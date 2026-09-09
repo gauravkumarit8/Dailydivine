@@ -41,7 +41,7 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleInstance"
-            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
             android:taskAffinity=""
             android:theme="@style/Theme.DailyDivine.AlarmRing"
             android:turnScreenOn="true" />

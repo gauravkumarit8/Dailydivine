@@ -9,8 +9,5 @@
     </style>
 
     <!-- Screen S08: full-screen alarm activity over the lock screen -->
-    <style name="Theme.DailyDivine.AlarmRing" parent="Theme.DailyDivine">
-        <item name="android:windowShowWhenLocked">true</item>
-        <item name="android:windowTurnScreenOn">true</item>
-    </style>
+    <style name="Theme.DailyDivine.AlarmRing" parent="Theme.DailyDivine" />
 </resources>
