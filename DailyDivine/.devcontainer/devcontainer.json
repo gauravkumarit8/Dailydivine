@@ -1,0 +1,36 @@
+{
+  "name": "DailyDivine Android Dev",
+  "image": "mcr.microsoft.com/devcontainers/java:17",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installGradle": "true",
+      "gradleVersion": "8.4"
+    },
+    "ghcr.io/devcontainers/features/android-sdk:1": {
+      "version": "34",
+      "buildTools": "34.0.0",
+      "platformTools": true,
+      "cmdlineTools": true
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "mathiasfrohlich.Kotlin",
+        "fwcd.kotlin",
+        "vscjava.vscode-gradle",
+        "naco-siren.gradle-language",
+        "esafirm.kotlin-formatter"
+      ],
+      "settings": {
+        "editor.fontSize": 14,
+        "editor.tabSize": 4,
+        "kotlin.languageServer.enabled": true
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "forwardPorts": [5554, 5555],
+  "remoteUser": "vscode"
+}

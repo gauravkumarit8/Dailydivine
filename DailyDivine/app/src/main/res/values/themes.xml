@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.DailyDivine" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Screen S01: branded splash theme consumed by installSplashScreen() -->
+    <style name="Theme.DailyDivine.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="postSplashScreenTheme">@style/Theme.DailyDivine</item>
+    </style>
+
+    <!-- Screen S08: full-screen alarm activity over the lock screen -->
+    <style name="Theme.DailyDivine.AlarmRing" parent="Theme.DailyDivine">
+        <item name="android:windowShowWhenLocked">true</item>
+        <item name="android:windowTurnScreenOn">true</item>
+    </style>
+</resources>

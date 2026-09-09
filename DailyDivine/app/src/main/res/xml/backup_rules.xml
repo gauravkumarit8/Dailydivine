@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SEC-01/02: everything is local-only; the default full-backup set is fine
+     since there is no server-side data to reconcile against. -->
+<full-backup-content>
+    <include domain="database" path="dailydivine.db" />
+    <include domain="sharedpref" path="." />
+</full-backup-content>

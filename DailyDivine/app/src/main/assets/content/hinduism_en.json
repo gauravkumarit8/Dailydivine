@@ -1,0 +1,55 @@
+{
+  "religion": "Hinduism",
+  "language": "en",
+  "version": 1,
+  "categories": [
+    { "id": 101, "name": "Bhagavad Gita", "icon": "book_gita", "verseCount": 700 }
+  ],
+  "verses": [
+    {
+      "id": 1001,
+      "categoryId": 101,
+      "dayNumber": 1,
+      "originalText": "dhritarashtra uvacha: dharma-kshetre kuru-kshetre...",
+      "translatedText": "On the sacred field of Kurukshetra, assembled and eager for battle, what did my sons and the sons of Pandu do?",
+      "sourceReference": "Bhagavad Gita 1.1",
+      "tags": "dharma,duty,battlefield,beginning"
+    },
+    {
+      "id": 1002,
+      "categoryId": 101,
+      "dayNumber": 2,
+      "originalText": "na tv evaham jatu nasam...",
+      "translatedText": "Never was there a time when I did not exist, nor you, nor all these kings; nor in the future shall any of us cease to be.",
+      "sourceReference": "Bhagavad Gita 2.12",
+      "tags": "soul,eternity,existence"
+    },
+    {
+      "id": 1003,
+      "categoryId": 101,
+      "dayNumber": 3,
+      "originalText": "na jayate mriyate va kadachin...",
+      "translatedText": "The soul is neither born, and nor does it die; nor having once existed, does it ever cease to be.",
+      "sourceReference": "Bhagavad Gita 2.20",
+      "tags": "soul,immortality"
+    },
+    {
+      "id": 1004,
+      "categoryId": 101,
+      "dayNumber": 4,
+      "originalText": "karmany evadhikaras te...",
+      "translatedText": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.",
+      "sourceReference": "Bhagavad Gita 2.47",
+      "tags": "duty,karma,detachment"
+    },
+    {
+      "id": 1005,
+      "categoryId": 101,
+      "dayNumber": 5,
+      "originalText": "yogah karmasu kaushalam...",
+      "translatedText": "Yoga is skill in action — performing one's duty with an even mind, undisturbed by success or failure.",
+      "sourceReference": "Bhagavad Gita 2.50",
+      "tags": "yoga,balance,action"
+    }
+  ]
+}
