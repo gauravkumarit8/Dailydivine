@@ -200,3 +200,37 @@ e: Error occurred in KSP, check log for detail
 5. Re-swept **every** `.kt` and `.gradle.kts` file in the project for brace/paren balance after these edits (I broke and had to re-fix `app/build.gradle.kts`'s `packaging {}` block mid-edit — caught by the same sweep before it ever reached you this time).
 
 **Status:** ✅ Fixed in this repo. **Not yet re-verified against a real Gradle build.**
+
+### 2026-09-09 — GitHub Actions CI added (build + test + downloadable APK)
+
+**What changed:** upgraded `.github/workflows/build.yml` from the original PRD scaffold to actually be usable for on-demand device testing:
+- Added `workflow_dispatch` trigger — you can hit "Run workflow" in the Actions tab any time, no push needed.
+- Swapped the manual `actions/cache` block for `gradle/actions/setup-gradle@v4`, the currently-recommended official caching action (confirmed current as of this session — the older `android-actions/setup-android@v3` was also confirmed still correct/maintained, not deprecated).
+- Split `./gradlew test` into `testDebugUnitTest` specifically (faster — doesn't also run release-variant tests) and run it *before* `assembleDebug`, so a broken unit test fails fast instead of after a slow APK build.
+- `--stacktrace` on both, so a CI failure gives you a real stack trace instead of a one-line summary.
+- Uploads the debug APK as a downloadable artifact (`DailyDivine-debug-apk`, 14-day retention) and, separately, unit test result XML even when the build fails (`if: always()`), so a red run still tells you *why*.
+
+**Why this build won't hit the JDK-25 problem:** `actions/setup-java@v4` pins JDK 17 explicitly on a clean runner — the whole Codespace issue was a pre-existing default JDK colliding with what we asked for. That can't happen here the same way.
+
+**How to use it (once pushed):**
+1. GitHub → your repo → **Actions** tab → **Android CI** (left sidebar) → **Run workflow** button (top right) → pick `main` → **Run workflow**.
+2. Wait for the green check (first run will be slower — no Gradle cache yet; subsequent runs are faster).
+3. Click into the completed run → scroll to **Artifacts** at the bottom → download **DailyDivine-debug-apk** (downloads as a `.zip` containing the `.apk`).
+4. Get it onto your phone (any of: email it to yourself, upload to Google Drive and download on-device, or `adb install app-debug.apk` over USB with the phone connected to your PC) → tap the `.apk` on your phone → allow "install from unknown sources" if prompted → install.
+5. This is a **debug build**, auto-signed with a debug key — it installs fine for testing but is not suitable for the Play Store (that needs the release signing setup from PRD Section 25, not yet done).
+
+**Status:** ✅ Workflow written, YAML-validated locally. **Not yet run for real** — first live run on your push will also serve as the actual verification that everything fixed in the last three sessions (JDK pin, SDK, theme attrs, Room converters) genuinely compiles clean, independent of your Codespace's environment quirks.
+
+---
+
+## What's Next (as of this session)
+
+Real, current priority order — supersedes the older "Next Session Priorities" list above where they conflict:
+
+1. **Push this session's two changes** (`.github/workflows/build.yml`, this CHECKLIST update) and trigger the Actions workflow. This is the actual end-to-end verification we've been building toward across the last several fix cycles — if it goes green, everything in `alarm/`, `data/`, `ui/`, and the Hilt wiring compiles clean on a real, independent machine.
+2. **If Actions goes red:** paste me the failing step's log the same way you have been — same pattern, another real bug to fix, likely something Codespaces papered over differently than a clean runner will.
+3. **If Actions goes green:** install the APK on your device per the steps above and confirm the app actually launches and shows the Welcome onboarding screen. That's the first real "does this app run at all" signal we'll have had.
+4. Once that's confirmed, next actual feature work (in order, per Sprint 2/3/4 gaps in the tables above):
+   - Wire DataStore into onboarding so religion/language selections persist and Home screen reads a real `religionId` instead of the hardcoded `1` placeholder.
+   - Build `AlarmRingActivity` (Screen S08) — `AlarmEscalationController` and `AlarmService` currently have no UI to hand control back to.
+   - Add the API 26 `WindowManager` flag fallback for `showWhenLocked`/`turnScreenOn` noted in the Sept 9 bug-fix entry above.
