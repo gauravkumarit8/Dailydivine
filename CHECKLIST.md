@@ -256,6 +256,24 @@ Error: At least one Gradle Wrapper Jar failed validation!
 
 **Status:** ✅ Fixed and independently verified against Gradle's own checksum list. **Not yet run in a real Actions build** — this should be the last environment-layer fix; if this goes green, everything downstream is finally testing the actual app code.
 
+### 2026-09-09 — First real Kotlin compilation attempt: 2 genuine API-usage bugs found and fixed
+
+**This is the milestone we've been building toward.** Every previous fix in this log was environment/tooling (JDK, SDK, wrapper security). This run got past all of that and reached `:app:compileDebugKotlin` — the actual Kotlin compiler, checking the actual app code, for the first time. It found exactly two real bugs, both API-version mismatches, no environment issues at all:
+
+```
+e: HomeScreen.kt:95:13 None of the following functions can be called with the arguments supplied:
+   public fun LinearProgressIndicator(progress: Float, ...)   [only this overload exists]
+e: ReligionSelectScreen.kt:35:17 This material API is experimental and is likely to change or to be removed in the future.
+```
+
+**Bug 1 — `HomeScreen.kt`:** I wrote `LinearProgressIndicator(progress = { streak.progressToNext }, ...)`, using the lambda-based `progress: () -> Float` overload. That overload was added in a **newer** Compose Material3 release than the one this project's `compose-bom:2024.01.00` pins — that BOM version only exposes the plain `progress: Float` overload. **Fix:** `progress = streak.progressToNext` (no lambda).
+
+**Bug 2 — `ReligionSelectScreen.kt`:** the clickable `Card(onClick = { ... }, ...)` overload (used for the tappable religion-selection cards) is marked `@ExperimentalMaterial3Api` in this BOM version, and Kotlin treats using an experimental API without opting in as a hard compile **error**, not a warning. **Fix:** added `@OptIn(ExperimentalMaterial3Api::class)` to `ReligionSelectScreen`.
+
+**Verification beyond just fixing the two reported lines:** swept the entire `app/src/main/java/` tree for (a) any other `progress = { ... }` lambda usages — none found beyond the fixed one — and (b) every other Material3 component actually in use in the project (`grep` for `Scaffold`, `TopAppBar`, `ModalBottomSheet`, etc.) — `Card` was the *only* one in use, and its one clickable instance is now the fixed one. So this isn't "fixed the two lines the compiler happened to mention" — it's "confirmed these are the only two instances of these two bug classes anywhere in the codebase."
+
+**Status:** ✅ Fixed in this repo, and swept for recurrence elsewhere. **Not yet re-verified against a real Gradle build** — but for the first time, a green run here means the actual Compose UI code compiles, not just the environment around it.
+
 ---
 
 ## What's Next (as of this session)

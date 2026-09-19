@@ -92,8 +92,15 @@ private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo) {
                 Text("Streak: ${streak.currentStreak} days", style = MaterialTheme.typography.headlineSmall)
             }
             Spacer(Modifier.height(8.dp))
+            // NOTE: the lambda-based `progress = { ... }` overload of
+            // LinearProgressIndicator was added in a newer Compose Material3
+            // than the one pinned by our compose-bom (2024.01.00) resolves
+            // to -- that version only has the plain `progress: Float`
+            // overload. Using the lambda form fails with "None of the
+            // following functions can be called with the arguments
+            // supplied", listing only the Float overload as available.
             LinearProgressIndicator(
-                progress = { streak.progressToNext },
+                progress = streak.progressToNext,
                 modifier = Modifier.fillMaxWidth()
             )
             streak.nextMilestone?.let {

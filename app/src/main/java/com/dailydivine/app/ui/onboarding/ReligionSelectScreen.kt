@@ -22,6 +22,7 @@ private val RELIGIONS = listOf(
     ReligionOption(7, "Spiritual", "Universal wisdom & peace")
 )
 
+@OptIn(ExperimentalMaterial3Api::class) // clickable Card(onClick = ...) below is experimental in this BOM version
 @Composable
 fun ReligionSelectScreen(onContinue: (Int) -> Unit) {
     var selected by remember { mutableStateOf<Int?>(null) }
