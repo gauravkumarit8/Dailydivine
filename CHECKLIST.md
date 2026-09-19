@@ -274,6 +274,30 @@ e: ReligionSelectScreen.kt:35:17 This material API is experimental and is likely
 
 **Status:** ✅ Fixed in this repo, and swept for recurrence elsewhere. **Not yet re-verified against a real Gradle build** — but for the first time, a green run here means the actual Compose UI code compiles, not just the environment around it.
 
+### 2026-09-19 — First real runtime crash, caught on an actual physical device: AdMob's auto-init `ContentProvider` crashes on launch, unconditionally
+
+**This is a different class of bug than everything above.** The build succeeded, the APK installed — and then the app crashed immediately on open, before showing anything. This can't be caught by a compiler; it only shows up by actually running the app, which is exactly what happened here (via `adb logcat --uid=<app-uid>`, filtered to just this app's process).
+
+**The actual crash** (from `adb logcat AndroidRuntime:E`):
+```
+FATAL EXCEPTION: main
+Process: com.dailydivine.app, PID: 32695
+java.lang.RuntimeException: Unable to get provider com.google.android.gms.ads.MobileAdsInitProvider: java.lang.IllegalStateException:
+*** The Google Mobile Ads SDK was initialized incorrectly. AdMob publishers should follow the instructions here... to add a valid App ID inside the AndroidManifest. ***
+    at android.app.ActivityThread.installProvider(...)
+    at android.app.ActivityThread.installContentProviders(...)
+    at android.app.ActivityThread.handleBindApplication(...)
+```
+
+**Root cause:** the `play-services-ads` (AdMob) dependency auto-registers a `ContentProvider` (`MobileAdsInitProvider`) via its own bundled manifest, which gets merged into ours. Android installs all `ContentProvider`s during `handleBindApplication` — **before `Application.onCreate()`, before Hilt, before `MainActivity`, before anything in our code runs at all.** That provider's `attachInfo()` unconditionally requires an AdMob App ID `<meta-data>` entry in the manifest, and throws `IllegalStateException` if it's missing. We added this dependency back in the initial Sprint 1 scaffold (forward-looking, for Sprint 7's monetization work), but Sprint 7 hasn't started — no App ID, no `ConsentManager`, nothing configured. So the dependency sat there as a live landmine: the very first time the app was actually run on a device (this session — every prior "success" was compile-only), it went off.
+
+**Fix applied:**
+1. Commented out `play-services-ads` and `user-messaging-platform` in `app/build.gradle.kts`, with an inline comment explaining exactly why, quoting the crash, and instructing that both must be re-enabled *together* with the required manifest App ID as a single Sprint 7 change — never the dependency alone.
+2. Verified via `grep` that zero lines of actual code reference `com.google.android.gms.ads.*` or `com.google.android.ump.*` — confirms removing the dependency breaks nothing currently working.
+3. **Proactively checked for the same bug class elsewhere** rather than declaring victory after one fix: Firebase Analytics is also in `build.gradle.kts`, also unconfigured (no `google-services.json`, `google-services` plugin not applied), also has zero real code references. Researched whether `FirebaseInitProvider` has the same unconditional-crash behavior as AdMob's provider — **it doesn't**: it degrades gracefully when unconfigured rather than throwing during provider install, and only fails if code later calls a Firebase API (ours doesn't). So it's **not** a confirmed live crash risk the way AdMob was, and I left it in place rather than making an unverified speculative change. **Flagged here for Sprint 7:** apply the `google-services` plugin and add `google-services.json` at the same time Firebase Analytics logging actually gets wired into `AlarmService.kt`'s commented-out `alarm_missed` event — don't let it sit configured-but-unused the way AdMob just did.
+
+**Status:** ✅ Fixed and root-caused with a real stack trace, not a guess. **Not yet re-verified** — next build + device install is the real test. This is also the first crash in the whole project that a `./gradlew assembleDebug` (or even the CI pipeline) *cannot* catch — worth remembering that "CI is green" and "the app actually runs" are genuinely different levels of verification, and Sprint 7+ should budget for real device testing before assuming a green build means a working app.
+
 ---
 
 ## What's Next (as of this session)

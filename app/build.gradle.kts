@@ -89,8 +89,21 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.2.1")
 
     // Google AdMob + UMP (v1.1 — SEC-11 consent gate)
-    implementation("com.google.android.gms:play-services-ads:22.6.0")
-    implementation("com.google.android.ump:user-messaging-platform:2.2.0")
+    // DISABLED until Sprint 7 (Monetization) actually implements AdMob.
+    // play-services-ads registers a ContentProvider (MobileAdsInitProvider)
+    // that auto-runs on app startup -- before MainActivity, before Hilt,
+    // before anything in our code -- and it hard-crashes the entire process
+    // if the manifest has no AdMob App ID meta-data. We had this dependency
+    // declared with zero AdMob configuration (no App ID, no ConsentManager),
+    // so every real launch crashed immediately with:
+    //   "The Google Mobile Ads SDK was initialized incorrectly... add a
+    //    valid App ID inside the AndroidManifest."
+    // Caught via a real device install + adb logcat, see CHECKLIST.md.
+    // Re-enable both lines AND add the required <meta-data> App ID to
+    // AndroidManifest.xml together, as one Sprint 7 change -- never one
+    // without the other.
+    // implementation("com.google.android.gms:play-services-ads:22.6.0")
+    // implementation("com.google.android.ump:user-messaging-platform:2.2.0")
 
     // Google Play Billing
     implementation("com.android.billingclient:billing-ktx:6.1.0")
