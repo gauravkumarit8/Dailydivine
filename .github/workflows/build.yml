@@ -30,6 +30,18 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # v3's default `packages` input is "tools platform-tools" -- the
+          # standalone "tools" package was removed from Google's SDK
+          # repository years ago and no longer exists, so the default always
+          # fails with "Failed to find package 'tools'" on a fresh runner.
+          # GitHub-hosted runners already ship a preinstalled Android SDK
+          # (incl. platform-tools) at $ANDROID_HOME, so we don't need this
+          # action to install anything -- just accept licenses / set env.
+          packages: ''
+
+      - name: Install required SDK platform & build-tools
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
       - name: Set up Gradle (with caching)
         uses: gradle/actions/setup-gradle@v4

@@ -221,6 +221,20 @@ e: Error occurred in KSP, check log for detail
 
 **Status:** ✅ Workflow written, YAML-validated locally. **Not yet run for real** — first live run on your push will also serve as the actual verification that everything fixed in the last three sessions (JDK pin, SDK, theme attrs, Room converters) genuinely compiles clean, independent of your Codespace's environment quirks.
 
+### 2026-09-09 — First real CI run, caught immediately: `android-actions/setup-android@v3` fails on `Failed to find package 'tools'`
+
+**Symptom:** the very first Actions run failed before Gradle even started, inside the "Set up Android SDK" step:
+```
+Warning: Failed to find package 'tools'
+Error: The process '.../sdkmanager' failed with exit code 1
+```
+
+**Root cause:** confirmed via research, not a guess — `android-actions/setup-android@v3`'s default `packages` input is `"tools platform-tools"`. The standalone `tools` package (the old, pre-`cmdline-tools` Android SDK Tools bundle) was removed from Google's SDK repository years ago and no longer exists at any version. Any workflow using this action's defaults with no `packages:` override hits this immediately on a fresh runner — this isn't specific to our project.
+
+**Fix applied:** pass `packages: ''` to the action so it only sets up licenses/environment without trying to install the dead `tools` package, then explicitly install exactly what we need via a separate `sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"` step. This is also more explicit/predictable than relying on the action's implicit defaults.
+
+**Status:** ✅ Fixed in this repo. **Not yet re-verified** — next push's Actions run is the real test.
+
 ---
 
 ## What's Next (as of this session)
