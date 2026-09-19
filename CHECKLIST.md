@@ -128,3 +128,75 @@ Not applicable yet.
 2. Wire DataStore into onboarding (closes the Sprint 2 gap).
 3. Build `AlarmRingActivity` (S08) — the escalation controller has nothing to interact with yet.
 4. Extract `ContentSource` interface so `ContentMigrationManager` gets a true end-to-end unit test, not just its DAO contract.
+
+---
+
+## Environment / Build Issues Log
+
+Real problems hit while actually running this in Codespaces, and how they were fixed. Append to this, don't just overwrite — it's the debugging history.
+
+### 2026-09-09 — `./gradlew assembleDebug` fails immediately, `BUILD FAILED`, cryptic `* What went wrong: 25.0.4.1`
+
+**Symptom:** first real build attempt in the pushed Codespace failed before compiling anything. `java -version` in that terminal showed **OpenJDK 25.0.4.1** (Microsoft build) as the active JDK.
+
+**Root cause:** Gradle 8.4 (this project's wrapper version) officially only runs on JVM 17–21 (some later 8.x patches stretch to 24). It does **not** run on JDK 25 — that requires **Gradle 9.1.0+**, confirmed against Gradle's own compatibility matrix. The Codespace's default `java` resolved to a JDK 25 the base machine ships, overriding/ignoring the JDK 17 our `.devcontainer/devcontainer.json` asks for — almost certainly because **the container was never rebuilt** after `.devcontainer/` was pushed (GitHub Codespaces doesn't auto-rebuild an already-running codespace when devcontainer config changes land on `main`).
+
+**Why not just upgrade Gradle to 9.1+?** Because AGP (Android Gradle Plugin) 9.0+ requires Gradle 9.1+ *and* is a major release with breaking changes (built-in Kotlin support replaces the separate `org.jetbrains.kotlin.android` plugin, DSL changes). That's a real migration, not a quick fix, and this project doesn't need JDK 25 for anything — it only needs *a* supported JDK to run the Gradle daemon. Pinning to JDK 17 (which the devcontainer already installs) is the lower-risk fix.
+
+**Fix applied:**
+1. `.devcontainer/devcontainer.json` — added `containerEnv.JAVA_HOME` pinned to the SDKMAN-managed `.../candidates/java/current` path the `java:17` feature maintains, so the Gradle daemon uses 17 regardless of what else is on the base image's `PATH`.
+2. `.devcontainer/setup.sh` — now explicitly runs `sdk default java <17.x-tem>` and exports/persists `JAVA_HOME`/`PATH` to `~/.bashrc`, with a printed fallback recovery procedure if SDKMAN isn't where expected.
+
+**What you need to do:** Command Palette → **"Codespaces: Rebuild Container"** (or delete and recreate the Codespace from the latest `main`) so the updated devcontainer config actually takes effect — pushing the file alone doesn't retroactively fix an already-running container.
+
+**If you can't rebuild right now**, unblock the current terminal directly:
+```bash
+ls /usr/local/sdkman/candidates/java/        # find the 17.x-tem folder name
+export JAVA_HOME=/usr/local/sdkman/candidates/java/<that-folder>
+export PATH=$JAVA_HOME/bin:$PATH
+java -version                                 # confirm it now says 17.x
+./gradlew assembleDebug
+```
+If there's no `/usr/local/sdkman` directory at all, the `java:17` devcontainer feature never ran — that's the rebuild-container case, not a JAVA_HOME problem.
+
+**Status:** ✅ Fixed and verified — the JDK/SDK environment issues are resolved. See the next entry for the first real code bug this build actually caught.
+
+### 2026-09-09 — First real code bug, caught by an actual `./gradlew assembleDebug`: `processDebugResources FAILED`
+
+**Symptom:** with JDK and Android SDK both correctly resolved, the build reached real resource linking and failed:
+```
+error: style attribute 'android:attr/windowShowWhenLocked' not found.
+error: style attribute 'android:attr/windowTurnScreenOn' not found.
+```
+
+**Root cause:** genuinely my mistake, not an environment problem. `res/values/themes.xml` declared `Theme.DailyDivine.AlarmRing` with `<item name="android:windowShowWhenLocked">` and `<item name="android:windowTurnScreenOn">` — **these theme attributes don't exist in the Android framework.** I conflated them with the real mechanism: `showWhenLocked` and `turnScreenOn` are **`<activity>` manifest attributes** (added API 27), not style/theme items. On top of that, the manifest itself had the attribute name slightly wrong too (`android:showOnLockScreen`, which also isn't real — the correct name is `android:showWhenLocked`).
+
+**Fix applied:**
+1. `AndroidManifest.xml` — `android:showOnLockScreen` → `android:showWhenLocked` (the real attribute) on `AlarmRingActivity`.
+2. `res/values/themes.xml` — removed both invalid `<item>` lines; `Theme.DailyDivine.AlarmRing` is now just a plain style with no bogus attributes, since the lock-screen behavior lives on the `<activity>` element instead.
+3. Swept every other XML resource in the project for the same class of mistake (`grep` for `android:window*`/`android:show*`/`android:turn*`) — this was the only occurrence.
+4. Noted a real follow-up: `showWhenLocked`/`turnScreenOn` only take effect on API 27+, but this project's `minSdk` is 26. `AlarmRingActivity` (not yet built) should additionally set `WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED`/`FLAG_TURN_SCREEN_ON` at runtime as an API 26 fallback.
+
+**Status:** ✅ Fixed in this repo. **Not yet re-verified against a real Gradle build** — please pull and re-run `./gradlew assembleDebug`; if resource linking passes, that confirms this specific fix and the build should move on to actually compiling the Kotlin sources, which is the first real test of everything in `alarm/`, `data/`, and `ui/`.
+
+### 2026-09-09 — Second real code bug, caught by KSP during Kotlin compilation: `kspDebugKotlin FAILED`
+
+**Symptom:** resource linking passed (previous fix confirmed working). Next failure was in annotation processing:
+```
+e: [ksp] .../Converters.kt:8: Class is referenced as a converter but it does not have any converter methods.
+w: [ksp] .../AppDatabase.kt:27: Schema export directory was not provided...
+e: Error occurred in KSP, check log for detail
+```
+
+**Root cause (the blocking error):** `AppDatabase` declared `@TypeConverters(Converters::class)`, but `Converters.kt` was an intentionally-empty placeholder class with zero `@TypeConverter`-annotated methods. Room's KSP processor now hard-fails on that combination rather than silently ignoring it — reasonable behavior on Room's part, this was genuinely dead/premature code on mine. None of the current entities need a converter (every field is a Room-native primitive), so the annotation shouldn't have been there yet.
+
+**Root cause (the warning, non-blocking but fixed anyway):** `exportSchema = true` was set with no `room.schemaLocation` configured, so Room had nowhere to write schema snapshots.
+
+**Fix applied:**
+1. `AppDatabase.kt` — removed `@TypeConverters(Converters::class)` and the now-unused `import androidx.room.TypeConverters`. Left a comment explaining exactly when to re-add it (once a field actually needs a converter, e.g. `List<Int>` stored as JSON).
+2. `Converters.kt` — comment updated to explain it's deliberately unreferenced for now, not accidentally orphaned.
+3. `app/build.gradle.kts` — added a `ksp { arg("room.schemaLocation", "$projectDir/schemas") }` block so Room exports schema JSON on every build.
+4. Created `app/schemas/` (with a `.gitkeep`) so the directory exists and its exported contents get committed — useful later for testing `MIGRATION_1_2` against a real prior-schema snapshot rather than just the hand-written SQL.
+5. Re-swept **every** `.kt` and `.gradle.kts` file in the project for brace/paren balance after these edits (I broke and had to re-fix `app/build.gradle.kts`'s `packaging {}` block mid-edit — caught by the same sweep before it ever reached you this time).
+
+**Status:** ✅ Fixed in this repo. **Not yet re-verified against a real Gradle build.**

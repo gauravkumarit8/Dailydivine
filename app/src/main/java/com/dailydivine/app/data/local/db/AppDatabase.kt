@@ -2,7 +2,6 @@ package com.dailydivine.app.data.local.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.dailydivine.app.data.local.dao.*
@@ -23,7 +22,11 @@ import com.dailydivine.app.data.local.entity.*
     version = 2, // bumped from 1 -> 2 for the v1.1 content_versions table
     exportSchema = true
 )
-@TypeConverters(Converters::class)
+// No @TypeConverters(Converters::class) here: Room's KSP processor hard-fails
+// if the referenced class has zero @TypeConverter methods, and every entity
+// field is currently a Room-native primitive (String/Int/Long/Boolean).
+// Converters.kt is kept as an intentionally-empty extension point -- re-add
+// this annotation once it actually has a converter method to register.
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun verseDao(): VerseDao

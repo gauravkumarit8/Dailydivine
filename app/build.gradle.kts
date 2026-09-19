@@ -47,6 +47,14 @@ android {
     }
 }
 
+// Resolves the Room KSP warning: "Schema export directory was not provided".
+// Exported schemas are checked into version control under app/schemas/ so
+// migrations (like v1.1's MIGRATION_1_2) can be tested against real prior
+// schema snapshots later, per Room's own recommended practice.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     // Jetpack Compose
     implementation(platform("androidx.compose:compose-bom:2024.01.00"))
