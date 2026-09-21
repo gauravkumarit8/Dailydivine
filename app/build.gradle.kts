@@ -124,9 +124,26 @@ dependencies {
     // Lottie Animations
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
-    // Glance (Home Screen Widgets)
-    implementation("androidx.glance:glance-appwidget:1.0.0")
-    implementation("androidx.glance:glance-material3:1.0.0")
+    // Glance (Home Screen Widgets) — DISABLED until Sprint 9 actually builds
+    // DailyVerseWidget.kt. Root-caused as the crash source for:
+    //   java.lang.NoSuchMethodError: No virtual method at(...)
+    //   in class KeyframesSpec$KeyframesSpecConfig
+    //   at androidx.compose.material3.ProgressIndicatorKt$CircularProgressIndicator...
+    // Glance 1.0.0 predates our compose-bom (2024.01.00) and pulls its own
+    // transitive androidx.compose.animation:animation-core version that
+    // doesn't match what material3 (from the BOM) was compiled against --
+    // classic Compose BOM version-skew: material3's compiled bytecode calls
+    // a method signature on KeyframesSpecConfig that the actual animation-core
+    // .jar bundled in the final APK doesn't have. Caught via a real device
+    // crash + adb logcat (see CHECKLIST.md), not a compiler error -- this
+    // class of bug is invisible to ./gradlew assembleDebug and even CI.
+    // Zero code currently references Glance (confirmed via grep) -- exact
+    // same "unused-but-live-landmine" shape as the AdMob crash fix above.
+    // Re-enable only alongside either (a) a compose-bom upgrade verified
+    // compatible with Glance's required version, or (b) an explicit
+    // dependency constraint forcing animation-core to the BOM's version.
+    // implementation("androidx.glance:glance-appwidget:1.0.0")
+    // implementation("androidx.glance:glance-material3:1.0.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

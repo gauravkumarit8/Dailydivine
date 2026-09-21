@@ -298,6 +298,26 @@ java.lang.RuntimeException: Unable to get provider com.google.android.gms.ads.Mo
 
 **Status:** ✅ Fixed and root-caused with a real stack trace, not a guess. **Not yet re-verified** — next build + device install is the real test. This is also the first crash in the whole project that a `./gradlew assembleDebug` (or even the CI pipeline) *cannot* catch — worth remembering that "CI is green" and "the app actually runs" are genuinely different levels of verification, and Sprint 7+ should budget for real device testing before assuming a green build means a working app.
 
+### 2026-09-20 — Second real runtime crash: Compose BOM version skew via `androidx.glance`, `NoSuchMethodError` in the loading spinner
+
+**Symptom:** the AdMob crash fix worked — the app now opens, and onboarding (Religion → Language → Alarm setup) works correctly. Crash happens on reaching the **Home screen**, specifically while the loading spinner (`CircularProgressIndicator`) is showing:
+```
+FATAL EXCEPTION: main
+java.lang.NoSuchMethodError: No virtual method at(Ljava/lang/Object;I)Landroidx/compose/animation/core/KeyframesSpec$KeyframeEntity;
+  in class Landroidx.compose.animation.core.KeyframesSpec$KeyframesSpecConfig
+    at androidx.compose.material3.ProgressIndicatorKt$CircularProgressIndicator$endAngle$1.invoke(ProgressIndicator.kt:371)
+    ...
+    at com.dailydivine.app.ui.home.HomeScreenKt.HomeScreen(HomeScreen.kt:37)
+```
+
+**Root cause:** a classic **Compose BOM version-skew bug**, not a logic error in our code. `material3`'s `CircularProgressIndicator` (from `compose-bom:2024.01.00`) was compiled against a specific version of `androidx.compose.animation:animation-core` and calls a method (`KeyframesSpecConfig.at(...)`) that exists with that exact signature only in that version. But the actual `animation-core` .jar that ended up bundled in the final APK was a **different, incompatible version** — meaning some other dependency pulled its own transitive `animation-core` version that "won" Gradle's dependency resolution instead of the BOM's. `androidx.glance:*:1.0.0` (added early for the still-unbuilt Sprint 9 home screen widget) is a well-known culprit for exactly this: it predates our Jan-2024 BOM (released mid/late-2023) and has documented history of fighting Compose BOM version alignment.
+
+**Fix applied:** commented out `androidx.glance:glance-appwidget` and `androidx.glance:glance-material3` in `app/build.gradle.kts`, same pattern as the AdMob fix — confirmed via `grep` that zero code currently references Glance (the widget feature is Sprint 9, not started), so nothing breaks. Also checked Lottie (also unused) as a weaker secondary suspect and left it alone — Lottie has its own internal animation engine and doesn't typically depend on `compose.animation.core`, so it's a much less likely contributor and I didn't want to remove more than the evidence supports in one change.
+
+**Being honest about confidence level here:** unlike the AdMob fix (where the stack trace pointed at AdMob's own code directly), this fix is **strong circumstantial reasoning, not a proven-certain root cause** — I don't have a way to run `./gradlew :app:dependencies` myself in this sandbox to confirm Glance was definitively the version that "won" resolution. If the *exact same* `KeyframesSpecConfig.at()` crash recurs after this fix, that disproves Glance as the cause and the next suspects to isolate (one at a time) are `lottie-compose` and then `navigation-compose`'s pinned version against this BOM.
+
+**Status:** 🟡 Fix applied based on strong (not certain) reasoning. **Needs a real device re-test to confirm** — please rebuild, reinstall, and get all the way to the Home screen again.
+
 ---
 
 ## What's Next (as of this session)
