@@ -30,7 +30,10 @@ class MainViewModel @Inject constructor(
             _startDestination.value = if (prefs.onboardingCompleted) {
                 Screen.Home.route
             } else {
-                Screen.Welcome.route
+                // Must be the nested graph's own route, not Welcome.route
+                // directly -- same bug/fix as NavGraph.kt's default
+                // startDestination, see Screen.kt's OnboardingGraph comment.
+                Screen.OnboardingGraph.route
             }
         }
     }

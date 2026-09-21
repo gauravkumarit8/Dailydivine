@@ -14,12 +14,20 @@ import androidx.navigation.compose.rememberNavController
 import com.dailydivine.app.ui.home.HomeScreen
 import com.dailydivine.app.ui.onboarding.*
 
-private const val ONBOARDING_GRAPH_ROUTE = "onboarding"
-
 @Composable
 fun DailyDivineNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Welcome.route
+    // Root NavHost.startDestination MUST be a direct child of the root
+    // graph. The onboarding screens (Welcome, ReligionSelect, ...) are
+    // children of the NESTED "onboarding" sub-graph below, not of the root
+    // -- so the correct default/entry point here is the sub-graph's own
+    // route (Screen.OnboardingGraph.route = "onboarding"), which Navigation
+    // then automatically descends into that sub-graph's own startDestination
+    // (Screen.Welcome.route). Passing Screen.Welcome.route directly here
+    // throws "navigation destination onboarding/welcome is not a direct
+    // child of this NavGraph" on every launch -- see Screen.kt's comment
+    // and CHECKLIST.md for the full story.
+    startDestination: String = Screen.OnboardingGraph.route
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
 
@@ -28,7 +36,7 @@ fun DailyDivineNavGraph(
         // sub-graph's own back stack entry -- selections made on one screen
         // (e.g. religion) are visible to later screens (e.g. language
         // filtering) without threading state through navigation arguments.
-        navigation(startDestination = Screen.Welcome.route, route = ONBOARDING_GRAPH_ROUTE) {
+        navigation(startDestination = Screen.Welcome.route, route = Screen.OnboardingGraph.route) {
             composable(Screen.Welcome.route) {
                 WelcomeScreen(onBegin = { navController.navigate(Screen.ReligionSelect.route) })
             }
@@ -71,7 +79,7 @@ fun DailyDivineNavGraph(
                     onDone = { granted ->
                         viewModel.completeOnboarding(notificationsGranted = granted) {
                             navController.navigate(Screen.Home.route) {
-                                popUpTo(ONBOARDING_GRAPH_ROUTE) { inclusive = true }
+                                popUpTo(Screen.OnboardingGraph.route) { inclusive = true }
                             }
                         }
                     }
@@ -95,7 +103,7 @@ private fun onboardingViewModel(
     backStackEntry: NavBackStackEntry
 ): OnboardingViewModel {
     val parentEntry = remember(backStackEntry) {
-        navController.getBackStackEntry(ONBOARDING_GRAPH_ROUTE)
+        navController.getBackStackEntry(Screen.OnboardingGraph.route)
     }
     return hiltViewModel(parentEntry)
 }

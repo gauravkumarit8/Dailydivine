@@ -357,6 +357,28 @@ java.lang.NoSuchMethodError: No virtual method at(Ljava/lang/Object;I)Landroidx/
 
 **Status:** 🟡 Substantial new feature code, carefully self-reviewed, not yet build-verified. This is a bigger single change than the recent one-file bug fixes — if the build fails, the error will likely point at one specific file rather than being a systemic issue, given how contained each piece is.
 
+### 2026-09-21 — Crashed on every launch: nested navigation graph start destination bug
+
+**Symptom:** app crashed immediately on open, before any UI rendered — happened on every single launch attempt (3 in a row in the log), 100% reproducible, not intermittent:
+```
+FATAL EXCEPTION: main
+java.lang.IllegalArgumentException: navigation destination onboarding/welcome is not a direct child of this NavGraph
+    at androidx.navigation.NavGraphNavigator.navigate(...)
+    at androidx.navigation.compose.NavHostKt.NavHost(...)
+    at com.dailydivine.app.ui.navigation.NavGraphKt.DailyDivineNavGraph(NavGraph.kt:24)
+```
+
+**Root cause:** a genuine bug in the previous session's nested-navigation-graph work, caught immediately by the first real test — exactly the value of testing every change on a device rather than assuming compile-clean means correct. The 5 onboarding screens were (correctly) nested inside their own sub-graph (route `"onboarding"`) so they could share one `OnboardingViewModel`. But `Screen.Welcome.route` (`"onboarding/welcome"`) is a child of *that sub-graph*, not of the *root* graph — and `NavHost`'s `startDestination` parameter must always be a direct child of the graph it's building. Both `NavGraph.kt`'s default parameter and `MainViewModel.kt`'s "not yet onboarded" branch were passing `Screen.Welcome.route` straight to the root `NavHost`, which can't find it there and throws immediately, before any composable ever renders — explaining why it crashed before even reaching Welcome, and why every retry hit the same wall.
+
+**Fix applied:**
+1. Added `Screen.OnboardingGraph` (route `"onboarding"`) to `Screen.kt` as the single source of truth for the sub-graph's own route, with an explanatory comment on exactly this failure mode so it can't quietly regress again.
+2. `NavGraph.kt`: root `NavHost`'s default `startDestination` now correctly points at `Screen.OnboardingGraph.route` (which Navigation then automatically descends into that sub-graph's own `startDestination`, `Screen.Welcome.route` — a separate, correct usage that legitimately stays as-is). Also removed the private, duplicated `ONBOARDING_GRAPH_ROUTE` string constant in favor of the single shared `Screen.OnboardingGraph.route`, since a second hardcoded copy of that string is exactly how this class of bug could resurface later.
+3. `MainViewModel.kt`: the "onboarding not completed" branch now also resolves to `Screen.OnboardingGraph.route` instead of `Screen.Welcome.route`, for the identical reason.
+
+**Verification:** grepped for any remaining problematic usage of `Screen.Welcome.route` as a start-destination argument (only the one *correct* usage remains — the sub-graph's own internal `startDestination`, which is right by design) and re-ran the full brace/paren balance sweep across every file (clean).
+
+**Status:** ✅ Fixed and the specific mechanism is well understood (not a guess) — this was a straightforward, well-documented Navigation Compose API contract violation, not a mysterious runtime issue. **Not yet re-verified on device.**
+
 ---
 
 ## What's Next (as of this session)
