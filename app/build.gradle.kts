@@ -57,7 +57,23 @@ ksp {
 
 dependencies {
     // Jetpack Compose
-    implementation(platform("androidx.compose:compose-bom:2024.01.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    // v was 2024.01.00 -- bumped to fix a CONFIRMED Google bug (not a guess):
+    // https://issuetracker.google.com/issues/322214617 -- a binary
+    // compatibility break in KeyframesSpec.at()/atFraction() shipped in the
+    // 2024.01.00-era animation-core, breaking material3's own
+    // CircularProgressIndicator at runtime with:
+    //   NoSuchMethodError: No virtual method at(...)Landroidx/compose/
+    //   animation/core/KeyframesSpec$KeyframeEntity; in KeyframesSpecConfig
+    // This is not a version-skew issue between OUR dependencies (we already
+    // ruled that out by disabling androidx.glance and confirming the exact
+    // same crash persisted, disproving that hypothesis) -- it's a genuine
+    // bug inside this specific compose-bom release that even hit Google's
+    // own official JetNews sample app and multiple unrelated projects.
+    // Google's fix landed Jan 25 2024 and shipped in the next BOM release;
+    // 2024.04.01 is safely past it and still Compose-Compiler-1.5.8/
+    // Kotlin-1.9.22 compatible (same "Compose 1.6.x" runtime family, no
+    // compiler/Kotlin bump needed). See CHECKLIST.md for the full trail.
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -125,23 +141,16 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
     // Glance (Home Screen Widgets) — DISABLED until Sprint 9 actually builds
-    // DailyVerseWidget.kt. Root-caused as the crash source for:
-    //   java.lang.NoSuchMethodError: No virtual method at(...)
-    //   in class KeyframesSpec$KeyframesSpecConfig
-    //   at androidx.compose.material3.ProgressIndicatorKt$CircularProgressIndicator...
-    // Glance 1.0.0 predates our compose-bom (2024.01.00) and pulls its own
-    // transitive androidx.compose.animation:animation-core version that
-    // doesn't match what material3 (from the BOM) was compiled against --
-    // classic Compose BOM version-skew: material3's compiled bytecode calls
-    // a method signature on KeyframesSpecConfig that the actual animation-core
-    // .jar bundled in the final APK doesn't have. Caught via a real device
-    // crash + adb logcat (see CHECKLIST.md), not a compiler error -- this
-    // class of bug is invisible to ./gradlew assembleDebug and even CI.
-    // Zero code currently references Glance (confirmed via grep) -- exact
-    // same "unused-but-live-landmine" shape as the AdMob crash fix above.
-    // Re-enable only alongside either (a) a compose-bom upgrade verified
-    // compatible with Glance's required version, or (b) an explicit
-    // dependency constraint forcing animation-core to the BOM's version.
+    // DailyVerseWidget.kt. Simply unused right now, nothing more: it was
+    // briefly suspected as the cause of a real runtime crash (a
+    // NoSuchMethodError in material3's CircularProgressIndicator), but that
+    // theory was DISPROVEN -- disabling Glance alone did not fix the crash,
+    // which turned out to be a confirmed Google bug in the compose-bom
+    // itself (see the compose-bom comment above, and CHECKLIST.md's "second
+    // runtime crash, corrected diagnosis" entry for the full trail,
+    // including the wrong first guess). Safe to re-enable in Sprint 9 --
+    // no known reason not to, now that the actual bug is fixed via the BOM
+    // bump.
     // implementation("androidx.glance:glance-appwidget:1.0.0")
     // implementation("androidx.glance:glance-material3:1.0.0")
 

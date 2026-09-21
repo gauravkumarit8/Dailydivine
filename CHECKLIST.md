@@ -318,6 +318,18 @@ java.lang.NoSuchMethodError: No virtual method at(Ljava/lang/Object;I)Landroidx/
 
 **Status:** 🟡 Fix applied based on strong (not certain) reasoning. **Needs a real device re-test to confirm** — please rebuild, reinstall, and get all the way to the Home screen again.
 
+### 2026-09-21 — Same crash recurred after the Glance fix: the Glance hypothesis was WRONG. Real root cause found: confirmed Google bug, not our dependency graph
+
+**What happened:** rebuilt with Glance disabled, reinstalled, got past onboarding (Religion → Language → Alarm setup all working now) — then hit the **exact same** `NoSuchMethodError` on `KeyframesSpecConfig.at()` on reaching the Home screen. Identical stack trace, identical crash point.
+
+**This disproves the previous entry's hypothesis.** Disabling Glance did not fix it, which means Glance was never the cause — worth stating plainly rather than quietly moving past it. The earlier fix wasn't wrong to *attempt* (it was well-reasoned circumstantial evidence at the time, and removing an unused dependency was low-risk either way), but it wasn't the actual root cause, and I said so explicitly at the time precisely so this could be caught and corrected here.
+
+**Actual root cause — this time confirmed, not inferred:** found the exact same crash reported against **Google's own official JetNews sample app**, plus multiple unrelated third-party apps, all with the identical stack trace. It traces to a real, acknowledged bug on Google's issue tracker ([issuetracker.google.com/issues/322214617](https://issuetracker.google.com/issues/322214617)): a **binary compatibility break** in `KeyframesSpecConfig.at()`/`atFraction()` shipped in the `androidx.compose.animation` release that our `compose-bom:2024.01.00` pinned. Google's own fix commit (merged Jan 25, 2024, days after our pinned BOM was cut) states directly: *"Fix binary compatibility of KeyframesSpec... makes sure the signature of `at` and `atFraction` of KeyframesSpecConfig is binary compatible with previous releases."* This has nothing to do with any dependency in our project fighting the BOM — it's a bug **inside that specific BOM release itself**, and it explains why removing Glance changed nothing: there was no version conflict to remove.
+
+**Fix applied:** bumped `compose-bom` from `2024.01.00` → `2024.04.01` in `app/build.gradle.kts` — safely past Google's fix, still within the same "Compose 1.6.x" runtime family as our pinned `kotlinCompilerExtensionVersion = "1.5.8"` / Kotlin 1.9.22, so no compiler or Kotlin version bump needed alongside it (lower risk than jumping further forward). Left Glance still disabled for this round on purpose — re-enabling it at the same time as the BOM bump would muddy verification of whether the BOM bump alone actually fixes this. Its build.gradle.kts comment now correctly says it's safe to re-enable in Sprint 9, with the wrong original theory called out rather than silently erased.
+
+**Status:** ✅ Root-caused against a real, external, confirmed source (Google's issue tracker) rather than inference from our own dependency list — this is a materially higher confidence level than the previous attempt. **Not yet re-verified** — next device test is the real confirmation, same as always. If this crash recurs a third time with the identical trace, the BOM-bug theory would also need to be reconsidered, but that's now a low-probability outcome given the direct match to a documented, fixed Google bug.
+
 ---
 
 ## What's Next (as of this session)
