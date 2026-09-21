@@ -67,8 +67,14 @@ fun DailyDivineNavGraph(
                     onTtsToggle = viewModel::setTtsEnabled,
                     canScheduleExactAlarms = state.canScheduleExactAlarms,
                     onRequestExactAlarmPermission = viewModel::refreshExactAlarmPermission,
-                    onContinue = { navController.navigate(Screen.Permission.route) },
-                    onSkip = { navController.navigate(Screen.Permission.route) }
+                    onContinue = {
+                        viewModel.confirmAlarm()
+                        navController.navigate(Screen.Permission.route)
+                    },
+                    onSkip = {
+                        viewModel.skipAlarm()
+                        navController.navigate(Screen.Permission.route)
+                    }
                 )
             }
             composable(Screen.Permission.route) { backStackEntry ->

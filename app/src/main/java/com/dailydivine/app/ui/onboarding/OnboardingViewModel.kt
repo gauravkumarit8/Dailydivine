@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
+import com.dailydivine.app.data.repository.AlarmRepository
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,10 @@ data class OnboardingUiState(
     val alarmHour: Int = 5,
     val alarmMinute: Int = 30,
     val ttsEnabled: Boolean = true,
+    /** Distinguishes "Set Alarm →" from "Skip, I'll set up later" (S05) --
+     *  previously both buttons did the exact same thing with no way to tell
+     *  them apart, so no alarm was ever actually created either way. */
+    val wantsAlarm: Boolean = true,
     val canScheduleExactAlarms: Boolean = true,
     val isCompleting: Boolean = false
 ) {
@@ -32,6 +37,7 @@ data class OnboardingUiState(
 class OnboardingViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val contentMigrationManager: ContentMigrationManager,
+    private val alarmRepository: AlarmRepository,
     @ApplicationContext private val appContext: android.content.Context
 ) : ViewModel() {
 
@@ -62,6 +68,17 @@ class OnboardingViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(ttsEnabled = enabled)
     }
 
+    /** Called by "Set Alarm →" on S05. */
+    fun confirmAlarm() {
+        _uiState.value = _uiState.value.copy(wantsAlarm = true)
+    }
+
+    /** Called by "Skip, I'll set up later" on S05 -- no alarm gets created
+     *  in completeOnboarding() when this is the last call made. */
+    fun skipAlarm() {
+        _uiState.value = _uiState.value.copy(wantsAlarm = false)
+    }
+
     fun refreshExactAlarmPermission() {
         _uiState.value = _uiState.value.copy(
             canScheduleExactAlarms = AlarmScheduler(appContext).canScheduleExactAlarms()
@@ -71,17 +88,21 @@ class OnboardingViewModel @Inject constructor(
     /**
      * Called from the Permission screen (S06). Persists everything collected
      * across onboarding, stamps the install date (F002's day-number anchor),
-     * and kicks off the first content load for the selected religion via the
-     * v1.1 Content Migration Manager (F002-R13) — the same code path an app
-     * update will use later, so this is exercised from day one rather than
-     * only in a hypothetical future update.
+     * kicks off the first content load for the selected religion via the
+     * v1.1 Content Migration Manager (F002-R13), and -- new this pass --
+     * actually creates and schedules a real alarm via AlarmRepository if
+     * the user didn't skip that step. Previously none of this alarm
+     * creation happened at all: AlarmScheduler/AlarmService/
+     * AlarmEscalationController existed since Sprint 1 but nothing in the
+     * UI ever called them.
      */
     fun completeOnboarding(notificationsGranted: Boolean, onDone: () -> Unit) {
-        val religionId = _uiState.value.selectedReligionId ?: Religions.ALL.first().id
-        val languageCode = _uiState.value.selectedLanguageCode
+        val state = _uiState.value
+        val religionId = state.selectedReligionId ?: Religions.ALL.first().id
+        val languageCode = state.selectedLanguageCode
         val religion = Religions.byId(religionId)
 
-        _uiState.value = _uiState.value.copy(isCompleting = true)
+        _uiState.value = state.copy(isCompleting = true)
 
         viewModelScope.launch {
             userPreferences.setReligion(religionId)
@@ -92,7 +113,7 @@ class OnboardingViewModel @Inject constructor(
             // Only Hinduism has a real sample content file as of this sprint
             // (see util/Religions.kt) -- other religions simply have no
             // verses yet, which HomeScreen already handles gracefully
-            // (shows "No verse available yet" rather than crashing).
+            // (shows an explicit empty state rather than crashing).
             religion?.contentAssetEn?.let { assetFile ->
                 runCatching {
                     contentMigrationManager.migrateIfNeeded(religionId, assetFile, "en")
@@ -100,7 +121,22 @@ class OnboardingViewModel @Inject constructor(
                 // Deliberately swallow failures here rather than block
                 // onboarding completion on content loading -- a missing/bad
                 // JSON file shouldn't strand the user on the permission
-                // screen. HomeScreen's empty-state handles zero verses fine.
+                // screen.
+            }
+
+            if (state.wantsAlarm) {
+                runCatching {
+                    alarmRepository.createAndSchedule(
+                        hour = state.alarmHour,
+                        minute = state.alarmMinute,
+                        isTTSEnabled = state.ttsEnabled
+                    )
+                }
+                // Same reasoning as content loading above: a scheduling
+                // failure (e.g. an unexpected AlarmManager exception on some
+                // OEM skin) shouldn't strand the user mid-onboarding. The
+                // Alarm screen (S11, not yet built) will be where a user can
+                // retry/edit this later.
             }
 
             _uiState.value = _uiState.value.copy(isCompleting = false)

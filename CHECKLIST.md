@@ -53,14 +53,19 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 |---|---|---|
 | `AlarmScheduler` (schedule/cancel/snooze) | ✅ | Includes v1.1 exact-alarm fallback |
 | **F004-R25 (v1.1): exact-alarm permission fallback** | ✅ | `canScheduleExactAlarms()` gates `setAlarmClock()` vs `setWindow()`; reliability banner in `AlarmSetupScreen` |
-| **F004-R19 (v1.1): escalation / auto-snooze cap** | ✅ | `AlarmEscalationController` — **unit-tested and verified standalone** (11/11 assertions pass, see below) |
-| `AlarmService` (foreground service, tone playback) | ✅ | Drives the escalation loop, volume ramp, WakeLock |
+| **F004-R19 (v1.1): escalation / auto-snooze cap** | ✅ | `AlarmEscalationController` — **unit-tested and verified standalone** (11/11 assertions pass) |
+| `AlarmService` (foreground service, tone playback) | ✅ | Drives the escalation loop, volume ramp, WakeLock. Now also handles `ACTION_STOP` (sent by `AlarmRingActivity`) and launches the ring screen via a full-screen notification intent |
 | `AlarmReceiver` | ✅ | Starts the foreground service |
-| `BootReceiver` (reschedule after reboot) | 🟡 | Structure in place; DB wiring left as a TODO pending Hilt entry-point pattern for non-Compose receivers |
-| Alarm ring screen (full-screen activity) | ⬜ | `AlarmRingActivity` referenced in the manifest, not yet implemented |
+| `BootReceiver` (reschedule after reboot) | ✅ | Now a real `@AndroidEntryPoint` receiver, Hilt-injects `AlarmRepository`, calls `rescheduleAllEnabled()` on `ACTION_BOOT_COMPLETED` — was a TODO stub before this session |
+| `AlarmRepository` (Room + AlarmScheduler wiring) | ✅ | **New this session.** Closes the gap where `Alarm` entities and `AlarmScheduler` existed but were never connected — every create/update/delete now both persists to Room AND (re)schedules or cancels the real system alarm in one call, so they can't drift out of sync |
+| **Onboarding actually creates a real alarm** | ✅ | **New this session.** Previously "Set Alarm →" and "Skip, I'll set up later" did the *exact same thing* (both just navigated forward) — no alarm was ever created either way, regardless of which button was tapped. `OnboardingViewModel` now tracks `wantsAlarm` distinctly per button and calls `AlarmRepository.createAndSchedule()` on completion only when true |
+| Alarm ring screen (S08) | ✅ | **New this session.** `AlarmRingActivity.kt` — Snooze / Wake Up & Read buttons, current time display, back-press absorbed (can't silently dismiss an alarm). Verse preview (first line of today's verse) deliberately deferred — needs a `VerseRepository` lookup keyed off the alarm, tracked below |
+| **API 26 lock-screen fallback** | ✅ | **New this session.** `showWhenLocked`/`turnScreenOn` manifest attributes only take effect on API 27+; `AlarmRingActivity` now also sets the older `WindowManager.LayoutParams` flags (`FLAG_SHOW_WHEN_LOCKED`, `FLAG_TURN_SCREEN_ON`, `FLAG_DISMISS_KEYGUARD`) for exactly API 26, this project's `minSdk` floor |
 | Alarm tone playback (real audio) | 🟡 | `AlarmService` plays from `res/raw/`; only a **placeholder** `temple_bell.mp3` exists — needs real royalty-free audio (Appendix B) |
-| Alarm configuration UI (S11) | ⬜ | Not started |
-| Unit tests: `AlarmEscalationControllerTest` | ✅ | **4 test cases, verified passing** (see Verification section) |
+| Alarm configuration UI (S11) | ⬜ | Still not started — no screen to view/edit/delete the alarm created during onboarding, or add additional alarms (premium, up to 5 per F004-R02) |
+| Verse preview on the ring screen | ⬜ | Deferred this session (see above) — `AlarmRingActivity` shows a generic greeting instead of the actual daily verse's first line |
+| Time picker in onboarding (S05) | ⬜ | `AlarmSetupScreen` still shows static "Default alarm time: 5:30 AM" text rather than an interactive picker — the alarm that gets created this session always uses 5:30 AM. A real `TimePicker` is experimental in this BOM version (same `@OptIn` pattern as the `Card` fix would be needed) — scoped out to keep this pass focused |
+| Unit tests: `AlarmEscalationControllerTest` | ✅ | 4 test cases, verified passing |
 
 ## Sprint 5 — Audio & TTS
 
@@ -379,14 +384,43 @@ java.lang.IllegalArgumentException: navigation destination onboarding/welcome is
 
 **Status:** ✅ Fixed and the specific mechanism is well understood (not a guess) — this was a straightforward, well-documented Navigation Compose API contract violation, not a mysterious runtime issue. **Not yet re-verified on device.**
 
+### 2026-09-21 — Confirmed working end-to-end. Continued development: made the alarm system actually functional
+
+**Confirmed by you:** full onboarding-to-Home flow works cleanly now. Moving on to real feature work per the checklist's "What's Next."
+
+**The gap closed this session:** the app's entire core feature — the prayer alarm — was completely inert. `AlarmScheduler`, `AlarmEscalationController`, and `AlarmService` all existed and were individually correct (the v1.1 fixes), but **nothing in the UI ever actually created a real alarm.** Tapping "Set Alarm →" during onboarding just navigated to the next screen with no side effect at all — same as tapping "Skip, I'll set up later," since both buttons called the identical navigation lambda. And even if an alarm *had* been scheduled, there was no `AlarmRingActivity` for it to launch when it fired — the manifest declared the activity, but the class didn't exist.
+
+**What this session built:**
+
+1. **`data/repository/AlarmRepository.kt` (new).** Wraps `AlarmDao` together with `AlarmScheduler` so every create/update/delete of an alarm both persists to Room *and* schedules/cancels the real system alarm in one call — previously these two pieces existed independently with nothing connecting them. Also exposes `rescheduleAllEnabled()` for boot recovery.
+
+2. **`OnboardingViewModel.kt` (updated).** Added a `wantsAlarm: Boolean` field distinguishing "Set Alarm →" (`confirmAlarm()`) from "Skip, I'll set up later" (`skipAlarm()`) — these were indistinguishable before. `completeOnboarding()` now actually calls `alarmRepository.createAndSchedule()` when the user didn't skip, using the TTS preference already collected on that screen.
+
+3. **`NavGraph.kt` (updated).** Wired `AlarmSetupScreen`'s `onContinue`/`onSkip` callbacks to call `confirmAlarm()`/`skipAlarm()` before navigating, instead of both doing the exact same thing.
+
+4. **`ui/alarm/AlarmRingActivity.kt` (new).** Screen S08 — the full-screen UI that appears when an alarm actually fires. Snooze (reschedules via `AlarmScheduler.scheduleSnooze()` using the alarm's own configured duration) and "Wake Up & Read" (opens `MainActivity`/Home) buttons, both of which first send `AlarmService.ACTION_STOP` so the escalation loop stops cleanly rather than continuing to ring in the background. Back button is absorbed (can't silently dismiss an alarm — matches F004-R14's intent). **Also implements the API 26 fallback** noted as a follow-up in an earlier session: `showWhenLocked`/`turnScreenOn` manifest attributes only apply on API 27+, so this activity additionally sets the older `WindowManager.LayoutParams` flags for exactly this project's `minSdk` floor (26).
+
+5. **`AlarmService.kt` (updated).** Now handles an `ACTION_STOP` intent (stops the escalation loop and tone cleanly when sent by `AlarmRingActivity`) and, more importantly, **actually launches `AlarmRingActivity`** — previously the service played the tone and showed a notification but nothing ever displayed the ring screen. Uses the notification's `setFullScreenIntent()` mechanism specifically (not a direct `startActivity()` call from the service), since that's the officially correct approach for alarm/call-style interruptions — a direct `startActivity()` from a background service is subject to Android 10+'s background-activity-launch restrictions and can silently fail to show anything, which `setFullScreenIntent()` is specifically exempted from.
+
+6. **`BootReceiver.kt` (rewritten).** Was a stub with a TODO comment and zero real logic. Now a real `@AndroidEntryPoint` `BroadcastReceiver` (the standard, documented pattern for injecting Hilt dependencies into a receiver, which isn't part of the normal Activity/Fragment Hilt graph) that calls `AlarmRepository.rescheduleAllEnabled()` on `ACTION_BOOT_COMPLETED`, using `goAsync()` to keep the process alive long enough for the coroutine to finish.
+
+**A smaller thing worth noting:** while writing `AlarmRingActivity`, I initially reached for overriding the classic `onBackPressed()` method, then caught myself — given this exact toolchain's history of hard-failing on deprecated/experimental APIs (the `Card(onClick=...)` opt-in issue from an earlier session), I switched to the modern `onBackPressedDispatcher.addCallback()` API instead, before it became a problem rather than after.
+
+**Explicitly scoped out, not silently skipped** (all listed in the Sprint 4 table above): the verse preview on the ring screen shows a generic greeting instead of today's actual verse text; the alarm always fires at the PRD's default 5:30 AM since `AlarmSetupScreen` still has no interactive time picker (a real `TimePicker` is experimental in this Compose BOM, same class of issue as the `Card` fix); and there's still no Alarm screen (S11) to view, edit, or delete the alarm afterward.
+
+**Verification performed:** full brace/paren balance sweep across every new and modified file (all clean), and — learning from earlier sessions where I stated call signatures from memory without checking — explicitly grepped each new cross-file call site against its actual target function signature side-by-side (`AlarmRepository.createAndSchedule()`, `AlarmScheduler.scheduleSnooze()`, `AlarmService.ACTION_STOP`) rather than assuming they'd match. **Not yet compiled or device-tested** — same as every substantial round, that's the next real checkpoint.
+
+**Status:** 🟡 The largest single feature addition so far, carefully self-reviewed and cross-checked, but unverified against a real build. Given how many distinct pieces this touches (new repository, rewritten service, new activity, rewritten receiver, updated ViewModel and nav graph), a build failure here is more likely to be a genuine typo/import miss than in recent single-file rounds — worth budgeting for at least one fix-and-retest cycle.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test this session's Sprint 2 work** (DataStore persistence, shared onboarding ViewModel, real Home screen data, splash-gated start destination). Same drill as every round: rebuild, reinstall, walk through onboarding, confirm the Home screen now shows the religion you actually picked and that force-closing and reopening the app skips straight to Home instead of Welcome.
-2. If it crashes or fails to build: same process — `adb logcat --uid=<uid>`, paste the trace, real fix over guessing.
-3. If it works: next real feature gaps, in rough priority order —
-   - Wire the real `POST_NOTIFICATIONS` runtime permission dialog into the Permission screen (currently just records intent, doesn't trigger the system prompt).
-   - Build `AlarmRingActivity` (Screen S08) — `AlarmEscalationController` and `AlarmService` still have no UI to hand control back to; alarms can be scheduled but nothing happens when one actually fires.
-   - Add the API 26 `WindowManager` flag fallback for `showWhenLocked`/`turnScreenOn` noted in an earlier entry.
-   - Re-enable `androidx.glance` (confirmed safe — the real bug was the compose-bom, not Glance) whenever Sprint 9's widget work actually starts; no rush.
+1. **Build + device-test this session's alarm system work.** Same drill: rebuild, reinstall, complete onboarding with "Set Alarm →" (not Skip), wait for 5:30 AM or — more practically for testing — temporarily change the device clock forward, or add a quick debug-only "trigger test alarm now" button before removing it again. Confirm `AlarmRingActivity` actually appears, Snooze reschedules, and "Wake Up & Read" opens Home.
+2. If it crashes or fails to build: same process — `adb logcat --uid=<uid>`, paste the trace.
+3. If it works: next real gaps, in rough priority order —
+   - Alarm configuration screen (S11) — right now the only way to create an alarm is once, during onboarding; there's no way to view, edit, disable, or delete it afterward, or add a second one.
+   - Real `TimePicker` in `AlarmSetupScreen` so the alarm isn't hardcoded to 5:30 AM.
+   - Verse preview on the alarm ring screen.
+   - The real `POST_NOTIFICATIONS` runtime permission dialog (still just records intent, doesn't trigger the system prompt).
+   - Re-enable `androidx.glance` whenever Sprint 9's widget work actually starts; confirmed safe, no rush.
