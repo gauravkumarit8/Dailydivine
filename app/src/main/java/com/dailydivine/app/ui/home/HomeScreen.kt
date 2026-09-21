@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import java.time.LocalDate
 
 /** Screen S07 (PRD Section 9): Home — greeting, daily verse card, reflection
  *  input, streak card, next-alarm banner. */
@@ -19,14 +18,14 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        // TODO(Sprint 2 wiring): read religionId + installDate from
-        // UserPreferences (DataStore) instead of these placeholders once
-        // onboarding writes them.
-        viewModel.load(religionId = 1, installDate = LocalDate.now())
+        viewModel.load()
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Good Morning!", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            state.religion?.let { "Good Morning! — ${it.name}" } ?: "Good Morning!",
+            style = MaterialTheme.typography.headlineMedium
+        )
         state.streak?.let { streak ->
             Text("Day ${streak.totalDaysActive} of your journey", style = MaterialTheme.typography.bodyMedium)
         }
@@ -43,7 +42,10 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     source = daily.verse.sourceReference,
                     isBookmarked = daily.isBookmarked
                 )
-            } ?: Text("No verse available yet — content will load on first launch.")
+            } ?: Text(
+                "No verse content yet for ${state.religion?.name ?: "this religion"} — " +
+                    "only Hinduism has sample content loaded in this build."
+            )
 
             Spacer(Modifier.height(16.dp))
             state.streak?.let { StreakCard(it) }

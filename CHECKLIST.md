@@ -27,11 +27,14 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Task | Status | Notes |
 |---|---|---|
 | Onboarding flow (5 screens) | ✅ | `WelcomeScreen`, `ReligionSelectScreen`, `LanguageSelectScreen`, `AlarmSetupScreen`, `PermissionScreen` |
-| Religion/language selection UI | ✅ | 7-religion grid (S03), language list (S04) |
-| DataStore preferences | ⬜ | Onboarding screens don't yet persist selections — next step before this sprint is "done" |
-| Home screen UI | ✅ | `HomeScreen.kt` — greeting, verse card, streak card |
-| Daily verse display logic | ✅ | `VerseRepository.getDailyVerse()` — deterministic day-number algorithm (API Contract 1) |
+| Religion/language selection UI | ✅ | 7-religion grid (S03), language list filtered per religion (S04) via `util/Religions.kt` |
+| DataStore preferences | ✅ | `data/local/datastore/UserPreferences.kt` — religion, language, install date, onboarding-completed, notifications-granted all persisted. Wired into onboarding via a shared `OnboardingViewModel` scoped to a nested nav graph (all 5 screens share one instance/one set of in-progress selections) |
+| Home screen UI | ✅ | `HomeScreen.kt` — greeting (now shows the real selected religion name), verse card, streak card |
+| Daily verse display logic | ✅ | `VerseRepository.getDailyVerse()` — deterministic day-number algorithm (API Contract 1), now fed by the **real** persisted `religionId`/install date via `HomeViewModel`, not a hardcoded placeholder |
 | Day number calculation | ✅ | Implemented + matches PRD Section 19 contract exactly |
+| Returning-user start destination | ✅ | `MainViewModel` resolves `onboardingCompleted` from DataStore and gates the splash screen (`setKeepOnScreenCondition`) until known — a returning user lands on Home directly, never re-sees Welcome |
+| Content actually loads on onboarding completion | ✅ | `OnboardingViewModel.completeOnboarding()` now calls `ContentMigrationManager.migrateIfNeeded()` for the selected religion — previously built (Sprint 1) but never invoked anywhere. Only Hinduism has real sample content (`hinduism_en.json`); other religions show a clear empty-state message rather than a blank/confusing screen |
+| Real Android notification permission (`POST_NOTIFICATIONS`) | ⬜ | Permission screen (S06) records the user's stated preference to DataStore but does not yet trigger the actual system permission dialog — needs an `ActivityResultContracts.RequestPermission` launcher wired from `MainActivity`. Flagged inline in `PermissionScreen.kt` |
 
 ## Sprint 3 — Core Features (Streaks, Bookmarks, Share)
 
@@ -330,16 +333,38 @@ java.lang.NoSuchMethodError: No virtual method at(Ljava/lang/Object;I)Landroidx/
 
 **Status:** ✅ Root-caused against a real, external, confirmed source (Google's issue tracker) rather than inference from our own dependency list — this is a materially higher confidence level than the previous attempt. **Not yet re-verified** — next device test is the real confirmation, same as always. If this crash recurs a third time with the identical trace, the BOM-bug theory would also need to be reconsidered, but that's now a low-probability outcome given the direct match to a documented, fixed Google bug.
 
+### 2026-09-21 — App confirmed working end-to-end on device. Closed the Sprint 2 gap: onboarding now actually persists and drives Home
+
+**Confirmed by you:** the compose-bom fix worked — full onboarding flow (Religion → Language → Alarm → Notifications) completes without crashing, Home screen loads. This closes out the crash-debugging arc from the last several sessions.
+
+**What this session actually built** (real feature work, not a bug fix):
+
+1. **`data/local/datastore/UserPreferences.kt` (new).** DataStore-backed persistence for `religionId`, `languageCode`, `onboardingCompleted`, `installEpochDay` (anchors the day-number algorithm), `notificationsGranted`. This is the piece that was completely missing before — every onboarding selection was previously discarded the moment the user tapped "Continue."
+
+2. **`util/Religions.kt` (new).** Single source of truth for the 7 religions, their taglines, supported languages, and (where one exists) their content JSON filename — replaces the hardcoded religion list that used to live directly inside `ReligionSelectScreen.kt` with no connection to the rest of the app.
+
+3. **`ui/onboarding/OnboardingViewModel.kt` (new).** A single `@HiltViewModel` shared across all 5 onboarding screens (scoped to a nested Navigation Compose sub-graph's back stack entry — the standard pattern for this exact situation). Holds in-progress selections as the user moves screen to screen, and on completion: persists everything, stamps the install date exactly once (idempotent — never overwrites a returning user's original install date), and **calls `ContentMigrationManager.migrateIfNeeded()` for the selected religion** — this Sprint-1-built class existed but was never actually invoked anywhere until now.
+
+4. **`ui/MainViewModel.kt` (new) + `MainActivity.kt` (updated).** Resolves `onboardingCompleted` from DataStore and uses it to gate the splash screen via `setKeepOnScreenCondition` — the idiomatic `core-splashscreen` pattern for "don't render anything until we know where to start." A returning user now lands directly on Home; a new user still sees Welcome. Previously the app *always* started at Welcome regardless of prior completion.
+
+5. **`ui/navigation/NavGraph.kt` (rewritten).** Onboarding screens moved into a nested `navigation(route = "onboarding") { ... }` graph specifically so they can share one `OnboardingViewModel` instance via `hiltViewModel(parentBackStackEntry)`. This is the standard, documented way to share state across a multi-screen flow in Navigation Compose — avoids threading every selection through navigation arguments by hand.
+
+6. **`ui/home/HomeViewModel.kt` + `HomeScreen.kt` (updated).** `load()` now reads the real `religionId` and install date from `UserPreferences` instead of the `religionId = 1, LocalDate.now()` placeholders that were hardcoded in `HomeScreen.kt` since Sprint 1. Home screen's greeting now shows the actual selected religion's name, and the empty-state message is explicit about *why* most religions show no verse yet (only Hinduism has sample content loaded — this is expected, not a bug, until real content is authored for the other 6).
+
+**Known, explicitly-flagged gap left for later:** the Permission screen (S06) records the user's *stated* preference ("Allow Notifications" vs "Maybe Later") to DataStore, but doesn't yet trigger Android's real `POST_NOTIFICATIONS` runtime permission dialog (API 33+) — that needs an `ActivityResultContracts.RequestPermission` launcher wired from `MainActivity`, deliberately scoped out of this pass to keep it focused. Flagged inline in `PermissionScreen.kt` and in the Sprint 2 table above, not silently skipped.
+
+**Verification performed:** full brace/paren balance sweep across every new and modified file (all clean), cross-checked every new call site against the actual target function signatures (`AlarmScheduler.canScheduleExactAlarms()`, `ContentMigrationManager.migrateIfNeeded()`, `hiltViewModel(NavBackStackEntry)`) rather than assuming they'd match, and grepped for any stale references to the old `HomeViewModel.load(religionId, installDate)` signature (none found). **Not yet compiled** — same as every previous round, the real test is your next `./gradlew assembleDebug` + device install.
+
+**Status:** 🟡 Substantial new feature code, carefully self-reviewed, not yet build-verified. This is a bigger single change than the recent one-file bug fixes — if the build fails, the error will likely point at one specific file rather than being a systemic issue, given how contained each piece is.
+
 ---
 
 ## What's Next (as of this session)
 
-Real, current priority order — supersedes the older "Next Session Priorities" list above where they conflict:
-
-1. **Push this session's two changes** (`.github/workflows/build.yml`, this CHECKLIST update) and trigger the Actions workflow. This is the actual end-to-end verification we've been building toward across the last several fix cycles — if it goes green, everything in `alarm/`, `data/`, `ui/`, and the Hilt wiring compiles clean on a real, independent machine.
-2. **If Actions goes red:** paste me the failing step's log the same way you have been — same pattern, another real bug to fix, likely something Codespaces papered over differently than a clean runner will.
-3. **If Actions goes green:** install the APK on your device per the steps above and confirm the app actually launches and shows the Welcome onboarding screen. That's the first real "does this app run at all" signal we'll have had.
-4. Once that's confirmed, next actual feature work (in order, per Sprint 2/3/4 gaps in the tables above):
-   - Wire DataStore into onboarding so religion/language selections persist and Home screen reads a real `religionId` instead of the hardcoded `1` placeholder.
-   - Build `AlarmRingActivity` (Screen S08) — `AlarmEscalationController` and `AlarmService` currently have no UI to hand control back to.
-   - Add the API 26 `WindowManager` flag fallback for `showWhenLocked`/`turnScreenOn` noted in the Sept 9 bug-fix entry above.
+1. **Build + device-test this session's Sprint 2 work** (DataStore persistence, shared onboarding ViewModel, real Home screen data, splash-gated start destination). Same drill as every round: rebuild, reinstall, walk through onboarding, confirm the Home screen now shows the religion you actually picked and that force-closing and reopening the app skips straight to Home instead of Welcome.
+2. If it crashes or fails to build: same process — `adb logcat --uid=<uid>`, paste the trace, real fix over guessing.
+3. If it works: next real feature gaps, in rough priority order —
+   - Wire the real `POST_NOTIFICATIONS` runtime permission dialog into the Permission screen (currently just records intent, doesn't trigger the system prompt).
+   - Build `AlarmRingActivity` (Screen S08) — `AlarmEscalationController` and `AlarmService` still have no UI to hand control back to; alarms can be scheduled but nothing happens when one actually fires.
+   - Add the API 26 `WindowManager` flag fallback for `showWhenLocked`/`turnScreenOn` noted in an earlier entry.
+   - Re-enable `androidx.glance` (confirmed safe — the real bug was the compose-bom, not Glance) whenever Sprint 9's widget work actually starts; no rush.

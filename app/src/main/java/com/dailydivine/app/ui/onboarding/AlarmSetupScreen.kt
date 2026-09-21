@@ -2,7 +2,7 @@ package com.dailydivine.app.ui.onboarding
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,20 +11,17 @@ import androidx.compose.ui.unit.dp
  * Screen S05 (PRD Section 9): Onboarding 4/5 — defaults to 5:30 AM.
  *
  * v1.1 (F004-R25): this is also where the Android 12+ exact-alarm
- * permission is requested, before the first alarm is scheduled. The actual
- * system settings intent launch is wired in AlarmSetupViewModel once Hilt
- * navigation lands (Sprint 4); [onRequestExactAlarmPermission] is exposed
- * here so the composable stays testable without a real Activity.
+ * permission is requested, before the first alarm is scheduled.
  */
 @Composable
 fun AlarmSetupScreen(
-    canScheduleExactAlarms: Boolean = true,
-    onRequestExactAlarmPermission: () -> Unit = {},
+    ttsEnabled: Boolean,
+    onTtsToggle: (Boolean) -> Unit,
+    canScheduleExactAlarms: Boolean,
+    onRequestExactAlarmPermission: () -> Unit,
     onContinue: () -> Unit,
     onSkip: () -> Unit
 ) {
-    var ttsEnabled by remember { mutableStateOf(true) }
-
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         Text("Set Your Morning Blessing", style = MaterialTheme.typography.headlineMedium)
         Text("Wake up to divine wisdom every day", style = MaterialTheme.typography.bodyMedium)
@@ -34,7 +31,7 @@ fun AlarmSetupScreen(
 
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Text("Read verse aloud when alarm rings", modifier = Modifier.weight(1f))
-            Switch(checked = ttsEnabled, onCheckedChange = { ttsEnabled = it })
+            Switch(checked = ttsEnabled, onCheckedChange = onTtsToggle)
         }
 
         // v1.1 / F004-R25: graceful reliability banner instead of a silent
