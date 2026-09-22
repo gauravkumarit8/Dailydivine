@@ -43,8 +43,8 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Streak tracking | ✅ | `StreakRepository.calculateStreak()` — consecutive-day walk, milestone lookup |
 | Milestone badges (data) | ✅ | `StreakInfo.MILESTONES` — all 10 badges from Section 6.2 |
 | Milestone badge animations | ⬜ | Needs Lottie asset + `BadgeAnimation.kt` composable |
-| Bookmark/Favorites | 🟡 | `BookmarkDao` done; no UI screen yet |
-| Copy/share functionality | ⬜ | Icon buttons stubbed in `HomeScreen.kt`, no handlers wired |
+| Bookmark/Favorites | ✅ | **New this session.** `BookmarkRepository` (new) wraps `BookmarkDao`; wired into `HomeViewModel`/`HomeScreen` so the bookmark icon on the daily verse actually toggles and persists. No dedicated Favorites list screen yet (`BookmarkRepository.getBookmarkedVerses()` exists and is ready for one) |
+| Copy/share functionality | 🟡 | **Copy is now wired** (uses Compose's `LocalClipboardManager`) — Share as image still not started |
 | Share image generation | ⬜ | Not started |
 
 ## Sprint 4 — Alarm System ⭐ (v1.1 changes live here)
@@ -73,7 +73,7 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Task | Status | Notes |
 |---|---|---|
 | TTS integration | ✅ | `TTSManager.kt` — matches PRD Section 12.1 exactly |
-| TTS wired into Home screen play button | ⬜ | Icon present, handler not wired |
+| TTS wired into Home screen play button | ✅ | **New this session.** `HomeViewModel` owns a `TTSManager` instance (initialized once, shut down in `onCleared()`), Play button now actually speaks the verse aloud and toggles to a Stop icon |
 | Mini player UI | ⬜ | Not started |
 | Background playback service (prayers) | ⬜ | Not started |
 
@@ -451,14 +451,34 @@ Continuing straight on: the app had a "Home screen" but no actual navigation str
 
 **Status:** 🟡 Six new/changed files, careful review, not yet build-verified. Same standing caveat as every substantial round — the next `./gradlew assembleDebug` + device walkthrough is the real test, particularly the `Scaffold`/bottom-nav restructuring since that changes how every existing screen is laid out (padding via `innerPadding`), not just the new ones.
 
+### 2026-09-21 (continued a third time) — Fixed "Clear all data," wired Home screen's action buttons
+
+**Confirmed by you:** bottom nav, alarm edit/delete/add all working. Continuing with the two items flagged at the end of the previous entry.
+
+1. **`SettingsViewModel.clearAllData()` fixed.** Previously only cleared DataStore — explicitly flagged as narrower than the button's name promised. Now cancels every real scheduled alarm first (via `AlarmRepository.delete()`, which calls `AlarmScheduler.cancel()` before removing the Room row — order matters, since clearing Room first would orphan any scheduled `AlarmManager` entry with no way to reach it afterward), then calls Room's built-in `AppDatabase.clearAllTables()`, then clears DataStore last.
+
+2. **`BookmarkRepository.kt` (new).** `BookmarkDao` existed since Sprint 1 but nothing wrapped it — same "built but never connected" pattern as the alarm system before two sessions ago.
+
+3. **Home screen's three of four action buttons wired** (`HomeViewModel`, `HomeScreen`) — these had been inert `IconButton`s with comments like "Sprint 5"/"Sprint 3" since the very first version of this screen, despite Home being the screen a user sees every single day:
+   - **Play (TTS):** `HomeViewModel` now owns a `TTSManager` instance directly (initialized once in `init`, shut down exactly once in `onCleared()` — not left to the Composable, so playback survives recomposition correctly). Button toggles between Play/Stop icons.
+   - **Copy:** uses Compose's own `LocalClipboardManager` — no manual `ClipboardManager` service lookup needed.
+   - **Bookmark:** wired to the new `BookmarkRepository`, persists and reflects in the icon (filled vs. outline) immediately.
+   - **Share (image)** deliberately left alone — that's real image-generation work (F008), a meaningfully bigger feature than the other three, not something to rush into this round.
+
+**Verification performed:** full brace/paren sweep (clean), and — continuing the now-standard habit — explicitly diffed `DailyVerseCard`'s 7-parameter signature against its call site side by side (all match), plus cross-checked `BookmarkDao` and `TTSManager`'s actual method signatures against every new call site rather than trusting memory.
+
+**Status:** 🟡 Four files changed/added, moderate scope, same not-yet-build-verified caveat as every round. `TTSManager`'s `isSpeaking` state is honestly approximate (noted in a code comment) — it reflects "we asked the engine to speak," not true completion, since `TTSManager` doesn't yet expose a completion callback; the Stop icon may show slightly longer than actual audio playback until that's added.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test.** Complete onboarding, confirm the bottom nav bar appears once you land on Home (and only then — not during onboarding), and that all four tabs (Home/Library/Alarm/Settings) work. On the Alarm tab, confirm the alarm created during onboarding shows up correctly, and that editing its time/TTS/enabled state actually take effect. Try Settings → Clear all data and confirm it resets you back to Welcome.
+1. **Build + device-test.** Try Play (does it actually read the verse aloud?), Copy (paste somewhere to confirm), Bookmark (toggle it, force-close and reopen the app, confirm it's still bookmarked). Try Settings → Clear all data, then check the Alarm tab is genuinely empty afterward (not just DataStore-reset with a stale alarm still silently scheduled).
 2. If it crashes or fails to build: `adb logcat --uid=<uid>`, paste the trace.
 3. If it works, next real gaps:
-   - Make "Clear all data" actually clear Room too (streaks/bookmarks/alarms) and cancel the real scheduled alarm, not just DataStore — currently narrower than the button's name suggests, flagged above.
+   - `TTSManager` completion callback, so `isSpeaking` reflects real engine state instead of "we asked it to speak."
+   - A real Favorites list screen (`BookmarkRepository.getBookmarkedVerses()` is ready and unused).
+   - Share-as-image (F008) — a genuinely bigger feature, image generation + share sheet.
    - Library screen's real content (Sprint 6): category browsing, search, verse detail.
    - Editing religion/language after onboarding from Settings (currently read-only display only).
    - Re-enable `androidx.glance` whenever Sprint 9's widget work starts; confirmed safe, no rush.
