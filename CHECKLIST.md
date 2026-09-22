@@ -62,8 +62,8 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Alarm ring screen (S08) | ✅ | **New this session.** `AlarmRingActivity.kt` — Snooze / Wake Up & Read buttons, current time display, back-press absorbed (can't silently dismiss an alarm). Verse preview (first line of today's verse) deliberately deferred — needs a `VerseRepository` lookup keyed off the alarm, tracked below |
 | **API 26 lock-screen fallback** | ✅ | **New this session.** `showWhenLocked`/`turnScreenOn` manifest attributes only take effect on API 27+; `AlarmRingActivity` now also sets the older `WindowManager.LayoutParams` flags (`FLAG_SHOW_WHEN_LOCKED`, `FLAG_TURN_SCREEN_ON`, `FLAG_DISMISS_KEYGUARD`) for exactly API 26, this project's `minSdk` floor |
 | Alarm tone playback (real audio) | 🟡 | `AlarmService` plays from `res/raw/`; only a **placeholder** `temple_bell.mp3` exists — needs real royalty-free audio (Appendix B) |
-| Alarm configuration UI (S11) | ⬜ | Still not started — no screen to view/edit/delete the alarm created during onboarding, or add additional alarms (premium, up to 5 per F004-R02) |
-| Verse preview on the ring screen | ✅ | **New this session.** `AlarmRingViewModel` fetches today's verse for the user's religion and shows its first sentence on `AlarmRingActivity` |
+| Alarm configuration UI (S11) | ✅ | **New this session.** `AlarmListScreen` — list, toggle enable/disable, edit time (reuses the shared `TimePickerDialog`), toggle TTS, delete, and add a new alarm. Everything routes through `AlarmRepository` so Room and the real scheduled alarm never drift apart |
+| Verse preview on the ring screen | ✅ | `AlarmRingViewModel` fetches today's verse for the user's religion and shows its first sentence on `AlarmRingActivity` |
 | Time picker in onboarding (S05) | ✅ | **New this session.** Real Material3 `TimePicker` in an `AlertDialog`, replacing the static "5:30 AM" text — user can now actually pick their alarm time |
 | Real notification permission request | ✅ | **New this session.** `PermissionScreen` now triggers Android's actual `POST_NOTIFICATIONS` runtime dialog (API 33+) via `rememberLauncherForActivityResult`, called directly from the composable — no `MainActivity`-level plumbing needed |
 | Unit tests: `AlarmEscalationControllerTest` | ✅ | 4 test cases, verified passing |
@@ -78,7 +78,7 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Background playback service (prayers) | ⬜ | Not started |
 
 ## Sprint 6 — Library & Search
-All ⬜ — not started this pass.
+Library route now has a real (if minimal) screen — see the "What's Next" entry below. Category browsing, search, verse detail, history: still ⬜, not started.
 
 ## Sprint 7 — Monetization & Polish
 
@@ -427,13 +427,38 @@ Continuing directly on the alarm-system work above, closing every item that roun
 
 **Status:** 🟡 Same caveat as the previous entry — real, careful work, not yet build-verified. This round is more contained than the previous one (3 files changed/added vs. 7), so somewhat lower risk of a build break, but the `TimePicker` experimental-API usage is the single most likely point of failure if something's still off.
 
+### 2026-09-21 (continued again) — Bottom navigation + real Alarm/Library/Settings screens
+
+Continuing straight on: the app had a "Home screen" but no actual navigation structure — `Screen.Library`/`Screen.Alarm`/`Screen.Settings` were routes that existed in `Screen.kt` with literally nothing behind them, and there was no way to ever see or manage the alarm the last two sessions' work now actually creates.
+
+**What this session built:**
+
+1. **`ui/components/TimePickerDialog.kt` (new).** Extracted the time-picker dialog out of `AlarmSetupScreen` into a shared, reusable composable — needed it a second time for the new Alarm list screen, and duplicating it would have meant two copies that could silently drift apart (exactly the kind of thing the `Screen.OnboardingGraph` route-string fix a few sessions ago was about avoiding). `AlarmSetupScreen` now uses this shared version instead of its own inline copy.
+
+2. **`AlarmRepository` extended** with `getAllAlarms()`, `updateAndReschedule()`, `delete()` (already had `createAndSchedule()` from the previous session) — all of it already existed, this session just gave it a UI.
+
+3. **`ui/alarm/AlarmListViewModel.kt` + `AlarmListScreen.kt` (new) — Screen S11.** Real list of alarms with toggle enable/disable, tap-to-edit time (via the shared `TimePickerDialog`), toggle TTS, delete, and a FAB to add another. Every mutation routes through `AlarmRepository`, never `AlarmDao` directly, so the displayed list and the real scheduled alarms can't drift apart.
+
+4. **`ui/library/LibraryScreen.kt` (new) — Screen S09, honest placeholder.** Category browsing, search, and verse detail are genuinely Sprint 6 scope and weren't attempted — this is a real screen with real copy explaining that, not a silent crash-avoidance stub pretending to be more than it is.
+
+5. **`ui/settings/SettingsViewModel.kt` + `SettingsScreen.kt` (new) — Screen S12, partial.** Shows the user's actual persisted religion and language (read-only for now), plus a working "Clear all data" flow with a real confirmation dialog (F012-R16) that resets `UserPreferences` and navigates back to onboarding. **Explicitly noted in the code, not hidden:** this currently only clears DataStore — it does *not* yet wipe Room (streaks, bookmarks, scheduled alarms) or cancel the real system alarm, so "clear all data" is presently narrower than its name promises. Flagged as a follow-up below.
+
+6. **`ui/navigation/BottomNavBar.kt` (new) + `NavGraph.kt` (restructured).** The whole `NavHost` is now wrapped in a `Scaffold` whose `bottomBar` only renders for the four "returning user" destinations (Home/Library/Alarm/Settings per PRD Section 8) — onboarding correctly stays full-screen with no bottom bar, checked via the current route from `navController.currentBackStackEntryAsState()`.
+
+**A small self-correction during this round, worth noting rather than hiding:** first draft of the Settings "clear all data" navigation used `popUpTo(0) { inclusive = true }` — a common but slightly hacky community idiom for "clear the whole back stack" that relies on `0` never coinciding with a real destination ID. Caught it before shipping and switched to the explicit, unambiguous `popUpTo(navController.graph.id) { inclusive = true }` instead, which says precisely what it means rather than relying on an implicit assumption.
+
+**Verification performed:** full brace/paren sweep (clean) after every file, including the two follow-up fixes made mid-review — and, having been burned twice before by assuming a signature rather than checking it, explicitly grepped every new cross-file call (`AlarmRepository`'s four methods, `Alarm` entity field names, `SettingsScreen`'s parameter, `UserPreferences.clearAll()`) against its actual declaration side-by-side before considering this done.
+
+**Status:** 🟡 Six new/changed files, careful review, not yet build-verified. Same standing caveat as every substantial round — the next `./gradlew assembleDebug` + device walkthrough is the real test, particularly the `Scaffold`/bottom-nav restructuring since that changes how every existing screen is laid out (padding via `innerPadding`), not just the new ones.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test this session's work** (alarm creation/scheduling, ring screen, boot rescheduling, real time picker, real notification permission, verse preview). Same drill: rebuild, reinstall, complete onboarding picking a real alarm time, confirm the permission dialog actually appears on API 33+ devices, and (when the alarm fires or is manually triggered for testing) confirm `AlarmRingActivity` shows the correct time and verse preview.
-2. If it crashes or fails to build: same process — `adb logcat --uid=<uid>`, paste the trace.
-3. If it works: next real gaps, in rough priority order —
-   - Alarm configuration screen (S11) — the only way to create an alarm is still once, during onboarding; no way to view, edit, disable, or delete it afterward, or add a second one (premium, up to 5).
-   - Bottom navigation (Home / Library / Alarm / Settings) — currently only Home exists as a real destination; the other three routes are reserved in `Screen.kt` but have no UI.
-   - Re-enable `androidx.glance` whenever Sprint 9's widget work actually starts; confirmed safe, no rush.
+1. **Build + device-test.** Complete onboarding, confirm the bottom nav bar appears once you land on Home (and only then — not during onboarding), and that all four tabs (Home/Library/Alarm/Settings) work. On the Alarm tab, confirm the alarm created during onboarding shows up correctly, and that editing its time/TTS/enabled state actually take effect. Try Settings → Clear all data and confirm it resets you back to Welcome.
+2. If it crashes or fails to build: `adb logcat --uid=<uid>`, paste the trace.
+3. If it works, next real gaps:
+   - Make "Clear all data" actually clear Room too (streaks/bookmarks/alarms) and cancel the real scheduled alarm, not just DataStore — currently narrower than the button's name suggests, flagged above.
+   - Library screen's real content (Sprint 6): category browsing, search, verse detail.
+   - Editing religion/language after onboarding from Settings (currently read-only display only).
+   - Re-enable `androidx.glance` whenever Sprint 9's widget work starts; confirmed safe, no rush.

@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dailydivine.app.ui.components.TimePickerDialog
 import com.dailydivine.app.util.formatTime12h
 
 /**
@@ -18,7 +19,6 @@ import com.dailydivine.app.util.formatTime12h
  * v1.1 (F004-R25): this is also where the Android 12+ exact-alarm
  * permission is requested, before the first alarm is scheduled.
  */
-@OptIn(ExperimentalMaterial3Api::class) // TimePicker below is experimental in this BOM version
 @Composable
 fun AlarmSetupScreen(
     alarmHour: Int,
@@ -71,23 +71,11 @@ fun AlarmSetupScreen(
     }
 
     if (showTimePicker) {
-        val timePickerState = rememberTimePickerState(
+        TimePickerDialog(
             initialHour = alarmHour,
             initialMinute = alarmMinute,
-            is24Hour = false
-        )
-        AlertDialog(
-            onDismissRequest = { showTimePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    onTimeChange(timePickerState.hour, timePickerState.minute)
-                    showTimePicker = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
-            },
-            text = { TimePicker(state = timePickerState) }
+            onDismiss = { showTimePicker = false },
+            onConfirm = onTimeChange
         )
     }
 }
