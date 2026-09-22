@@ -68,6 +68,10 @@ class OnboardingViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(ttsEnabled = enabled)
     }
 
+    fun setAlarmTime(hour: Int, minute: Int) {
+        _uiState.value = _uiState.value.copy(alarmHour = hour, alarmMinute = minute)
+    }
+
     /** Called by "Set Alarm →" on S05. */
     fun confirmAlarm() {
         _uiState.value = _uiState.value.copy(wantsAlarm = true)

@@ -3,9 +3,14 @@ package com.dailydivine.app.ui.onboarding
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dailydivine.app.util.formatTime12h
 
 /**
  * Screen S05 (PRD Section 9): Onboarding 4/5 — defaults to 5:30 AM.
@@ -13,8 +18,12 @@ import androidx.compose.ui.unit.dp
  * v1.1 (F004-R25): this is also where the Android 12+ exact-alarm
  * permission is requested, before the first alarm is scheduled.
  */
+@OptIn(ExperimentalMaterial3Api::class) // TimePicker below is experimental in this BOM version
 @Composable
 fun AlarmSetupScreen(
+    alarmHour: Int,
+    alarmMinute: Int,
+    onTimeChange: (hour: Int, minute: Int) -> Unit,
     ttsEnabled: Boolean,
     onTtsToggle: (Boolean) -> Unit,
     canScheduleExactAlarms: Boolean,
@@ -22,11 +31,18 @@ fun AlarmSetupScreen(
     onContinue: () -> Unit,
     onSkip: () -> Unit
 ) {
+    var showTimePicker by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         Text("Set Your Morning Blessing", style = MaterialTheme.typography.headlineMedium)
         Text("Wake up to divine wisdom every day", style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(24.dp))
-        Text("Default alarm time: 5:30 AM", style = MaterialTheme.typography.headlineSmall)
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(formatTime12h(alarmHour, alarmMinute), style = MaterialTheme.typography.headlineSmall)
+            Spacer(Modifier.width(12.dp))
+            TextButton(onClick = { showTimePicker = true }) { Text("Change") }
+        }
         Spacer(Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -52,5 +68,26 @@ fun AlarmSetupScreen(
         Spacer(Modifier.weight(1f))
         Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) { Text("Set Alarm →") }
         TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) { Text("Skip, I'll set up later") }
+    }
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = alarmHour,
+            initialMinute = alarmMinute,
+            is24Hour = false
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    onTimeChange(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+            },
+            text = { TimePicker(state = timePickerState) }
+        )
     }
 }

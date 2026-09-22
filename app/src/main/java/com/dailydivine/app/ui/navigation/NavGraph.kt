@@ -63,6 +63,9 @@ fun DailyDivineNavGraph(
                 val viewModel = onboardingViewModel(navController, backStackEntry)
                 val state by viewModel.uiState.collectAsState()
                 AlarmSetupScreen(
+                    alarmHour = state.alarmHour,
+                    alarmMinute = state.alarmMinute,
+                    onTimeChange = viewModel::setAlarmTime,
                     ttsEnabled = state.ttsEnabled,
                     onTtsToggle = viewModel::setTtsEnabled,
                     canScheduleExactAlarms = state.canScheduleExactAlarms,

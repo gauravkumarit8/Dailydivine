@@ -63,8 +63,9 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | **API 26 lock-screen fallback** | ✅ | **New this session.** `showWhenLocked`/`turnScreenOn` manifest attributes only take effect on API 27+; `AlarmRingActivity` now also sets the older `WindowManager.LayoutParams` flags (`FLAG_SHOW_WHEN_LOCKED`, `FLAG_TURN_SCREEN_ON`, `FLAG_DISMISS_KEYGUARD`) for exactly API 26, this project's `minSdk` floor |
 | Alarm tone playback (real audio) | 🟡 | `AlarmService` plays from `res/raw/`; only a **placeholder** `temple_bell.mp3` exists — needs real royalty-free audio (Appendix B) |
 | Alarm configuration UI (S11) | ⬜ | Still not started — no screen to view/edit/delete the alarm created during onboarding, or add additional alarms (premium, up to 5 per F004-R02) |
-| Verse preview on the ring screen | ⬜ | Deferred this session (see above) — `AlarmRingActivity` shows a generic greeting instead of the actual daily verse's first line |
-| Time picker in onboarding (S05) | ⬜ | `AlarmSetupScreen` still shows static "Default alarm time: 5:30 AM" text rather than an interactive picker — the alarm that gets created this session always uses 5:30 AM. A real `TimePicker` is experimental in this BOM version (same `@OptIn` pattern as the `Card` fix would be needed) — scoped out to keep this pass focused |
+| Verse preview on the ring screen | ✅ | **New this session.** `AlarmRingViewModel` fetches today's verse for the user's religion and shows its first sentence on `AlarmRingActivity` |
+| Time picker in onboarding (S05) | ✅ | **New this session.** Real Material3 `TimePicker` in an `AlertDialog`, replacing the static "5:30 AM" text — user can now actually pick their alarm time |
+| Real notification permission request | ✅ | **New this session.** `PermissionScreen` now triggers Android's actual `POST_NOTIFICATIONS` runtime dialog (API 33+) via `rememberLauncherForActivityResult`, called directly from the composable — no `MainActivity`-level plumbing needed |
 | Unit tests: `AlarmEscalationControllerTest` | ✅ | 4 test cases, verified passing |
 
 ## Sprint 5 — Audio & TTS
@@ -412,15 +413,27 @@ java.lang.IllegalArgumentException: navigation destination onboarding/welcome is
 
 **Status:** 🟡 The largest single feature addition so far, carefully self-reviewed and cross-checked, but unverified against a real build. Given how many distinct pieces this touches (new repository, rewritten service, new activity, rewritten receiver, updated ViewModel and nav graph), a build failure here is more likely to be a genuine typo/import miss than in recent single-file rounds — worth budgeting for at least one fix-and-retest cycle.
 
+### 2026-09-21 (continued) — Closed the three gaps flagged in the previous entry
+
+Continuing directly on the alarm-system work above, closing every item that round's entry had explicitly deferred rather than leaving them to accumulate:
+
+1. **Real `TimePicker` in `AlarmSetupScreen` (`util/TimeFormat.kt` new).** Was static "5:30 AM" text; now a genuine Material3 `TimePicker` in an `AlertDialog`, wired through a new `OnboardingViewModel.setAlarmTime()` into the `OnboardingUiState.alarmHour`/`alarmMinute` fields that `completeOnboarding()` was already reading (previously always reading the unchangeable defaults). `TimePicker` is an experimental Material3 API in this BOM, same class of thing as the `Card(onClick=...)` fix from an earlier session — added the same `@OptIn(ExperimentalMaterial3Api::class)` annotation, applying a lesson already learned rather than re-discovering it via another crash.
+
+2. **Real `POST_NOTIFICATIONS` permission request (`PermissionScreen.kt`).** Previously recorded the user's tap but never showed Android's actual system permission dialog. Turned out simpler than originally scoped: `rememberLauncherForActivityResult` works directly inside a composable (registration just needs to happen during composition, which a `@Composable` function body satisfies) — no `MainActivity`-level launcher plumbing needed after all, which the original "needs Activity-level plumbing" note undersold.
+
+3. **Verse preview on the alarm ring screen (`AlarmRingViewModel.kt`, new).** A small dedicated `@HiltViewModel`, consistent with the rest of the app's architecture rather than ad hoc Activity state, fetches today's verse for the user's persisted religion and extracts its first sentence (capped at 120 chars) for display on `AlarmRingActivity`. Same graceful-empty-state pattern as Home: shows nothing extra (not an error) when the user's religion has no sample content yet.
+
+**Verification performed:** full brace/paren sweep (clean), and explicitly cross-checked `DailyVerse`'s actual field names (`verse.verse.translatedText`) against what `AlarmRingViewModel` assumed, rather than trusting memory — this exact kind of assumption-without-checking is what caused two separate bugs in earlier sessions (the `LinearProgressIndicator` overload and the wrong manifest attribute name), so it's now a standing habit for every new cross-file reference, not just novel ones.
+
+**Status:** 🟡 Same caveat as the previous entry — real, careful work, not yet build-verified. This round is more contained than the previous one (3 files changed/added vs. 7), so somewhat lower risk of a build break, but the `TimePicker` experimental-API usage is the single most likely point of failure if something's still off.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test this session's alarm system work.** Same drill: rebuild, reinstall, complete onboarding with "Set Alarm →" (not Skip), wait for 5:30 AM or — more practically for testing — temporarily change the device clock forward, or add a quick debug-only "trigger test alarm now" button before removing it again. Confirm `AlarmRingActivity` actually appears, Snooze reschedules, and "Wake Up & Read" opens Home.
+1. **Build + device-test this session's work** (alarm creation/scheduling, ring screen, boot rescheduling, real time picker, real notification permission, verse preview). Same drill: rebuild, reinstall, complete onboarding picking a real alarm time, confirm the permission dialog actually appears on API 33+ devices, and (when the alarm fires or is manually triggered for testing) confirm `AlarmRingActivity` shows the correct time and verse preview.
 2. If it crashes or fails to build: same process — `adb logcat --uid=<uid>`, paste the trace.
 3. If it works: next real gaps, in rough priority order —
-   - Alarm configuration screen (S11) — right now the only way to create an alarm is once, during onboarding; there's no way to view, edit, disable, or delete it afterward, or add a second one.
-   - Real `TimePicker` in `AlarmSetupScreen` so the alarm isn't hardcoded to 5:30 AM.
-   - Verse preview on the alarm ring screen.
-   - The real `POST_NOTIFICATIONS` runtime permission dialog (still just records intent, doesn't trigger the system prompt).
+   - Alarm configuration screen (S11) — the only way to create an alarm is still once, during onboarding; no way to view, edit, disable, or delete it afterward, or add a second one (premium, up to 5).
+   - Bottom navigation (Home / Library / Alarm / Settings) — currently only Home exists as a real destination; the other three routes are reserved in `Screen.kt` but have no UI.
    - Re-enable `androidx.glance` whenever Sprint 9's widget work actually starts; confirmed safe, no rush.

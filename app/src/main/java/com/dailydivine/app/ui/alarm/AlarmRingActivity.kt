@@ -14,10 +14,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.alarm.AlarmService
@@ -63,8 +67,11 @@ class AlarmRingActivity : ComponentActivity() {
 
         setContent {
             DailyDivineTheme {
+                val ringViewModel: AlarmRingViewModel = hiltViewModel()
+                val versePreview by ringViewModel.versePreview.collectAsState()
                 AlarmRingScreen(
                     currentTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date()),
+                    versePreview = versePreview,
                     onSnooze = { snooze() },
                     onWakeUpAndRead = { wakeUpAndRead() }
                 )
@@ -117,6 +124,7 @@ class AlarmRingActivity : ComponentActivity() {
 @Composable
 private fun AlarmRingScreen(
     currentTime: String,
+    versePreview: String?,
     onSnooze: () -> Unit,
     onWakeUpAndRead: () -> Unit
 ) {
@@ -135,10 +143,21 @@ private fun AlarmRingScreen(
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
-        // Verse preview (first line of today's verse) is a follow-up --
-        // needs a VerseRepository lookup keyed off the alarm's religion,
-        // tracked in CHECKLIST.md rather than expanded in this pass.
-        Spacer(Modifier.height(64.dp))
+
+        // F004-R15: verse preview (first line of today's verse), when one
+        // is available -- null while loading or if the user's religion has
+        // no sample content yet (same graceful empty state as Home).
+        versePreview?.let {
+            Spacer(Modifier.height(24.dp))
+            Text(
+                "\"$it\"",
+                style = MaterialTheme.typography.bodyLarge,
+                fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(Modifier.height(if (versePreview != null) 40.dp else 64.dp))
 
         Button(onClick = onWakeUpAndRead, modifier = Modifier.fillMaxWidth()) {
             Text("Wake Up & Read")
