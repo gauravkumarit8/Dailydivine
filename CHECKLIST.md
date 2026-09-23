@@ -43,7 +43,7 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Streak tracking | ✅ | `StreakRepository.calculateStreak()` — consecutive-day walk, milestone lookup |
 | Milestone badges (data) | ✅ | `StreakInfo.MILESTONES` — all 10 badges from Section 6.2 |
 | Milestone badge animations | ⬜ | Needs Lottie asset + `BadgeAnimation.kt` composable |
-| Bookmark/Favorites | ✅ | **New this session.** `BookmarkRepository` (new) wraps `BookmarkDao`; wired into `HomeViewModel`/`HomeScreen` so the bookmark icon on the daily verse actually toggles and persists. No dedicated Favorites list screen yet (`BookmarkRepository.getBookmarkedVerses()` exists and is ready for one) |
+| Bookmark/Favorites | ✅ | `BookmarkRepository` wraps `BookmarkDao`; wired into `HomeViewModel`/`HomeScreen` so the bookmark icon on the daily verse toggles and persists. **Real Favorites list screen added this session** — `LibraryScreen` now shows all bookmarked verses via `LibraryViewModel`, previously `getBookmarkedVerses()` existed unused |
 | Copy/share functionality | 🟡 | **Copy is now wired** (uses Compose's `LocalClipboardManager`) — Share as image still not started |
 | Share image generation | ⬜ | Not started |
 
@@ -73,7 +73,7 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Task | Status | Notes |
 |---|---|---|
 | TTS integration | ✅ | `TTSManager.kt` — matches PRD Section 12.1 exactly |
-| TTS wired into Home screen play button | ✅ | **New this session.** `HomeViewModel` owns a `TTSManager` instance (initialized once, shut down in `onCleared()`), Play button now actually speaks the verse aloud and toggles to a Stop icon |
+| TTS wired into Home screen play button | ✅ | `HomeViewModel` owns a `TTSManager` instance (initialized once, shut down in `onCleared()`), Play button actually speaks the verse aloud and toggles to a Stop icon. **Completion callback added this session** — `isSpeaking` now reflects real TTS engine state via `UtteranceProgressListener`, not just "we asked it to speak" |
 | Mini player UI | ⬜ | Not started |
 | Background playback service (prayers) | ⬜ | Not started |
 
@@ -469,16 +469,28 @@ Continuing straight on: the app had a "Home screen" but no actual navigation str
 
 **Status:** 🟡 Four files changed/added, moderate scope, same not-yet-build-verified caveat as every round. `TTSManager`'s `isSpeaking` state is honestly approximate (noted in a code comment) — it reflects "we asked the engine to speak," not true completion, since `TTSManager` doesn't yet expose a completion callback; the Stop icon may show slightly longer than actual audio playback until that's added.
 
+### 2026-09-21 (continued a fourth time) — Sandbox reset mid-session; recovered from GitHub, then closed two more follow-ups
+
+**Environment note, not a code issue:** partway through this continuation, the local working copy in the assistant's sandbox was unexpectedly wiped (a container/session reset, not something in this repo). Recovered cleanly by cloning `https://github.com/gauravkumarit8/Dailydivine` directly — since every round's changes have been pushed to `main` immediately after each fix, GitHub was already the actual source of truth, not the sandbox. Verified the clone matched expectations (commit log, 65 `.kt` files) before continuing. **This is exactly why the discipline of pushing every round rather than batching changes locally matters** — a lost local sandbox here cost nothing.
+
+**Two follow-ups closed after recovery:**
+
+1. **`TTSManager` completion callback.** Previously `isSpeaking` was honestly documented as approximate ("we asked it to speak," not confirmed playback). Added a real `UtteranceProgressListener` (`onDone`/`onError` both resolve the callback) so `HomeViewModel.togglePlayVerse()` now flips back to the Play icon exactly when speech genuinely finishes, not based on a guess.
+
+2. **Real Favorites list (`LibraryViewModel.kt` new, `LibraryScreen.kt` rewritten).** `BookmarkRepository.getBookmarkedVerses()` existed since last round with nothing calling it. `LibraryScreen` (Screen S09) now shows the real bookmarked-verses list; category browsing and search remain an honest "coming in a future update" note rather than a silently missing feature, since those are genuinely Sprint 6 scope.
+
+**Verification performed:** full brace/paren sweep (clean) after the sandbox recovery — re-ran this on the freshly-cloned repo before making any further edits, to establish a clean baseline rather than assuming the clone was correct. Cross-checked `TTSManager.speak()`'s new `onDone` parameter against its call site, and `BookmarkRepository.getBookmarkedVerses()`'s return type against `LibraryViewModel`'s usage.
+
+**Status:** 🟡 Small, contained round (2 files changed, 2 new). Same standing caveat — next build is the real test.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test.** Try Play (does it actually read the verse aloud?), Copy (paste somewhere to confirm), Bookmark (toggle it, force-close and reopen the app, confirm it's still bookmarked). Try Settings → Clear all data, then check the Alarm tab is genuinely empty afterward (not just DataStore-reset with a stale alarm still silently scheduled).
+1. **Build + device-test.** Confirm Play now toggles back to the Play icon right when the verse actually finishes reading (not early, not stuck on Stop). Bookmark a verse from Home, switch to the Library tab, confirm it shows up in Favorites; un-bookmark it and confirm it disappears.
 2. If it crashes or fails to build: `adb logcat --uid=<uid>`, paste the trace.
 3. If it works, next real gaps:
-   - `TTSManager` completion callback, so `isSpeaking` reflects real engine state instead of "we asked it to speak."
-   - A real Favorites list screen (`BookmarkRepository.getBookmarkedVerses()` is ready and unused).
    - Share-as-image (F008) — a genuinely bigger feature, image generation + share sheet.
-   - Library screen's real content (Sprint 6): category browsing, search, verse detail.
+   - Library screen's category browsing/search (Sprint 6) — Favorites is real now, the rest isn't.
    - Editing religion/language after onboarding from Settings (currently read-only display only).
    - Re-enable `androidx.glance` whenever Sprint 9's widget work starts; confirmed safe, no rush.

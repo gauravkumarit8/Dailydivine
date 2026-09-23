@@ -88,11 +88,12 @@ class HomeViewModel @Inject constructor(
             ttsManager.stop()
             _uiState.value = _uiState.value.copy(isSpeaking = false)
         } else if (ttsReady) {
-            ttsManager.speak(verse.translatedText, Locale.getDefault())
             _uiState.value = _uiState.value.copy(isSpeaking = true)
-            // TTSManager doesn't expose a completion callback yet (follow-up);
-            // poll briefly is overkill for now, so isSpeaking just reflects
-            // "we asked it to speak" rather than tracking true engine state.
+            ttsManager.speak(
+                verse.translatedText,
+                Locale.getDefault(),
+                onDone = { _uiState.value = _uiState.value.copy(isSpeaking = false) }
+            )
         }
     }
 
