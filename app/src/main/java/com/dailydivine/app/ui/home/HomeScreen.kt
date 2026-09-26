@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,10 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 
 /** Screen S07 (PRD Section 9): Home — greeting, daily verse card, reflection
  *  input, streak card, next-alarm banner. */
@@ -19,10 +22,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val clipboardManager = LocalClipboardManager.current
-
-    LaunchedEffect(Unit) {
-        viewModel.load()
-    }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    // No LaunchedEffect/load() call needed -- HomeViewModel reactively
+    // observes UserPreferences in its own init block and loads
+    // automatically, including re-loading if the religion changes in
+    // Settings while this screen's ViewModel instance is retained.
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
@@ -51,7 +56,25 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             AnnotatedString("${daily.verse.translatedText}\n— ${daily.verse.sourceReference}")
                         )
                     },
-                    onBookmarkToggle = { viewModel.toggleBookmark() }
+                    onBookmarkToggle = { viewModel.toggleBookmark() },
+                    onShare = {
+                        // F008-R02/R07: generate the image (off-main-thread,
+                        // see HomeViewModel.generateShareImage) then hand it
+                        // to Android's own share sheet -- we don't pick the
+                        // destination app ourselves, ACTION_SEND + chooser
+                        // is the correct, standard way to let the user do that.
+                        coroutineScope.launch {
+                            val uri = viewModel.generateShareImage()
+                            if (uri != null) {
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "image/png"
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, "Share verse"))
+                            }
+                        }
+                    }
                 )
             } ?: Text(
                 "No verse content yet for ${state.religion?.name ?: "this religion"} — " +
@@ -72,7 +95,8 @@ private fun DailyVerseCard(
     isSpeaking: Boolean,
     onPlayToggle: () -> Unit,
     onCopy: () -> Unit,
-    onBookmarkToggle: () -> Unit
+    onBookmarkToggle: () -> Unit,
+    onShare: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp)) {
@@ -98,7 +122,7 @@ private fun DailyVerseCard(
                         contentDescription = "Bookmark verse"
                     )
                 }
-                IconButton(onClick = { /* F008: share as image — Sprint 3 follow-up */ }) {
+                IconButton(onClick = onShare) {
                     Icon(Icons.Filled.Share, contentDescription = "Share verse")
                 }
             }
@@ -116,10 +140,6 @@ private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo) {
                 Text("Streak: ${streak.currentStreak} days", style = MaterialTheme.typography.headlineSmall)
             }
             Spacer(Modifier.height(8.dp))
-            // NOTE: the lambda-based `progress = { ... }` overload of
-            // LinearProgressIndicator was added in a newer Compose Material3
-            // than the one pinned by our compose-bom resolves to -- that
-            // version only has the plain `progress: Float` overload.
             LinearProgressIndicator(
                 progress = streak.progressToNext,
                 modifier = Modifier.fillMaxWidth()

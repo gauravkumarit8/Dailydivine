@@ -27,7 +27,7 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Task | Status | Notes |
 |---|---|---|
 | Onboarding flow (5 screens) | ✅ | `WelcomeScreen`, `ReligionSelectScreen`, `LanguageSelectScreen`, `AlarmSetupScreen`, `PermissionScreen` |
-| Religion/language selection UI | ✅ | 7-religion grid (S03), language list filtered per religion (S04) via `util/Religions.kt` |
+| Religion/language selection UI | ✅ | 7-religion grid (S03), language list filtered per religion (S04) via `util/Religions.kt`. **Now also editable post-onboarding from Settings** (F001-R04) — see Sprint 7 section |
 | DataStore preferences | ✅ | `data/local/datastore/UserPreferences.kt` — religion, language, install date, onboarding-completed, notifications-granted all persisted. Wired into onboarding via a shared `OnboardingViewModel` scoped to a nested nav graph (all 5 screens share one instance/one set of in-progress selections) |
 | Home screen UI | ✅ | `HomeScreen.kt` — greeting (now shows the real selected religion name), verse card, streak card |
 | Daily verse display logic | ✅ | `VerseRepository.getDailyVerse()` — deterministic day-number algorithm (API Contract 1), now fed by the **real** persisted `religionId`/install date via `HomeViewModel`, not a hardcoded placeholder |
@@ -44,8 +44,8 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Milestone badges (data) | ✅ | `StreakInfo.MILESTONES` — all 10 badges from Section 6.2 |
 | Milestone badge animations | ⬜ | Needs Lottie asset + `BadgeAnimation.kt` composable |
 | Bookmark/Favorites | ✅ | `BookmarkRepository` wraps `BookmarkDao`; wired into `HomeViewModel`/`HomeScreen` so the bookmark icon on the daily verse toggles and persists. **Real Favorites list screen added this session** — `LibraryScreen` now shows all bookmarked verses via `LibraryViewModel`, previously `getBookmarkedVerses()` existed unused |
-| Copy/share functionality | 🟡 | **Copy is now wired** (uses Compose's `LocalClipboardManager`) — Share as image still not started |
-| Share image generation | ⬜ | Not started |
+| Copy/share functionality | ✅ | Copy uses Compose's `LocalClipboardManager`. **Share as image now wired this session** — see F008 row below |
+| Share image generation | ✅ | **New this session.** `ShareImageGenerator` renders a real 1080x1080 PNG via `android.graphics.Canvas` (religion-themed gradient background reusing existing palettes, verse text, source, "DailyDivine" watermark), saved via `FileProvider` and shared through Android's native share sheet. Scope note: 1 template per religion (not PRD's full "10 templates," which is design-asset work), square format only (1080x1920 story variant is a follow-up) |
 
 ## Sprint 4 — Alarm System ⭐ (v1.1 changes live here)
 
@@ -483,14 +483,45 @@ Continuing straight on: the app had a "Home screen" but no actual navigation str
 
 **Status:** 🟡 Small, contained round (2 files changed, 2 new). Same standing caveat — next build is the real test.
 
+### 2026-09-21 (continued a fifth time) — Religion/language now editable from Settings; fixed a real staleness bug in the process
+
+**Closing F001-R04**, explicitly stated in the PRD: "User MUST be able to change religion later in Settings." Settings only ever displayed the religion read-only until now.
+
+1. **`SettingsViewModel.changeReligion()`/`changeLanguage()` (new).** Switching religion resets the language to the new religion's first supported one (a stale language code from the old religion could be meaningless for the new one) and runs the same `ContentMigrationManager` path onboarding uses, so switching to a religion with real sample content works immediately.
+
+2. **`SettingsScreen`** — Religion and Language rows are now tappable, opening a real selection dialog (radio-button list, same interaction pattern as onboarding's own screens).
+
+3. **Caught and fixed a real bug while wiring this up, before it ever reached a device:** switching religion in Settings would update the persisted data correctly, but `HomeViewModel.load()` was a one-shot call that only ever ran once when the Home screen first composed. Since `hiltViewModel()` scopes a ViewModel to its destination's back-stack entry, and that entry is *retained* (not recreated) across bottom-nav tab switches, Home would keep showing the old religion's verse until the user force-closed and reopened the whole app — a real, would-be-confusing gap between "the setting changed" and "the screen reflects it." Fixed by making `HomeViewModel` reactively observe `UserPreferences.state` in its own `init` block (`.map { religionId to installEpochDay }.distinctUntilChanged().collect { ... }`) instead of a one-shot load — any change now propagates automatically the moment the user returns to Home. Removed the now-obsolete `LaunchedEffect(Unit) { viewModel.load() }` from `HomeScreen` accordingly.
+
+**Verification performed:** full brace/paren sweep (clean), explicitly grepped for any remaining references to the removed `HomeViewModel.load()` function before considering the refactor complete (none found — would have been a compile error if missed), and cross-checked `changeReligion`/`changeLanguage`/`migrateIfNeeded` signatures against their call sites.
+
+**Status:** 🟡 Three files changed. The `HomeViewModel` reactivity change is architecturally the most significant part of this round despite touching "only" one file — worth extra attention on the next device test specifically: confirm switching religion in Settings and returning to Home shows the new religion's data without needing to restart the app.
+
+### 2026-09-21 (continued a sixth time) — Share-as-image (F008), real this time
+
+The Share icon had been sitting inert since the very first version of the Home screen. Built the actual feature rather than deferring it again:
+
+1. **`AndroidManifest.xml` + `res/xml/file_paths.xml` (new).** Added a `FileProvider` declaration — required for sharing images cross-app on API 24+; a plain `file://` Uri is blocked by Android's `StrictMode` for exactly this use case, so this isn't optional scaffolding.
+
+2. **`util/ShareImageGenerator.kt` (new).** Renders a real 1080x1080 PNG using `android.graphics.Canvas` directly (not a Compose-capture approach, which is more fragile for this exact case): a gradient background reusing the same per-religion `ReligionPalette` values `ui/theme/Color.kt` already defines (so it's consistent with the app's own theming, not a separately-invented palette), the verse text word-wrapped and centered via `StaticLayout`, the source reference, and a "DailyDivine" watermark. Saves to `context.cacheDir/images/` and returns a `content://` Uri via `FileProvider`.
+
+3. **`HomeViewModel.generateShareImage()` (new)** — runs the Canvas/disk work on `Dispatchers.Default` rather than inline on whatever dispatcher the caller happens to be on, since it's real work (bitmap allocation, PNG encoding, disk write), not free. Returns `null` on any failure so the caller can skip launching a share sheet with nothing to share, rather than crashing.
+
+4. **`HomeScreen`'s Share button** — launches a coroutine that generates the image, then hands the resulting Uri to Android's own share sheet via `Intent.ACTION_SEND` + `Intent.createChooser()`. Deliberately does *not* pick a destination app itself — the whole point of `ACTION_SEND` + chooser is leaving that choice to the user and whatever apps they have installed.
+
+**Explicitly scoped down from the full PRD spec, not silently under-delivered:** F008-R03 calls for "10 pre-designed background templates per religion" — this implements one gradient template per religion, reusing palettes that already exist rather than fabricating 70 template designs that would need real design work to look good. F008-R06 (1080x1920 Instagram Stories format) isn't implemented either — square (1080x1080) only for now. Both noted in the code's own doc comment, not just here.
+
+**Verification performed:** full brace/paren sweep (clean); both edited XML files (`AndroidManifest.xml`, `file_paths.xml`) parsed successfully with Python's `xml.etree.ElementTree` as a well-formedness check, not just eyeballed; and — continuing the standing habit — explicitly diffed `DailyVerseCard`'s now-8-parameter signature against its call site, and `ShareImageGenerator.generate()`'s signature against `HomeViewModel`'s call, side by side rather than trusting memory.
+
+**Status:** 🟡 Four files changed/added (two of them XML, both independently validated). The Canvas rendering code is new territory for this project — everything else so far has been Compose UI, Room, or plain Kotlin logic — so it's the most likely single point of failure if something's off, even though it doesn't touch anything Compose-BOM-related (the actual source of every crash so far).
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test.** Confirm Play now toggles back to the Play icon right when the verse actually finishes reading (not early, not stuck on Stop). Bookmark a verse from Home, switch to the Library tab, confirm it shows up in Favorites; un-bookmark it and confirm it disappears.
+1. **Build + device-test.** Specifically: tap Share on the daily verse, confirm the share sheet actually opens with a real image attached (not a blank/broken one), and that the image looks right — gradient background, readable wrapped text, source line, watermark. Also re-verify the religion-switching fix from the previous round still works, since this round touched the same file.
 2. If it crashes or fails to build: `adb logcat --uid=<uid>`, paste the trace.
 3. If it works, next real gaps:
-   - Share-as-image (F008) — a genuinely bigger feature, image generation + share sheet.
    - Library screen's category browsing/search (Sprint 6) — Favorites is real now, the rest isn't.
-   - Editing religion/language after onboarding from Settings (currently read-only display only).
+   - The 1080x1920 Instagram Stories share format (F008-R06).
    - Re-enable `androidx.glance` whenever Sprint 9's widget work starts; confirmed safe, no rush.

@@ -1,6 +1,7 @@
 package com.dailydivine.app.ui.home
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.audio.TTSManager
@@ -12,13 +13,17 @@ import com.dailydivine.app.domain.model.DailyVerse
 import com.dailydivine.app.domain.model.StreakInfo
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
+import com.dailydivine.app.util.ShareImageGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
@@ -48,37 +53,45 @@ class HomeViewModel @Inject constructor(
     private val ttsManager = TTSManager(appContext)
     private var ttsReady = false
 
+    private val shareImageGenerator = ShareImageGenerator(appContext)
+
     init {
         ttsManager.initialize { ttsReady = true }
+
+        // Reactively observes religion/install-date instead of a one-shot
+        // load() -- previously, switching religion in Settings wouldn't
+        // update Home until the app was force-closed and reopened, since
+        // load() only ever ran once when the screen first composed and this
+        // ViewModel instance is retained across bottom-nav tab switches
+        // (hiltViewModel() scopes it to the Home destination's back stack
+        // entry, which survives navigating away and back). Now any change
+        // to the persisted religion/install date automatically triggers a
+        // fresh verse + streak load, visible the moment the user returns to
+        // the Home tab.
+        viewModelScope.launch {
+            userPreferences.state
+                .map { it.religionId to it.installEpochDay }
+                .distinctUntilChanged()
+                .collect { (religionIdRaw, installEpochDay) ->
+                    loadVerseAndStreak(religionIdRaw, installEpochDay)
+                }
+        }
     }
 
-    /**
-     * Reads the real religion + install date persisted during onboarding
-     * (closes the Sprint 2 gap where this screen read a hardcoded
-     * religionId = 1 placeholder regardless of what the user actually
-     * selected). Falls back to religion #1 / today only if prefs are
-     * somehow missing, which shouldn't happen once onboarding has run, but
-     * keeps this screen from crashing rather than assuming happy path.
-     */
-    fun load() {
-        viewModelScope.launch {
-            val prefs = userPreferences.state.first()
-            val religionId = prefs.religionId ?: Religions.ALL.first().id
-            val installDate = prefs.installEpochDay
-                ?.let { LocalDate.ofEpochDay(it) }
-                ?: LocalDate.now()
+    private suspend fun loadVerseAndStreak(religionIdRaw: Int?, installEpochDay: Long?) {
+        val religionId = religionIdRaw ?: Religions.ALL.first().id
+        val installDate = installEpochDay?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()
 
-            val verse = verseRepository.getDailyVerse(religionId, installDate, LocalDate.now())
-            verse?.let { streakRepository.recordOpenedToday(it.verse.id) }
-            val streak = streakRepository.calculateStreak()
+        val verse = verseRepository.getDailyVerse(religionId, installDate, LocalDate.now())
+        verse?.let { streakRepository.recordOpenedToday(it.verse.id) }
+        val streak = streakRepository.calculateStreak()
 
-            _uiState.value = HomeUiState(
-                religion = Religions.byId(religionId),
-                dailyVerse = verse,
-                streak = streak,
-                isLoading = false
-            )
-        }
+        _uiState.value = _uiState.value.copy(
+            religion = Religions.byId(religionId),
+            dailyVerse = verse,
+            streak = streak,
+            isLoading = false
+        )
     }
 
     /** F005-R07: play/stop the daily verse via on-device TTS. */
@@ -105,6 +118,25 @@ class HomeViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 dailyVerse = daily.copy(isBookmarked = !daily.isBookmarked)
             )
+        }
+    }
+
+    /**
+     * F008: generates a shareable image of the current daily verse.
+     * Bitmap/Canvas work runs on Dispatchers.Default (off the main thread)
+     * since image rendering, while fast, still touches disk I/O for the
+     * PNG write -- not something to do inline on the caller's dispatcher.
+     * Returns null if there's no verse loaded or generation fails, letting
+     * the caller (HomeScreen) skip launching a share sheet with nothing to
+     * share rather than crashing.
+     */
+    suspend fun generateShareImage(): Uri? {
+        val daily = _uiState.value.dailyVerse ?: return null
+        val religionId = _uiState.value.religion?.id ?: return null
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                shareImageGenerator.generate(daily.verse.translatedText, daily.verse.sourceReference, religionId)
+            }.getOrNull()
         }
     }
 
