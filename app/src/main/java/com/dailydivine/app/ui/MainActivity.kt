@@ -27,7 +27,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val startDestination by mainViewModel.startDestination.collectAsState()
-            DailyDivineTheme {
+            val religionId by mainViewModel.currentReligionId.collectAsState()
+            // BUG FIX: previously called with no religionId at all, so the
+            // app always showed the default (Spiritual/teal) palette
+            // regardless of what the user selected. See MainViewModel's
+            // currentReligionId doc comment.
+            DailyDivineTheme(religionId = religionId ?: 0) {
                 // startDestination is guaranteed non-null by the time Compose
                 // actually renders this, since the splash screen held above
                 // blocks the very first frame until it resolves.

@@ -62,7 +62,10 @@ Legend: ✅ done & present in repo · 🟡 partial/stubbed · ⬜ not started
 | Alarm ring screen (S08) | ✅ | **New this session.** `AlarmRingActivity.kt` — Snooze / Wake Up & Read buttons, current time display, back-press absorbed (can't silently dismiss an alarm). Verse preview (first line of today's verse) deliberately deferred — needs a `VerseRepository` lookup keyed off the alarm, tracked below |
 | **API 26 lock-screen fallback** | ✅ | **New this session.** `showWhenLocked`/`turnScreenOn` manifest attributes only take effect on API 27+; `AlarmRingActivity` now also sets the older `WindowManager.LayoutParams` flags (`FLAG_SHOW_WHEN_LOCKED`, `FLAG_TURN_SCREEN_ON`, `FLAG_DISMISS_KEYGUARD`) for exactly API 26, this project's `minSdk` floor |
 | Alarm tone playback (real audio) | 🟡 | `AlarmService` plays from `res/raw/`; only a **placeholder** `temple_bell.mp3` exists — needs real royalty-free audio (Appendix B) |
-| Alarm configuration UI (S11) | ✅ | **New this session.** `AlarmListScreen` — list, toggle enable/disable, edit time (reuses the shared `TimePickerDialog`), toggle TTS, delete, and add a new alarm. Everything routes through `AlarmRepository` so Room and the real scheduled alarm never drift apart |
+| Alarm configuration UI (S11) | ✅ | `AlarmListScreen` — list, toggle enable/disable, edit time (reuses the shared `TimePickerDialog`), toggle TTS, delete, and add a new alarm. Everything routes through `AlarmRepository` so Room and the real scheduled alarm never drift apart. **Now also surfaces two reliability banners** (exact-alarm permission, battery optimization) with buttons that genuinely open the relevant system Settings screens — see the 2026-09-22 log entry |
+| **Exact-alarm permission actually requestable** | ✅ | **Fixed this session — see log.** The "Enable exact alarms" button previously did nothing useful (only re-checked a status, never opened Settings); now launches the real system screen and re-checks automatically on return |
+| **Battery-optimization exemption (F004-R24)** | ✅ | **New this session.** Explicitly required by the PRD, never implemented. Banner + button in the Alarm tab launches the real system exemption dialog |
+| **Per-religion theming actually applied** | ✅ | **Fixed this session.** `MainActivity` never passed the user's religion into `DailyDivineTheme`, so every user always saw the default teal palette regardless of selection |
 | Verse preview on the ring screen | ✅ | `AlarmRingViewModel` fetches today's verse for the user's religion and shows its first sentence on `AlarmRingActivity` |
 | Time picker in onboarding (S05) | ✅ | **New this session.** Real Material3 `TimePicker` in an `AlertDialog`, replacing the static "5:30 AM" text — user can now actually pick their alarm time |
 | Real notification permission request | ✅ | **New this session.** `PermissionScreen` now triggers Android's actual `POST_NOTIFICATIONS` runtime dialog (API 33+) via `rememberLauncherForActivityResult`, called directly from the composable — no `MainActivity`-level plumbing needed |
@@ -515,13 +518,37 @@ The Share icon had been sitting inert since the very first version of the Home s
 
 **Status:** 🟡 Four files changed/added (two of them XML, both independently validated). The Canvas rendering code is new territory for this project — everything else so far has been Compose UI, Room, or plain Kotlin logic — so it's the most likely single point of failure if something's off, even though it doesn't touch anything Compose-BOM-related (the actual source of every crash so far).
 
+### 2026-09-22 — "Alarm doesn't fire at the set time" + "design not proper": two real bugs found, one caught by validation before shipping
+
+**Reported by you:** Sprint 4's alarm feature is implemented but the alarm doesn't fire at the set time, and the styling/design looks off.
+
+**Alarm timing — real root cause found in our own code:** the "Enable exact alarms" button in `AlarmSetupScreen` was wired to `viewModel::refreshExactAlarmPermission`, which only *re-reads* the current permission status. It **never opened Android's system Settings screen** where the user can actually grant "Alarms & reminders." So the button silently did nothing, the permission was almost certainly never granted, and `AlarmScheduler` correctly fell back to `setWindow()` with a 10-minute delivery window for **every alarm** — which looks exactly like "the alarm doesn't fire at the time." The fallback logic itself was working as designed; the bug was that the UI gave the user no working way to avoid it. Also: the Alarm tab (`AlarmListScreen`) had **no visibility into this at all** — a user who skipped it during onboarding could never discover or fix it afterward.
+
+**Fixes for alarm timing:**
+1. `AlarmSetupScreen` — button now launches `Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM` (API 31+), and a `DisposableEffect` + `LifecycleEventObserver` re-checks permission status on every `ON_RESUME`, so the banner correctly disappears the moment the user returns after granting it.
+2. `AlarmListViewModel` + `AlarmListScreen` — same banner and same real settings launch, now also on the Alarm tab.
+3. **Battery-optimization exemption (F004-R24, explicitly required by the PRD, never implemented until now).** Aggressive background-process killing (especially on some OEM Android skins) can stop `AlarmReceiver`'s broadcast from ever starting `AlarmService`, which looks identical to "the alarm didn't fire" from the user's side. Added a second banner + button (`Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`) plus the `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` manifest permission it requires.
+
+**Design — real bug found:** `MainActivity` called `DailyDivineTheme { ... }` with **no `religionId` argument**, silently defaulting to `0` — the "Spiritual" teal palette — for every user, regardless of which of the seven religions they selected. The whole point of defining seven distinct `ReligionPalette` values back in Sprint 1 was per-religion theming, but it was never actually wired to anything. Fixed: `MainViewModel` now reactively exposes `currentReligionId` (observes `UserPreferences` continuously, so switching religion in Settings re-themes the whole app immediately), and `MainActivity` passes it through. Also set explicit `onPrimary`/`onSecondary = White` in the color scheme, since those were left at Material3 defaults that don't account for our custom colors, risking poor text/icon contrast on buttons and FABs.
+
+**A near-miss worth recording — caught by validation before it could ship:** while adding the battery-optimization permission comment to `AndroidManifest.xml`, I wrote a comment containing `--` (used as an em-dash). **That is illegal in XML comments** — the spec only permits `--` as part of the closing `-->`. It would have been a hard manifest-merge failure in the real build. Caught because I ran the manifest through Python's real XML parser after the edit (the same check added two rounds ago for the FileProvider work) rather than eyeballing it — and then validated *every* XML file in the project, not just the one edited (all valid now). This is exactly the class of mistake that's invisible to my brace-balance sweep (which only checks Kotlin) and only shows up as a confusing build error afterward.
+
+**Being honest about certainty:** the exact-alarm-permission bug is a real, confirmed defect and a very plausible cause of the symptom — but I can't be 100% certain it's the *only* cause without knowing more about how the alarm is misbehaving on your device. **If alarms still don't fire correctly after this update, I need specifics to debug properly:** does it fire late, or never at all? What phone brand/Android version? After tapping the new banner buttons, do Settings → Apps → DailyDivine → "Alarms & reminders" and battery settings show as allowed?
+
+**On "design not proper":** the per-religion theming bug and the contrast fix are concrete, real improvements — but "design" is broad and subjective, and this app has only ever had a functionality-first pass (default Material3 components, no custom fonts, minimal visual hierarchy). If specific screens look wrong to you, screenshots or a description of what's off would let me fix concrete things rather than guess.
+
+**Verification performed:** full Kotlin brace/paren sweep (clean), *every* XML file in the project parsed with a real XML parser (all valid, after fixing the one real error), and cross-checked `DailyDivineTheme`'s actual signature against its new call site.
+
+**Status:** 🟡 Seven files changed. The alarm-permission fix is high-confidence for the specific bug it targets; whether it fully resolves the reported symptom depends on your device's actual behavior.
+
 ---
 
 ## What's Next (as of this session)
 
-1. **Build + device-test.** Specifically: tap Share on the daily verse, confirm the share sheet actually opens with a real image attached (not a blank/broken one), and that the image looks right — gradient background, readable wrapped text, source line, watermark. Also re-verify the religion-switching fix from the previous round still works, since this round touched the same file.
-2. If it crashes or fails to build: `adb logcat --uid=<uid>`, paste the trace.
+1. **Build + device-test the alarm fix specifically.** After updating: go to the Alarm tab, you should see one or both banners. Tap "Enable exact alarms" — it should open Android's "Alarms & reminders" settings for this app. Grant it, press back, confirm the banner disappears. Do the same for battery optimization. Then set an alarm 2 minutes out and see if it fires on time. Also confirm the app's colors now match the religion you selected (e.g. orange for Hinduism, blue for Christianity) instead of always teal.
+2. If it still misbehaves: tell me exactly how (late? never? crashes?) plus your phone brand and Android version, and grab `adb logcat` output around the alarm time.
 3. If it works, next real gaps:
    - Library screen's category browsing/search (Sprint 6) — Favorites is real now, the rest isn't.
    - The 1080x1920 Instagram Stories share format (F008-R06).
+   - A real design pass, if you can point me at what specifically looks wrong.
    - Re-enable `androidx.glance` whenever Sprint 9's widget work starts; confirmed safe, no rush.

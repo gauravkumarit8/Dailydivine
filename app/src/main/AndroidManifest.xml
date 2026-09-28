@@ -11,6 +11,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- F004-R24: lets the app ask the user to exempt it from battery
+         optimization, so AlarmReceiver's broadcast reliably reaches
+         AlarmService instead of the process being killed in the
+         background before it can start. Only used to launch the system
+         settings screen (ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS),
+         never silently self-granted. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!-- No INTERNET permission needed for core features (offline-first, NG3/NG7);
          add it only when AdMob/Firebase are wired in for Sprint 7. -->
 

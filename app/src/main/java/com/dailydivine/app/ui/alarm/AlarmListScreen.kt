@@ -1,5 +1,11 @@
 package com.dailydivine.app.ui.alarm
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,8 +16,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.dailydivine.app.data.local.entity.Alarm
 import com.dailydivine.app.ui.components.TimePickerDialog
 import com.dailydivine.app.util.formatTime12h
@@ -20,7 +30,24 @@ import com.dailydivine.app.util.formatTime12h
 @Composable
 fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     val alarms by viewModel.alarms.collectAsState()
+    val canScheduleExactAlarms by viewModel.canScheduleExactAlarms.collectAsState()
+    val isIgnoringBatteryOptimizations by viewModel.isIgnoringBatteryOptimizations.collectAsState()
     var editingAlarm by remember { mutableStateOf<Alarm?>(null) }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Same fix as AlarmSetupScreen (onboarding): re-check exact-alarm
+    // permission status whenever this screen resumes, e.g. after the user
+    // comes back from the system Settings screen. Previously this tab had
+    // no visibility into this at all -- a user who skipped it during
+    // onboarding had no way to discover or fix it here.
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshExactAlarmPermission()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -29,30 +56,73 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
             }
         }
     ) { innerPadding ->
-        if (alarms.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "No alarms yet — tap + to add your first morning blessing.",
-                    modifier = Modifier.padding(32.dp)
-                )
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            if (!canScheduleExactAlarms) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            "Exact alarms are turned off for DailyDivine, so alarms may fire up to 10 minutes late. Enable them for reliable wake-up times.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        TextButton(onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                        data = Uri.parse("package:${context.packageName}")
+                                    }
+                                )
+                            }
+                        }) { Text("Enable exact alarms") }
+                    }
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(alarms, key = { it.id }) { alarm ->
-                    AlarmRow(
-                        alarm = alarm,
-                        onToggle = { viewModel.toggleEnabled(alarm) },
-                        onTimeClick = { editingAlarm = alarm },
-                        onTtsToggle = { viewModel.toggleTts(alarm) },
-                        onDelete = { viewModel.delete(alarm) }
+
+            if (!isIgnoringBatteryOptimizations) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            "Battery optimization may stop your alarm from firing in the background. Exempt DailyDivine for reliable wake-ups.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        TextButton(onClick = {
+                            context.startActivity(
+                                Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                }
+                            )
+                        }) { Text("Disable battery optimization") }
+                    }
+                }
+            }
+
+            if (alarms.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "No alarms yet — tap + to add your first morning blessing.",
+                        modifier = Modifier.padding(32.dp)
                     )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(alarms, key = { it.id }) { alarm ->
+                        AlarmRow(
+                            alarm = alarm,
+                            onToggle = { viewModel.toggleEnabled(alarm) },
+                            onTimeClick = { editingAlarm = alarm },
+                            onTtsToggle = { viewModel.toggleTts(alarm) },
+                            onDelete = { viewModel.delete(alarm) }
+                        )
+                    }
                 }
             }
         }

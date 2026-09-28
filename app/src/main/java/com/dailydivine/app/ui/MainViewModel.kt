@@ -24,7 +24,24 @@ class MainViewModel @Inject constructor(
     private val _startDestination = MutableStateFlow<String?>(null)
     val startDestination: StateFlow<String?> = _startDestination.asStateFlow()
 
+    /**
+     * BUG FIX: MainActivity previously called DailyDivineTheme { ... } with
+     * no religionId at all, which silently defaults to 0 -- the Spiritual
+     * (teal) palette -- for every single user, regardless of which of the
+     * 7 religions they actually selected. The whole point of having 7
+     * distinct ReligionPalette values (ui/theme/Color.kt) was to visually
+     * theme the app per-religion; that never actually happened anywhere.
+     * Reactively observed (not a one-shot read) so the app re-themes itself
+     * immediately if the user changes religion from Settings, without
+     * needing a restart.
+     */
+    private val _currentReligionId = MutableStateFlow<Int?>(null)
+    val currentReligionId: StateFlow<Int?> = _currentReligionId.asStateFlow()
+
     init {
+        viewModelScope.launch {
+            userPreferences.state.collect { prefs -> _currentReligionId.value = prefs.religionId }
+        }
         viewModelScope.launch {
             val prefs = userPreferences.state.first()
             _startDestination.value = if (prefs.onboardingCompleted) {

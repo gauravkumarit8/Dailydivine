@@ -1,12 +1,18 @@
 package com.dailydivine.app.ui.alarm
 
+import android.content.Context
+import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.data.local.entity.Alarm
 import com.dailydivine.app.data.repository.AlarmRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,11 +24,40 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AlarmListViewModel @Inject constructor(
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     val alarms: StateFlow<List<Alarm>> = alarmRepository.getAllAlarms()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // v1.1/F004-R25: this tab previously had NO visibility into exact-alarm
+    // permission status at all -- a user who skipped/denied it during
+    // onboarding had no way to discover or fix that every alarm they
+    // create or edit here is silently running through the inexact
+    // setWindow() fallback (up to a 10-minute delivery window).
+    private val _canScheduleExactAlarms = MutableStateFlow(AlarmScheduler(appContext).canScheduleExactAlarms())
+    val canScheduleExactAlarms: StateFlow<Boolean> = _canScheduleExactAlarms.asStateFlow()
+
+    // F004-R24 ("Handle battery optimization exemption request") -- was
+    // never implemented anywhere in the app. Aggressive battery
+    // optimization (especially on some OEM Android skins) can kill the
+    // app's process before AlarmReceiver's broadcast ever gets to start
+    // AlarmService, which looks identical to "the alarm just didn't fire"
+    // from the user's side, same failure mode as the missing exact-alarm
+    // permission above.
+    private val _isIgnoringBatteryOptimizations = MutableStateFlow(checkIgnoringBatteryOptimizations())
+    val isIgnoringBatteryOptimizations: StateFlow<Boolean> = _isIgnoringBatteryOptimizations.asStateFlow()
+
+    fun refreshExactAlarmPermission() {
+        _canScheduleExactAlarms.value = AlarmScheduler(appContext).canScheduleExactAlarms()
+        _isIgnoringBatteryOptimizations.value = checkIgnoringBatteryOptimizations()
+    }
+
+    private fun checkIgnoringBatteryOptimizations(): Boolean {
+        val powerManager = appContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        return powerManager.isIgnoringBatteryOptimizations(appContext.packageName)
+    }
 
     fun toggleEnabled(alarm: Alarm) {
         viewModelScope.launch {
