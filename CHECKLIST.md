@@ -541,6 +541,23 @@ The Share icon had been sitting inert since the very first version of the Home s
 
 **Status:** 🟡 Seven files changed. The alarm-permission fix is high-confidence for the specific bug it targets; whether it fully resolves the reported symptom depends on your device's actual behavior.
 
+### 2026-09-29 — Alarm engine audit: four real defects found by reading the code end to end
+
+Started the new session by cloning the repo and tracing the whole alarm path (Scheduler → Receiver → Service → Ring screen) instead of waiting for logcat. Found four defects; the first is the suspect flagged in the handoff, the other three were not known.
+
+1. **Placeholder audio crash (confirmed).** `res/raw/temple_bell.mp3` was 4 bytes of junk. `AlarmService.startTone()` called `MediaPlayer.prepare()` on it right after `startForeground()`, so the service could crash at the moment of ringing even with perfect scheduling. **Fix:** replaced with a real 6 s synthesized bell tone (`temple_bell.wav`, original work, no licensing issue; inharmonic partials with exponential decay, two strikes, silent tail for a clean loop). `startTone()` is now fail-safe: bundled tone, then the system default alarm sound, then silent-but-alive (logged), and never an uncaught exception. `stop()` guarded against `IllegalStateException`.
+2. **NEW: daily alarm rang once, then never again.** `setAlarmClock`/`setWindow` are one-shot and nothing re-armed the next occurrence. **Fix:** `AlarmReceiver` is now `@AndroidEntryPoint`; after starting the service it calls `AlarmRepository.rescheduleNextOccurrence()` (via `goAsync()`) for non-snooze fires. Re-arm requires the next trigger to be at least 2 min ahead, so an alarm delivered slightly early by the inexact fallback cannot re-arm itself for "now".
+3. **NEW: snooze overwrote tomorrow's alarm.** Snooze and daily alarm shared one `PendingIntent` request code (`alarm.id`), so a snooze replaced the daily alarm in AlarmManager. **Fix:** snoozes use `SNOOZE_REQUEST_OFFSET (100000) + id`; `cancel()` now cancels both.
+4. **Auto-snooze cap never triggered.** `cyclesUsed` lived in the service instance, which is destroyed between cycles. **Fix:** carried in the re-fire Intent (`EXTRA_SNOOZE_CYCLES`) and read in `onStartCommand`.
+
+**Also done:** `repeatDays` is now honored (ISO weekdays 1=Mon..7=Sun; empty/unparseable means every day). Added a debug-only "ring a test alarm in 10 seconds" button on the Alarm tab (hidden unless the APK is debuggable) that exercises the full Receiver → Service → Ring path without touching saved alarms.
+
+**Still open / not done:** `alarmToneId` is still ignored (only one tone exists; 15 tones are roadmap item 2). `TTSManager` still uses `Locale.getDefault()`. A stale `AlarmRingActivity` is not dismissed when an auto-snooze fires while it is open (harmless, cosmetic).
+
+**Verification performed:** brace/paren sweep over all `.kt`/`.kts` (clean); every XML file parsed (clean); grep-compared every call site of `schedule`, `scheduleSnooze`, `scheduleTest`, `rescheduleNextOccurrence` and `EXTRA_SNOOZE_CYCLES` against the new signatures; confirmed no remaining `.mp3` references. Not compiled (no Android SDK here), so **CI plus a device test are still the real proof.**
+
+**Status:** 🟡 Eight files changed, one asset replaced. Confidence: high that items 1-3 are real defects; **not yet verified that they explain the user's "doesn't fire at the set time" report.**
+
 ---
 
 ## What's Next (as of this session)

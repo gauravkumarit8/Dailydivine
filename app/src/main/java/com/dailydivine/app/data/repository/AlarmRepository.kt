@@ -71,4 +71,11 @@ class AlarmRepository @Inject constructor(
     suspend fun rescheduleAllEnabled() {
         alarmDao.getEnabledAlarms().forEach { scheduler.schedule(it) }
     }
+
+    /** Called by AlarmReceiver right after a daily alarm rings: AlarmManager
+     *  entries are one-shot, so arm the next occurrence (respecting repeatDays). */
+    suspend fun rescheduleNextOccurrence(alarmId: Int) {
+        val alarm = alarmDao.getAlarmById(alarmId) ?: return
+        if (alarm.isEnabled) scheduler.schedule(alarm, afterFiring = true)
+    }
 }

@@ -57,6 +57,12 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
         }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            if (viewModel.isDebuggable) {
+                TextButton(
+                    onClick = { viewModel.fireTestAlarm(10) },
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) { Text("Debug: ring a test alarm in 10 seconds") }
+            }
             if (!canScheduleExactAlarms) {
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),

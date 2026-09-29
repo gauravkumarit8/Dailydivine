@@ -11,82 +11,87 @@ import java.util.Calendar
 /**
  * Schedules and cancels alarms.
  *
- * v1.1 / F004-R25 (NEW): on Android 12+ (API 31+), SCHEDULE_EXACT_ALARM
- * requires an explicit user grant in system settings. If it hasn't been
- * granted, this class MUST NOT crash or silently fail to schedule — it
- * falls back to AlarmManager.setWindow(), a less precise but always-legal
- * API, and the caller (AlarmSetupScreen / AlarmEditScreen) is responsible
- * for surfacing the "enable exact alarms for full reliability" banner via
- * [canScheduleExactAlarms].
+ * v1.1 / F004-R25: on Android 12+ (API 31+), SCHEDULE_EXACT_ALARM requires an
+ * explicit user grant. If it hasn't been granted, this class falls back to
+ * AlarmManager.setWindow() (inexact but always legal); the UI surfaces the
+ * banner via [canScheduleExactAlarms].
+ *
+ * Request-code layout (IMPORTANT): the daily alarm uses request code = alarm.id,
+ * snoozes use SNOOZE_REQUEST_OFFSET + alarm.id. They MUST differ: PendingIntent
+ * identity is what AlarmManager keys on, so sharing one code made a snooze
+ * silently overwrite tomorrow's daily alarm.
  */
 class AlarmScheduler(private val context: Context) {
 
     private val alarmManager: AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    /** Exposed so UI (onboarding S05, alarm config S11) can show the reliability banner. */
     fun canScheduleExactAlarms(): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             alarmManager.canScheduleExactAlarms()
         } else {
-            true // no runtime grant required pre-Android 12
+            true
         }
 
-    fun schedule(alarm: Alarm) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_ALARM_ID, alarm.id)
-            putExtra(EXTRA_ALARM_TONE, alarm.alarmToneId)
-            putExtra(EXTRA_TTS_ENABLED, alarm.isTTSEnabled)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarm.id, // unique request code per alarm
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val triggerTime = calculateNextTriggerTime(alarm.hour, alarm.minute, alarm.repeatDays)
+    /**
+     * Schedules the next occurrence of [alarm].
+     * @param afterFiring true when called from AlarmReceiver right after the
+     *   alarm rang: the next trigger must then be at least [AFTER_FIRING_MIN_LEAD_MS]
+     *   in the future, so an alarm delivered a moment early (inexact fallback)
+     *   can't re-arm itself for "now" and ring twice.
+     */
+    fun schedule(alarm: Alarm, afterFiring: Boolean = false) {
+        val pendingIntent = buildPendingIntent(alarm, requestCode = alarm.id, isSnooze = false, cyclesUsed = 0)
+        val minLead = if (afterFiring) AFTER_FIRING_MIN_LEAD_MS else 0L
+        val triggerTime = calculateNextTriggerTime(alarm.hour, alarm.minute, alarm.repeatDays, minLead)
 
         if (canScheduleExactAlarms()) {
-            // F004-R04/R21: exact timing via AlarmClockInfo, survives Doze (setExactAndAllowWhileIdle
-            // also works, but AlarmClockInfo additionally surfaces the alarm icon in the status bar).
             alarmManager.setAlarmClock(
                 AlarmManager.AlarmClockInfo(triggerTime, pendingIntent),
                 pendingIntent
             )
         } else {
-            // v1.1 fallback: inexact delivery within a bounded window rather than failing outright.
-            alarmManager.setWindow(
-                AlarmManager.RTC_WAKEUP,
-                triggerTime,
-                INEXACT_WINDOW_MS,
-                pendingIntent
-            )
+            alarmManager.setWindow(AlarmManager.RTC_WAKEUP, triggerTime, INEXACT_WINDOW_MS, pendingIntent)
         }
     }
 
+    /** Cancels both the daily alarm and any pending snooze for [alarmId]. */
     fun cancel(alarmId: Int) {
-        val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context, alarmId, intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        pendingIntent?.let { alarmManager.cancel(it) }
+        listOf(alarmId, SNOOZE_REQUEST_OFFSET + alarmId).forEach { code ->
+            val pi = PendingIntent.getBroadcast(
+                context, code, Intent(context, AlarmReceiver::class.java),
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+            pi?.let { alarmManager.cancel(it); it.cancel() }
+        }
     }
 
-    /** Reschedule for N minutes from now — used for both manual snooze and v1.1 auto-snooze. */
-    fun scheduleSnooze(alarm: Alarm, minutesFromNow: Int) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_ALARM_ID, alarm.id)
-            putExtra(EXTRA_ALARM_TONE, alarm.alarmToneId)
-            putExtra(EXTRA_TTS_ENABLED, alarm.isTTSEnabled)
-            putExtra(EXTRA_IS_SNOOZE, true)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context, alarm.id, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    /**
+     * Re-fire in [minutesFromNow] minutes (manual snooze and v1.1 auto-snooze).
+     * [cyclesUsed] is carried in the Intent so AlarmService's 6-cycle cap
+     * survives the service being destroyed between cycles.
+     */
+    fun scheduleSnooze(alarm: Alarm, minutesFromNow: Int, cyclesUsed: Int = 0) {
+        val pendingIntent = buildPendingIntent(
+            alarm, requestCode = SNOOZE_REQUEST_OFFSET + alarm.id, isSnooze = true, cyclesUsed = cyclesUsed
         )
-        val triggerTime = System.currentTimeMillis() + minutesFromNow * 60_000L
+        fireAt(System.currentTimeMillis() + minutesFromNow * 60_000L, pendingIntent)
+    }
+
+    /** Debug helper: rings the full alarm path (Receiver -> Service -> Ring screen)
+     *  in [seconds] seconds, without touching any saved alarm. */
+    fun scheduleTest(seconds: Int) {
+        val testAlarm = Alarm(
+            id = TEST_ALARM_ID, hour = 0, minute = 0, repeatDays = "[]",
+            alarmToneId = "temple_bell", createdAt = 0L
+        )
+        val pendingIntent = buildPendingIntent(
+            testAlarm, requestCode = SNOOZE_REQUEST_OFFSET + TEST_ALARM_ID, isSnooze = true, cyclesUsed = 0
+        )
+        fireAt(System.currentTimeMillis() + seconds * 1000L, pendingIntent)
+    }
+
+    private fun fireAt(triggerTime: Long, pendingIntent: PendingIntent) {
         if (canScheduleExactAlarms()) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
         } else {
@@ -94,21 +99,48 @@ class AlarmScheduler(private val context: Context) {
         }
     }
 
-    private fun calculateNextTriggerTime(hour: Int, minute: Int, repeatDaysJson: String): Long {
-        val now = Calendar.getInstance()
-        val trigger = Calendar.getInstance().apply {
+    private fun buildPendingIntent(alarm: Alarm, requestCode: Int, isSnooze: Boolean, cyclesUsed: Int): PendingIntent {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(EXTRA_ALARM_ID, alarm.id)
+            putExtra(EXTRA_ALARM_TONE, alarm.alarmToneId)
+            putExtra(EXTRA_TTS_ENABLED, alarm.isTTSEnabled)
+            putExtra(EXTRA_IS_SNOOZE, isSnooze)
+            putExtra(EXTRA_SNOOZE_CYCLES, cyclesUsed)
+        }
+        return PendingIntent.getBroadcast(
+            context, requestCode, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    /**
+     * Next trigger time strictly after now + [minLeadMs], on one of the days in
+     * [repeatDaysJson] (ISO weekdays, 1 = Monday ... 7 = Sunday, e.g. "[1,2,3,4,5]").
+     * An empty/unparseable list is treated as "every day".
+     */
+    internal fun calculateNextTriggerTime(
+        hour: Int, minute: Int, repeatDaysJson: String, minLeadMs: Long = 0L
+    ): Long {
+        val days = parseRepeatDays(repeatDaysJson)
+        val earliest = System.currentTimeMillis() + minLeadMs
+        val candidate = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        if (trigger.before(now)) {
-            trigger.add(Calendar.DAY_OF_YEAR, 1)
+        // At most 8 steps: today + a full week always contains a matching day.
+        repeat(8) {
+            val isoDay = (candidate.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1 // Calendar: Sun=1 -> ISO: Mon=1..Sun=7
+            if (candidate.timeInMillis > earliest && isoDay in days) return candidate.timeInMillis
+            candidate.add(Calendar.DAY_OF_YEAR, 1)
         }
-        // NOTE: repeatDaysJson (e.g. "[1,2,3,4,5]") narrowing to specific
-        // weekdays is intentionally left as a follow-up — this MVP scheduler
-        // fires daily at the configured time, matching the F004-R08 default.
-        return trigger.timeInMillis
+        return candidate.timeInMillis
+    }
+
+    private fun parseRepeatDays(json: String): Set<Int> {
+        val parsed = Regex("\\d+").findAll(json).map { it.value.toInt() }.filter { it in 1..7 }.toSet()
+        return if (parsed.isEmpty()) (1..7).toSet() else parsed
     }
 
     companion object {
@@ -116,6 +148,10 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_ALARM_TONE = "ALARM_TONE"
         const val EXTRA_TTS_ENABLED = "TTS_ENABLED"
         const val EXTRA_IS_SNOOZE = "IS_SNOOZE"
-        private const val INEXACT_WINDOW_MS = 10 * 60 * 1000L // 10-minute delivery window
+        const val EXTRA_SNOOZE_CYCLES = "SNOOZE_CYCLES"
+        const val SNOOZE_REQUEST_OFFSET = 100_000
+        const val TEST_ALARM_ID = 9999
+        private const val INEXACT_WINDOW_MS = 10 * 60 * 1000L
+        private const val AFTER_FIRING_MIN_LEAD_MS = 2 * 60 * 1000L
     }
 }

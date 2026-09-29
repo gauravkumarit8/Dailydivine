@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.RingtoneManager
+import android.util.Log
 import android.os.*
 import androidx.core.app.NotificationCompat
 import com.dailydivine.app.R
@@ -52,14 +54,15 @@ class AlarmService : Service() {
 
         alarmId = intent?.getIntExtra(AlarmScheduler.EXTRA_ALARM_ID, -1) ?: -1
         toneId = intent?.getStringExtra(AlarmScheduler.EXTRA_ALARM_TONE) ?: "temple_bell"
+        // Auto-snooze cycles are carried in the re-fire Intent: this service
+        // instance is destroyed between cycles, so an in-memory counter would
+        // restart at 0 every time and the 6-cycle cap could never trigger.
+        cyclesUsed = intent?.getIntExtra(AlarmScheduler.EXTRA_SNOOZE_CYCLES, 0) ?: 0
 
         startForeground(NOTIFICATION_ID, buildNotification())
         acquireWakeLock()
         startTone()
-        // On a manual/auto snooze re-fire, this is a fresh ring cycle for
-        // escalation purposes; cyclesUsed is tracked in-process for the life
-        // of this alarm's ringing sequence (reset happens naturally since
-        // the process restarts the service per re-fire from AlarmReceiver).
+        // Each (re-)fire is a fresh ring cycle for escalation timing.
         ringStartElapsedMs = SystemClock.elapsedRealtime()
         startEscalationTicker()
 
@@ -84,7 +87,8 @@ class AlarmService : Service() {
                                     id = alarmId, hour = 0, minute = 0, repeatDays = "[]",
                                     alarmToneId = toneId, createdAt = 0L
                                 ),
-                                minutesFromNow = decision.minutes
+                                minutesFromNow = decision.minutes,
+                                cyclesUsed = decision.cyclesUsedAfterThis
                             )
                         }
                         stopTickerAndTone()
@@ -110,20 +114,47 @@ class AlarmService : Service() {
         // }
     }
 
+    /**
+     * An alarm must ALWAYS make noise. Try the bundled tone first; if it
+     * can't be prepared for any reason (bad/missing asset, codec error), fall
+     * back to the system default alarm sound rather than crashing the
+     * service or ringing silently.
+     */
     private fun startTone() {
-        val resId = resolveToneResource(toneId)
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
+        val bundled = android.net.Uri.parse("android.resource://$packageName/${resolveToneResource(toneId)}")
+        mediaPlayer = try {
+            createPlayer(bundled)
+        } catch (e: Exception) {
+            Log.e(TAG, "Bundled alarm tone failed, falling back to system alarm sound", e)
+            try {
+                val fallback = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                createPlayer(fallback)
+            } catch (e2: Exception) {
+                Log.e(TAG, "System fallback tone also failed", e2)
+                null
+            }
+        }
+    }
+
+    private fun createPlayer(uri: android.net.Uri): MediaPlayer {
+        val player = MediaPlayer()
+        try {
+            player.setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build()
             )
-            setDataSource(applicationContext, android.net.Uri.parse("android.resource://$packageName/$resId"))
-            isLooping = true
-            setVolume(0.15f, 0.15f) // start quiet; escalation ramps this up
-            prepare()
-            start()
+            player.setDataSource(applicationContext, uri)
+            player.isLooping = true
+            player.setVolume(0.15f, 0.15f) // start quiet; escalation ramps this up
+            player.prepare()
+            player.start()
+            return player
+        } catch (e: Exception) {
+            player.release()
+            throw e
         }
     }
 
@@ -143,7 +174,7 @@ class AlarmService : Service() {
 
     private fun stopTickerAndTone() {
         tickJob?.cancel()
-        mediaPlayer?.stop()
+        try { mediaPlayer?.stop() } catch (e: IllegalStateException) { Log.w(TAG, "stop() before start", e) }
         mediaPlayer?.release()
         mediaPlayer = null
         wakeLock?.let { if (it.isHeld) it.release() }
@@ -192,6 +223,7 @@ class AlarmService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 4004
+        private const val TAG = "AlarmService"
         const val ACTION_STOP = "com.dailydivine.app.alarm.ACTION_STOP"
     }
 }

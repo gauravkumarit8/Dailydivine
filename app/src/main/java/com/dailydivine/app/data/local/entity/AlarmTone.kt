@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class AlarmTone(
     @PrimaryKey val id: String,     // "temple_bell"
     val name: String,               // "Temple Bell"
-    val fileName: String,           // "temple_bell.mp3"
+    val fileName: String,           // "temple_bell.wav"
     val religionId: Int? = null,    // null = universal
     val durationSeconds: Int,
     val isPremium: Boolean = false

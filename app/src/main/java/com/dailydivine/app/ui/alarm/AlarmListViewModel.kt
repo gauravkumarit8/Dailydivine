@@ -1,6 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -57,6 +58,15 @@ class AlarmListViewModel @Inject constructor(
     private fun checkIgnoringBatteryOptimizations(): Boolean {
         val powerManager = appContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         return powerManager.isIgnoringBatteryOptimizations(appContext.packageName)
+    }
+
+    /** True only for debuggable builds (CI debug APK); hides the test button in release. */
+    val isDebuggable: Boolean =
+        (appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+    /** Rings the full real path (Receiver -> Service -> Ring screen) in [seconds] seconds. */
+    fun fireTestAlarm(seconds: Int = 10) {
+        AlarmScheduler(appContext).scheduleTest(seconds)
     }
 
     fun toggleEnabled(alarm: Alarm) {
