@@ -9,7 +9,6 @@ import android.media.RingtoneManager
 import android.util.Log
 import android.os.*
 import androidx.core.app.NotificationCompat
-import com.dailydivine.app.R
 import com.dailydivine.app.ui.alarm.AlarmRingActivity
 import kotlinx.coroutines.*
 
@@ -163,7 +162,7 @@ class AlarmService : Service() {
         mediaPlayer?.setVolume(v, v)
     }
 
-    private fun resolveToneResource(toneId: String): Int = R.raw.temple_bell // placeholder mapping
+    private fun resolveToneResource(toneId: String): Int = AlarmTones.resIdFor(toneId)
 
     private fun acquireWakeLock() {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager

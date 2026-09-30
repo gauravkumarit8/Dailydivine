@@ -2,6 +2,8 @@ package com.dailydivine.app.ui.home
 
 import android.content.Intent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -11,7 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontStyle
+import com.dailydivine.app.ui.theme.VerseTextStyle
+import java.util.Calendar
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
@@ -29,15 +32,24 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // automatically, including re-loading if the religion changes in
     // Settings while this screen's ViewModel instance is retained.
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(
-            state.religion?.let { "Good Morning! — ${it.name}" } ?: "Good Morning!",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        state.streak?.let { streak ->
-            Text("Day ${streak.totalDaysActive} of your journey", style = MaterialTheme.typography.bodyMedium)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 24.dp)
+    ) {
+        Text(greetingForNow(), style = MaterialTheme.typography.headlineLarge)
+        state.religion?.let {
+            Text(it.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
         }
-        Spacer(Modifier.height(16.dp))
+        state.streak?.let { streak ->
+            Text(
+                "Day ${streak.totalDaysActive} of your journey",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(Modifier.height(24.dp))
 
         if (state.isLoading) {
             Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
@@ -83,6 +95,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
             Spacer(Modifier.height(16.dp))
             state.streak?.let { StreakCard(it) }
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
@@ -98,15 +111,28 @@ private fun DailyVerseCard(
     onBookmarkToggle: () -> Unit,
     onShare: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp)) {
-            Text("Today's Verse", style = MaterialTheme.typography.headlineSmall)
-            Spacer(Modifier.height(12.dp))
-            Text("\"$verseText\"", fontStyle = FontStyle.Italic, style = MaterialTheme.typography.bodyLarge)
-            Spacer(Modifier.height(8.dp))
-            Text("— $source", style = MaterialTheme.typography.bodySmall)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+    ) {
+        Column(Modifier.padding(24.dp)) {
+            Text(
+                "TODAY'S VERSE",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text("\u201C$verseText\u201D", style = VerseTextStyle)
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "\u2014 $source",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(12.dp))
+            Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+            Spacer(Modifier.height(4.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(onClick = onPlayToggle) {
                     Icon(
                         if (isSpeaking) Icons.Filled.Stop else Icons.Filled.PlayArrow,
@@ -119,7 +145,8 @@ private fun DailyVerseCard(
                 IconButton(onClick = onBookmarkToggle) {
                     Icon(
                         if (isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                        contentDescription = "Bookmark verse"
+                        contentDescription = "Bookmark verse",
+                        tint = if (isBookmarked) MaterialTheme.colorScheme.primary else LocalContentColor.current
                     )
                 }
                 IconButton(onClick = onShare) {
@@ -132,17 +159,25 @@ private fun DailyVerseCard(
 
 @Composable
 private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.LocalFireDepartment, contentDescription = null)
+                Icon(
+                    Icons.Filled.LocalFireDepartment,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
                 Spacer(Modifier.width(8.dp))
                 Text("Streak: ${streak.currentStreak} days", style = MaterialTheme.typography.headlineSmall)
             }
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator(
                 progress = streak.progressToNext,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().height(8.dp),
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
             )
             streak.nextMilestone?.let {
                 Spacer(Modifier.height(4.dp))
@@ -150,4 +185,11 @@ private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo) {
             }
         }
     }
+}
+
+private fun greetingForNow(): String = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+    in 4..11 -> "Good Morning"
+    in 12..16 -> "Good Afternoon"
+    in 17..20 -> "Good Evening"
+    else -> "Peaceful Night"
 }

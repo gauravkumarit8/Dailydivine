@@ -6,6 +6,7 @@ import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.alarm.AlarmScheduler
+import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.entity.Alarm
 import com.dailydivine.app.data.repository.AlarmRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,11 +28,17 @@ import javax.inject.Inject
 @HiltViewModel
 class AlarmListViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
+    userPreferences: UserPreferences,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     val alarms: StateFlow<List<Alarm>> = alarmRepository.getAllAlarms()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Used to list the user's own religion's tones first in the tone picker. */
+    val religionId: StateFlow<Int?> = userPreferences.state
+        .map { it.religionId }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // v1.1/F004-R25: this tab previously had NO visibility into exact-alarm
     // permission status at all -- a user who skipped/denied it during
@@ -78,6 +86,12 @@ class AlarmListViewModel @Inject constructor(
     fun updateTime(alarm: Alarm, hour: Int, minute: Int) {
         viewModelScope.launch {
             alarmRepository.updateAndReschedule(alarm.copy(hour = hour, minute = minute))
+        }
+    }
+
+    fun updateTone(alarm: Alarm, toneId: String) {
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(alarmToneId = toneId))
         }
     }
 

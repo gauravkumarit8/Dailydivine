@@ -8,6 +8,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.sp
+import com.dailydivine.app.ui.theme.VerseTextStyle
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -128,19 +140,37 @@ private fun AlarmRingScreen(
     onSnooze: () -> Unit,
     onWakeUpAndRead: () -> Unit
 ) {
+    // S08: religion-themed gradient (primary fading to a deeper shade of itself).
+    val primary = MaterialTheme.colorScheme.primary
+    val gradient = Brush.verticalGradient(listOf(primary, lerp(primary, Color.Black, 0.55f)))
+
+    // S08: gentle pulse on the primary button.
+    val pulse by rememberInfiniteTransition(label = "pulse").animateFloat(
+        initialValue = 1f,
+        targetValue = 1.04f,
+        animationSpec = infiniteRepeatable(tween(1100), RepeatMode.Reverse),
+        label = "pulseScale"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(32.dp),
+            .background(gradient)
+            .padding(horizontal = 32.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(currentTime, style = MaterialTheme.typography.headlineLarge, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(16.dp))
+        Text(
+            currentTime,
+            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 64.sp, lineHeight = 72.sp),
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(12.dp))
         Text(
             "Time for your morning blessing",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.White.copy(alpha = 0.9f),
             textAlign = TextAlign.Center
         )
 
@@ -148,23 +178,35 @@ private fun AlarmRingScreen(
         // is available -- null while loading or if the user's religion has
         // no sample content yet (same graceful empty state as Home).
         versePreview?.let {
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
             Text(
-                "\"$it\"",
-                style = MaterialTheme.typography.bodyLarge,
-                fontStyle = FontStyle.Italic,
+                "\u201C$it\u201D",
+                style = VerseTextStyle.copy(fontSize = 18.sp, lineHeight = 28.sp),
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
         }
 
-        Spacer(Modifier.height(if (versePreview != null) 40.dp else 64.dp))
+        Spacer(Modifier.height(if (versePreview != null) 56.dp else 72.dp))
 
-        Button(onClick = onWakeUpAndRead, modifier = Modifier.fillMaxWidth()) {
-            Text("Wake Up & Read")
+        Button(
+            onClick = onWakeUpAndRead,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = primary),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp)
+                .graphicsLayer { scaleX = pulse; scaleY = pulse }
+        ) {
+            Text("Wake Up & Read", style = MaterialTheme.typography.titleMedium)
         }
-        Spacer(Modifier.height(12.dp))
-        OutlinedButton(onClick = onSnooze, modifier = Modifier.fillMaxWidth()) {
-            Text("Snooze")
+        Spacer(Modifier.height(16.dp))
+        OutlinedButton(
+            onClick = onSnooze,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.7f)),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+        ) {
+            Text("Snooze", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

@@ -32,7 +32,9 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     val alarms by viewModel.alarms.collectAsState()
     val canScheduleExactAlarms by viewModel.canScheduleExactAlarms.collectAsState()
     val isIgnoringBatteryOptimizations by viewModel.isIgnoringBatteryOptimizations.collectAsState()
+    val religionId by viewModel.religionId.collectAsState()
     var editingAlarm by remember { mutableStateOf<Alarm?>(null) }
+    var editingToneFor by remember { mutableStateOf<Alarm?>(null) }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -125,6 +127,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                             alarm = alarm,
                             onToggle = { viewModel.toggleEnabled(alarm) },
                             onTimeClick = { editingAlarm = alarm },
+                            onToneClick = { editingToneFor = alarm },
                             onTtsToggle = { viewModel.toggleTts(alarm) },
                             onDelete = { viewModel.delete(alarm) }
                         )
@@ -132,6 +135,18 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 }
             }
         }
+    }
+
+    editingToneFor?.let { alarm ->
+        TonePickerDialog(
+            currentToneId = alarm.alarmToneId,
+            religionId = religionId,
+            onDismiss = { editingToneFor = null },
+            onConfirm = { toneId ->
+                viewModel.updateTone(alarm, toneId)
+                editingToneFor = null
+            }
+        )
     }
 
     editingAlarm?.let { alarm ->
@@ -149,6 +164,7 @@ private fun AlarmRow(
     alarm: Alarm,
     onToggle: () -> Unit,
     onTimeClick: () -> Unit,
+    onToneClick: () -> Unit,
     onTtsToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -164,7 +180,10 @@ private fun AlarmRow(
                 }
                 Switch(checked = alarm.isEnabled, onCheckedChange = { onToggle() })
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
+            TextButton(onClick = onToneClick) {
+                Text("Tone: ${com.dailydivine.app.alarm.AlarmTones.byId(alarm.alarmToneId).name}")
+            }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 TextButton(onClick = onTimeClick) { Text("Change time") }
                 Spacer(Modifier.weight(1f))

@@ -558,6 +558,18 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Status:** 🟡 Eight files changed, one asset replaced. Confidence: high that items 1-3 are real defects; **not yet verified that they explain the user's "doesn't fire at the set time" report.**
 
+### 2026-09-29 (b) — Real alarm tones + working tone picker + design pass v1
+
+**Audio (roadmap item 2, partial).** 11 original synthesized tones bundled in `res/raw/` (16 kHz mono WAV, ~3 MB total): temple_bell, bamboo_flute, church_bell, tibetan_bowl, meditation_gong, soft_chimes, gentle_harp, peaceful_piano, nature_birds, nature_rain, nature_ocean. Generator is committed at `tools/generate_tones.py` so they are reproducible. Meets F004-R09 ("10+ tones"). **Deliberately NOT faked:** T02 Om Chanting, T05 Choir Hymn, T06 Azaan, T09 Shabad, T10 Shofar. Synthesized imitations of sacred recitation would be inaccurate and disrespectful; these need properly licensed real recordings. Numerically sanity-checked (no NaN/clipping, silent tails) but **not listened to by me; judge by ear on device.**
+
+**Tone selection now works (`alarmToneId` no longer ignored).** New `AlarmTones` catalog with explicit `R.raw` references (release-shrinker-safe). `AlarmService.resolveToneResource` uses it, unknown ids fall back to temple_bell. New `TonePickerDialog` (tap a row to preview, Select to save, player released on dismiss); each alarm card shows "Tone: X"; the user's religion's tones are listed first. Saving goes through `AlarmRepository.updateAndReschedule`, so the PendingIntent carries the new tone. The `alarm_tones` Room table stays unused (catalog is in code, avoiding a migration).
+
+**Design pass v1 (PRD 20.1), done without screenshots, so treat as a first cut:** Poppins 4 weights bundled (`res/font`, OFL license in `/licenses`), full type scale; verse text in the platform serif (Noto Serif on Android); shape scale 8/12/16 dp; page background tinted from the religion palette with white cards; Home: time-aware greeting, scrollable, elevated cards, serif verse with quotes, tinted bookmark/streak icons, thicker progress bar; alarm ring screen (S08): religion gradient, 64sp time, pulsing "Wake Up & Read", outlined Snooze.
+
+**Verification:** brace/paren sweep, duplicate-import check, all XML parsed, resource file names validated (a capitalised license file inside `res/` would have broken the build, so it lives in `/licenses`), call-site signatures grep-compared. Not compiled here; CI is the compile check. Log from the device shows no crash on launch/alarm cleanup.
+
+**Follow-ups:** onboarding alarm screen still has no tone selector (PRD S05); Om/Choir/Azaan/Shabad/Shofar recordings; per-screen polish for Library/Settings/Alarm list beyond the theme-level changes; user screenshots needed for the next design round.
+
 ---
 
 ## What's Next (as of this session)
