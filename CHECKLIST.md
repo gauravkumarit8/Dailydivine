@@ -570,6 +570,24 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Follow-ups:** onboarding alarm screen still has no tone selector (PRD S05); Om/Choir/Azaan/Shabad/Shofar recordings; per-screen polish for Library/Settings/Alarm list beyond the theme-level changes; user screenshots needed for the next design round.
 
+### 2026-09-29 (c) — Library (browse/search/detail), Christianity content, content-loading fixes
+
+**Two handoff claims were wrong; corrected here.** (1) "Settings has editable religion and language": false. Settings only *displayed* them (the code comment even said editing was a follow-up). Without an edit path, no one could ever reach a second religion's content. (2) Content migration only ran once, in onboarding, so (a) a shipped content update never reached existing users and (b) switching religion would have shown an empty state. Both fixed below.
+
+**Fixes.**
+- `SettingsViewModel.changeReligion()` + a religion picker dialog in Settings (F001-R04): loads the new religion's content *before* persisting the preference, so Home/Library never query an empty table. Streaks, bookmarks, alarms untouched. Religions with no content are labelled "Verses coming soon". Language remains read-only (only English content exists).
+- `MainViewModel` now runs `ContentMigrationManager.migrateIfNeeded` for the current religion on every launch (F002-R13 as the PRD intended); a cheap no-op when already current.
+
+**Library (S09/S10, F006).** Browse tab: categories for the user's religion, then verses in a category; search across the religion's verses (text and reference); tap any verse for a detail dialog (serif text, source, bookmark toggle); Favorites tab (existing, now tappable); honest "coming soon" empty state for religions without content. Category verse counts come from the *loaded* verses, not the JSON `verseCount` (Hinduism's JSON claims 700, only 5 exist).
+
+**Content: Christianity, 79 verses (KJV).** Four categories: Psalms (22), Proverbs (18), Gospels (14), Letters & Prophets (25). Built by `tools/build_christianity_en.py` from the KJV text *by reference*, aborting on any missing reference, so no verse is typed from memory; day numbers 1-79 are contiguous with categories interleaved so consecutive days vary. Sources and licensing: `licenses/CONTENT_SOURCES.md`.
+
+**Licensing risk flagged (needs your decision).** The 5 existing Hindu sample verses read like a modern, probably copyrighted translation; I could not verify their origin. Do not ship publicly until replaced with a verified public-domain translation (Edwin Arnold 1885 is the obvious candidate). Also: `originalText` is empty for Christianity (original Hebrew/Greek not included); nothing in the UI displays `originalText` yet.
+
+**Verification:** brace/paren sweep, duplicate-import check, all XML and JSON parsed, constructor call sites grepped (no tests construct the changed ViewModels), DAO/prefs signatures compared against actual declarations. Not compiled here; CI is the compile check. Content verified by construction (pulled from source, reference-checked), not by reading all 79 verses by eye.
+
+**Still open:** Hindu content replacement and expansion; Islam/Buddhism/Sikhism/Judaism/Spiritual content (each needs a verified public-domain source: e.g. Dhammapada in Max Muller's 1881 translation, JPS 1917 for Tanakh, Pickthall 1930 for the Quran, Macauliffe 1909 for Sikh scripture; licensing differs by country, so confirm); verse history screen; Library search is a plain substring match (no ranking); streak milestones/badges; notifications; journal; Sprint 7 items.
+
 ---
 
 ## What's Next (as of this session)

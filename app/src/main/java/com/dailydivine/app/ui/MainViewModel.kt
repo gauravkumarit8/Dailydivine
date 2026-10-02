@@ -2,19 +2,25 @@ package com.dailydivine.app.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
+import com.dailydivine.app.util.Religions
 import com.dailydivine.app.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val contentMigrationManager: ContentMigrationManager
 ) : ViewModel() {
 
     /** Null while still resolving -- MainActivity keeps the splash screen up
@@ -39,6 +45,21 @@ class MainViewModel @Inject constructor(
     val currentReligionId: StateFlow<Int?> = _currentReligionId.asStateFlow()
 
     init {
+        // F002-R13: apply bundled content updates on every launch. Previously
+        // migrateIfNeeded ran only once during onboarding, so a shipped
+        // content update never reached existing users. It is a cheap no-op
+        // when the stored content version is already current.
+        viewModelScope.launch {
+            userPreferences.state
+                .map { it.religionId }
+                .filterNotNull()
+                .distinctUntilChanged()
+                .collect { id ->
+                    Religions.byId(id)?.contentAssetEn?.let { asset ->
+                        runCatching { contentMigrationManager.migrateIfNeeded(id, asset, "en") }
+                    }
+                }
+        }
         viewModelScope.launch {
             userPreferences.state.collect { prefs -> _currentReligionId.value = prefs.religionId }
         }

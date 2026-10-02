@@ -2,6 +2,7 @@ package com.dailydivine.app.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.db.AppDatabase
 import com.dailydivine.app.data.repository.AlarmRepository
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val alarmRepository: AlarmRepository,
-    private val appDatabase: AppDatabase
+    private val appDatabase: AppDatabase,
+    private val contentMigrationManager: ContentMigrationManager
 ) : ViewModel() {
 
     private val _religion = MutableStateFlow<ReligionMeta?>(null)
@@ -34,6 +36,22 @@ class SettingsViewModel @Inject constructor(
                 _religion.value = prefs.religionId?.let { Religions.byId(it) }
                 _languageCode.value = prefs.languageCode
             }
+        }
+    }
+
+    /**
+     * F001-R04: change religion after onboarding. The new religion's content
+     * is loaded BEFORE the preference is persisted: Home/Library react to the
+     * preference change immediately, so persisting first would make them
+     * query an empty table and flash the "no verses" state.
+     * Streaks, bookmarks and alarms are untouched (never deleted).
+     */
+    fun changeReligion(religionId: Int) {
+        viewModelScope.launch {
+            Religions.byId(religionId)?.contentAssetEn?.let { asset ->
+                runCatching { contentMigrationManager.migrateIfNeeded(religionId, asset, "en") }
+            }
+            userPreferences.setReligion(religionId)
         }
     }
 

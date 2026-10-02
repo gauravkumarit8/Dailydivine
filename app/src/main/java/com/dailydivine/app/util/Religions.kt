@@ -10,9 +10,10 @@ data class ReligionMeta(
     val id: Int,
     val name: String,
     val tagline: String,
-    /** assets/content/<file> — null where no sample content exists yet
-     *  (only Hinduism has a real sample JSON as of Sprint 1; PRD Section 11.3
-     *  needs 11 files total, out of scope until real content is authored). */
+    /** assets/content/<file> — null where no content exists yet. Hinduism has
+     *  5 sample verses (licensing of their translation is UNVERIFIED, see
+     *  CHECKLIST); Christianity has 79 verses from the public-domain KJV.
+     *  PRD Section 11.3 needs 11 files total. */
     val contentAssetEn: String?,
     val languages: List<Pair<String, String>> // (display name, code)
 )
@@ -26,7 +27,7 @@ object Religions {
         ),
         ReligionMeta(
             id = 2, name = "Christianity", tagline = "Words of Christ & Scripture",
-            contentAssetEn = null,
+            contentAssetEn = "christianity_en.json",
             languages = listOf("English" to "en", "Spanish" to "es", "Portuguese" to "pt", "French" to "fr", "Korean" to "ko")
         ),
         ReligionMeta(
