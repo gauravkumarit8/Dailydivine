@@ -12,6 +12,9 @@ interface VerseDao {
     @Query("SELECT * FROM verses WHERE religionId = :religionId AND dayNumber = :dayNumber LIMIT 1")
     suspend fun getDailyVerse(religionId: Int, dayNumber: Int): Verse?
 
+    @Query("SELECT * FROM verses WHERE id = :id LIMIT 1")
+    suspend fun getVerseById(id: Int): Verse?
+
     @Query("SELECT * FROM verses WHERE categoryId = :categoryId ORDER BY dayNumber")
     fun getVersesByCategory(categoryId: Int): Flow<List<Verse>>
 

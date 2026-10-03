@@ -19,6 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dailydivine.app.data.local.entity.Verse
+import com.dailydivine.app.domain.model.JournalHistoryItem
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import com.dailydivine.app.ui.theme.VerseTextStyle
 
 /**
@@ -34,6 +38,8 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
     val verses by viewModel.verses.collectAsState()
     val bookmarked by viewModel.bookmarkedVerses.collectAsState()
     val detail by viewModel.detailVerse.collectAsState()
+    val history by viewModel.history.collectAsState()
+    val historyDetail by viewModel.historyDetail.collectAsState()
     var tab by remember { mutableIntStateOf(0) }
 
     val bookmarkedIds = remember(bookmarked) { bookmarked.map { it.id }.toSet() }
@@ -48,6 +54,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
         TabRow(selectedTabIndex = tab) {
             Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Browse") })
             Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Favorites") })
+            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("History") })
         }
         Spacer(Modifier.height(16.dp))
 
@@ -99,13 +106,52 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     }
                 }
             }
-        } else {
+        } else if (tab == 1) {
             if (bookmarked.isEmpty()) {
                 EmptyNote("No bookmarked verses yet \u2014 tap the bookmark icon on a verse to save it here.")
             } else {
                 VerseList(bookmarked, onClick = viewModel::showDetail)
             }
+        } else {
+            if (history.isEmpty()) {
+                EmptyNote("Your journey will appear here, one day at a time.")
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(history, key = { it.entry.id }) { item ->
+                        HistoryRow(item, onClick = { viewModel.showHistoryDetail(item) })
+                    }
+                }
+            }
         }
+    }
+
+    historyDetail?.let { item ->
+        AlertDialog(
+            onDismissRequest = viewModel::closeHistoryDetail,
+            title = { Text(formatHistoryDate(item.entry.date), style = MaterialTheme.typography.titleMedium) },
+            text = {
+                Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                    item.verse?.let { v ->
+                        Text("\u201C${v.translatedText}\u201D", style = VerseTextStyle)
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "\u2014 ${v.sourceReference}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(Modifier.height(20.dp))
+                    Text("YOUR REFLECTION", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        (item.entry.moodEmoji?.let { "$it  " } ?: "") +
+                            (item.entry.journalText ?: "No reflection written for this day."),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            confirmButton = { TextButton(onClick = viewModel::closeHistoryDetail) { Text("Close") } }
+        )
     }
 
     detail?.let { verse ->
@@ -170,3 +216,42 @@ private fun EmptyNote(text: String) {
         Text(text, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
     }
 }
+
+@Composable
+private fun HistoryRow(item: JournalHistoryItem, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    formatHistoryDate(item.entry.date),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                item.entry.moodEmoji?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
+            }
+            item.verse?.let {
+                Spacer(Modifier.height(4.dp))
+                Text(it.sourceReference, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                item.entry.journalText ?: "No reflection",
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (item.entry.journalText == null) MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+private fun formatHistoryDate(isoDate: String): String =
+    try {
+        LocalDate.parse(isoDate).format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.getDefault()))
+    } catch (e: Exception) {
+        isoDate
+    }

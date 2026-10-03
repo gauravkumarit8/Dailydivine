@@ -629,6 +629,22 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Verification:** brace/paren sweep, duplicate-import check, XML parsed, call-site signatures compared (`getDailyVerse`, `getEntryForDate`, `UserPrefsState` defaults). Not compiled here; CI is the compile check, then a device test.
 
+### 2026-09-29 (g) — Journal / reflection with mood (F011) + History tab
+
+**Built.**
+- **Home reflection card (R01/R02/R03/R05):** text field under the verse with the PRD placeholder "What does this verse mean to you today?", five optional mood emojis (tap again to clear), autosave debounced at 500 ms. Mood taps save immediately. A flush on `ON_STOP` means text typed in the last 500 ms is not lost when the app is backgrounded. Reopening the app the same day shows the saved reflection (AC2); a refresh never overwrites text the user is mid-typing.
+- **Storage (R06/R08):** no schema change. The existing `streaks` table already had `journalText` and `moodEmoji`, so a reflection is linked to the day's verse and date by construction. Saves use a new `StreakDao.updateJournal` UPDATE query, *not* `insertStreakEntry` (REPLACE would reset the row).
+- **Library > History tab (R04, F006 AC5):** past days newest first with date, verse reference, mood, reflection snippet; tap for a detail dialog with the verse and the full reflection.
+- **Fixed on the way:** Home's empty state still said "only Hinduism has sample content in this build" (stale since Christianity/Buddhism shipped); it now says verses are coming soon and points to Settings.
+
+**Correctness details worth knowing.** A debounced save captures the date the text was written, so a save firing just after midnight still lands on the right day (unit-tested). Saving for a day with no entry is a deliberate no-op: an entry only exists once that day's verse was shown, so religions with no content have no journal.
+
+**Tests:** new `JournalRepositoryTest` (6 cases: read-back, blank-to-null, save doesn't reset/duplicate the entry, no-op without an entry, date correctness, history order and verse join). **Adding `getVerseById` to the `VerseDao` interface would have broken the unit-test compile** because `ContentMigrationManagerTest.FakeVerseDao` implements that interface; caught by grep and fixed. Not compiled or run here; CI runs them.
+
+**Not done (deliberate):** export (F011-R07 is premium-only and F012-R15; premium gating/billing doesn't exist yet, and shipping it ungated would give away a premium feature); editing past reflections (History is read-only); `journal_entry_written` analytics (no analytics wired); reflection search.
+
+**Verification:** brace/paren sweep, duplicate-import check, XML parsed, DAO implementors grepped. Not compiled here.
+
 ---
 
 ## What's Next (as of this session)

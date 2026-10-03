@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.audio.TTSManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.repository.BookmarkRepository
+import com.dailydivine.app.data.repository.JournalRepository
 import com.dailydivine.app.data.repository.StreakRepository
 import com.dailydivine.app.data.repository.VerseRepository
 import com.dailydivine.app.domain.model.DailyVerse
@@ -19,6 +20,8 @@ import com.dailydivine.app.util.ShareImageGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +43,10 @@ data class HomeUiState(
     val isLoading: Boolean = true,
     val isSpeaking: Boolean = false,
     /** Set once when a streak milestone is first reached (F009-R10); cleared on dismiss. */
-    val milestoneReached: MilestoneBadge? = null
+    val milestoneReached: MilestoneBadge? = null,
+    /** F011: today's reflection text and optional mood emoji. */
+    val reflection: String = "",
+    val mood: String? = null
 )
 
 @HiltViewModel
@@ -49,6 +55,7 @@ class HomeViewModel @Inject constructor(
     private val verseRepository: VerseRepository,
     private val streakRepository: StreakRepository,
     private val bookmarkRepository: BookmarkRepository,
+    private val journalRepository: JournalRepository,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -99,6 +106,11 @@ class HomeViewModel @Inject constructor(
 
         val verse = verseRepository.getDailyVerse(religionId, installDate, LocalDate.now())
         verse?.let { streakRepository.recordOpenedToday(it.verse.id) }
+        // F011 AC2: reopening the app the same day shows the saved reflection.
+        // If the user is mid-edit (a save is pending) keep what they typed
+        // instead of overwriting it with the older saved value.
+        val entry = if (verse != null) journalRepository.getEntry(LocalDate.now()) else null
+        val keepTyped = saveJob?.isActive == true
         val streak = streakRepository.calculateStreak()
 
         // F009-R10/R11: celebrate a milestone exactly once. lastMilestoneDays
@@ -117,7 +129,9 @@ class HomeViewModel @Inject constructor(
             dailyVerse = verse,
             streak = streak,
             isLoading = false,
-            milestoneReached = reached ?: _uiState.value.milestoneReached
+            milestoneReached = reached ?: _uiState.value.milestoneReached,
+            reflection = if (keepTyped) _uiState.value.reflection else (entry?.journalText ?: ""),
+            mood = if (keepTyped) _uiState.value.mood else entry?.moodEmoji
         )
     }
 
@@ -130,6 +144,46 @@ class HomeViewModel @Inject constructor(
             val prefs = userPreferences.state.first()
             loadVerseAndStreak(prefs.religionId, prefs.installEpochDay)
         }
+    }
+
+    // ---- F011 journal: debounced autosave (R03, 500 ms) ----
+    private var saveJob: Job? = null
+    private var pendingDate: LocalDate? = null
+
+    fun onReflectionChanged(text: String) {
+        _uiState.value = _uiState.value.copy(reflection = text)
+        // Remember the day the text was written, so a save that fires just
+        // after midnight still lands on the right day.
+        val date = pendingDate ?: LocalDate.now().also { pendingDate = it }
+        saveJob?.cancel()
+        saveJob = viewModelScope.launch {
+            delay(500)
+            persistReflection(date)
+        }
+    }
+
+    /** Mood taps are saved immediately; tapping the selected emoji clears it. */
+    fun onMoodSelected(emoji: String) {
+        val newMood = if (_uiState.value.mood == emoji) null else emoji
+        _uiState.value = _uiState.value.copy(mood = newMood)
+        val date = pendingDate ?: LocalDate.now()
+        saveJob?.cancel()
+        viewModelScope.launch { persistReflection(date) }
+    }
+
+    /** Called when the app stops: don't lose text typed in the last 500 ms. */
+    fun flushReflection() {
+        val job = saveJob ?: return
+        if (!job.isActive) return
+        job.cancel()
+        val date = pendingDate ?: LocalDate.now()
+        viewModelScope.launch { persistReflection(date) }
+    }
+
+    private suspend fun persistReflection(date: LocalDate) {
+        val s = _uiState.value
+        journalRepository.save(date, s.reflection, s.mood)
+        pendingDate = null
     }
 
     fun dismissMilestone() {

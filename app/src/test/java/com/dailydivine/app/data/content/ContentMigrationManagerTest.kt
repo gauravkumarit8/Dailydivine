@@ -27,6 +27,7 @@ class ContentMigrationManagerTest {
         var lastInsertedBatch: List<Verse> = emptyList()
 
         override suspend fun getDailyVerse(religionId: Int, dayNumber: Int): Verse? = null
+        override suspend fun getVerseById(id: Int): Verse? = null
         override fun getVersesByCategory(categoryId: Int): Flow<List<Verse>> = throw NotImplementedError()
         override fun searchVerses(religionId: Int, query: String): Flow<List<Verse>> = throw NotImplementedError()
         override suspend fun getRandomVerse(religionId: Int): Verse? = null

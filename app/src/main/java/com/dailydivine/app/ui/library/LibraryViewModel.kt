@@ -8,6 +8,8 @@ import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.entity.Category
 import com.dailydivine.app.data.local.entity.Verse
 import com.dailydivine.app.data.repository.BookmarkRepository
+import com.dailydivine.app.data.repository.JournalRepository
+import com.dailydivine.app.domain.model.JournalHistoryItem
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val bookmarkRepository: BookmarkRepository,
+    journalRepository: JournalRepository,
     private val verseDao: VerseDao,
     categoryDao: CategoryDao,
     userPreferences: UserPreferences
@@ -74,6 +77,15 @@ class LibraryViewModel @Inject constructor(
 
     val bookmarkedVerses: StateFlow<List<Verse>> = bookmarkRepository.getBookmarkedVerses()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Past days (newest first) with each day's verse and reflection. */
+    val history: StateFlow<List<JournalHistoryItem>> = journalRepository.history()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _historyDetail = MutableStateFlow<JournalHistoryItem?>(null)
+    val historyDetail: StateFlow<JournalHistoryItem?> = _historyDetail.asStateFlow()
+    fun showHistoryDetail(item: JournalHistoryItem) { _historyDetail.value = item }
+    fun closeHistoryDetail() { _historyDetail.value = null }
 
     fun setQuery(q: String) { _query.value = q }
     fun openCategory(c: Category) { _selectedCategory.value = c }

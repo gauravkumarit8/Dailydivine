@@ -1,7 +1,13 @@
 package com.dailydivine.app.ui.home
 
 import android.content.Intent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.sp
+import com.dailydivine.app.domain.model.MOOD_EMOJIS
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -37,7 +43,11 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) viewModel.refresh()
+            when (event) {
+                Lifecycle.Event.ON_START -> viewModel.refresh()
+                Lifecycle.Event.ON_STOP -> viewModel.flushReflection()
+                else -> Unit
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -113,14 +123,75 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         }
                     }
                 )
+                Spacer(Modifier.height(16.dp))
+                ReflectionCard(
+                    reflection = state.reflection,
+                    mood = state.mood,
+                    onReflectionChange = viewModel::onReflectionChanged,
+                    onMoodSelect = viewModel::onMoodSelected
+                )
             } ?: Text(
-                "No verse content yet for ${state.religion?.name ?: "this religion"} — " +
-                    "only Hinduism has sample content loaded in this build."
+                "Verses for ${state.religion?.name ?: "this path"} are coming soon. " +
+                    "You can switch path in Settings."
             )
 
             Spacer(Modifier.height(16.dp))
             state.streak?.let { StreakCard(it) }
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun ReflectionCard(
+    reflection: String,
+    mood: String?,
+    onReflectionChange: (String) -> Unit,
+    onMoodSelect: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Text(
+                "YOUR REFLECTION",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = reflection,
+                onValueChange = onReflectionChange,
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                placeholder = { Text("What does this verse mean to you today?") } // F011-R02
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "How are you feeling?",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                MOOD_EMOJIS.forEach { emoji ->
+                    val selected = emoji == mood
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+                                else androidx.compose.ui.graphics.Color.Transparent
+                            )
+                            .clickable { onMoodSelect(emoji) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(emoji, fontSize = 24.sp)
+                    }
+                }
+            }
         }
     }
 }
