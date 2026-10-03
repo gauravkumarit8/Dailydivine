@@ -1,0 +1,547 @@
+{
+  "religion": "Buddhism",
+  "language": "en",
+  "version": 1,
+  "source": "The Dhammapada, tr. F. Max Müller, Sacred Books of the East vol. X (1881). Public domain; Project Gutenberg #2017.",
+  "categories": [
+    {
+      "id": 401,
+      "name": "Mind & Thought",
+      "icon": "book_dhammapada",
+      "verseCount": 11
+    },
+    {
+      "id": 402,
+      "name": "Love & Anger",
+      "icon": "book_dhammapada",
+      "verseCount": 11
+    },
+    {
+      "id": 403,
+      "name": "Wisdom & Right Living",
+      "icon": "book_dhammapada",
+      "verseCount": 22
+    },
+    {
+      "id": 404,
+      "name": "Peace & Happiness",
+      "icon": "book_dhammapada",
+      "verseCount": 13
+    }
+  ],
+  "verses": [
+    {
+      "id": 4001,
+      "categoryId": 401,
+      "dayNumber": 1,
+      "originalText": "",
+      "translatedText": "All that we are is the result of what we have thought: it is founded on our thoughts, it is made up of our thoughts. If a man speaks or acts with an evil thought, pain follows him, as the wheel follows the foot of the ox that draws the carriage.",
+      "sourceReference": "Dhammapada 1 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4002,
+      "categoryId": 402,
+      "dayNumber": 2,
+      "originalText": "",
+      "translatedText": "For hatred does not cease by hatred at any time: hatred ceases by love, this is an old rule.",
+      "sourceReference": "Dhammapada 5 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4003,
+      "categoryId": 403,
+      "dayNumber": 3,
+      "originalText": "",
+      "translatedText": "Earnestness is the path of immortality (Nirvana), thoughtlessness the path of death. Those who are in earnest do not die, those who are thoughtless are as if dead already.",
+      "sourceReference": "Dhammapada 21 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4004,
+      "categoryId": 404,
+      "dayNumber": 4,
+      "originalText": "",
+      "translatedText": "His thought is quiet, quiet are his word and deed, when he has obtained freedom by true knowledge, when he has thus become a quiet man.",
+      "sourceReference": "Dhammapada 96 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4005,
+      "categoryId": 401,
+      "dayNumber": 5,
+      "originalText": "",
+      "translatedText": "All that we are is the result of what we have thought: it is founded on our thoughts, it is made up of our thoughts. If a man speaks or acts with a pure thought, happiness follows him, like a shadow that never leaves him.",
+      "sourceReference": "Dhammapada 2 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4006,
+      "categoryId": 402,
+      "dayNumber": 6,
+      "originalText": "",
+      "translatedText": "Do not speak harshly to anybody; those who are spoken to will answer thee in the same way. Angry speech is painful, blows for blows will touch thee.",
+      "sourceReference": "Dhammapada 133 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4007,
+      "categoryId": 403,
+      "dayNumber": 7,
+      "originalText": "",
+      "translatedText": "By rousing himself, by earnestness, by restraint and control, the wise man may make for himself an island which no flood can overwhelm.",
+      "sourceReference": "Dhammapada 25 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4008,
+      "categoryId": 404,
+      "dayNumber": 8,
+      "originalText": "",
+      "translatedText": "In a hamlet or in a forest, in the deep water or on the dry land, wherever venerable persons (Arhanta) dwell, that place is delightful.",
+      "sourceReference": "Dhammapada 98 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4009,
+      "categoryId": 401,
+      "dayNumber": 9,
+      "originalText": "",
+      "translatedText": "As rain breaks through an ill-thatched house, passion will break through an unreflecting mind.",
+      "sourceReference": "Dhammapada 13 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4010,
+      "categoryId": 402,
+      "dayNumber": 10,
+      "originalText": "",
+      "translatedText": "Let us live happily then, not hating those who hate us! among men who hate us let us dwell free from hatred!",
+      "sourceReference": "Dhammapada 197 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4011,
+      "categoryId": 403,
+      "dayNumber": 11,
+      "originalText": "",
+      "translatedText": "Earnest among the thoughtless, awake among the sleepers, the wise man advances like a racer, leaving behind the hack.",
+      "sourceReference": "Dhammapada 29 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4012,
+      "categoryId": 404,
+      "dayNumber": 12,
+      "originalText": "",
+      "translatedText": "Let us live happily then, though we call nothing our own! We shall be like the bright gods, feeding on happiness!",
+      "sourceReference": "Dhammapada 200 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4013,
+      "categoryId": 401,
+      "dayNumber": 13,
+      "originalText": "",
+      "translatedText": "As rain does not break through a well-thatched house, passion will not break through a well-reflecting mind.",
+      "sourceReference": "Dhammapada 14 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4014,
+      "categoryId": 402,
+      "dayNumber": 14,
+      "originalText": "",
+      "translatedText": "Victory breeds hatred, for the conquered is unhappy. He who has given up both victory and defeat, he, the contented, is happy.",
+      "sourceReference": "Dhammapada 201 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4015,
+      "categoryId": 403,
+      "dayNumber": 15,
+      "originalText": "",
+      "translatedText": "As the bee collects nectar and departs without injuring the flower, or its colour or scent, so let a sage dwell in his village.",
+      "sourceReference": "Dhammapada 49 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4016,
+      "categoryId": 404,
+      "dayNumber": 16,
+      "originalText": "",
+      "translatedText": "There is no fire like passion; there is no losing throw like hatred; there is no pain like this body; there is no happiness higher than rest.",
+      "sourceReference": "Dhammapada 202 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4017,
+      "categoryId": 401,
+      "dayNumber": 17,
+      "originalText": "",
+      "translatedText": "As a fletcher makes straight his arrow, a wise man makes straight his trembling and unsteady thought, which is difficult to guard, difficult to hold back.",
+      "sourceReference": "Dhammapada 33 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4018,
+      "categoryId": 402,
+      "dayNumber": 18,
+      "originalText": "",
+      "translatedText": "He who holds back rising anger like a rolling chariot, him I call a real driver; other people are but holding the reins.",
+      "sourceReference": "Dhammapada 222 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4019,
+      "categoryId": 403,
+      "dayNumber": 19,
+      "originalText": "",
+      "translatedText": "Like a beautiful flower, full of colour, but without scent, are the fine but fruitless words of him who does not act accordingly.",
+      "sourceReference": "Dhammapada 51 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4020,
+      "categoryId": 404,
+      "dayNumber": 20,
+      "originalText": "",
+      "translatedText": "Health is the greatest of gifts, contentedness the best riches; trust is the best of relationships, Nirvana the highest happiness.",
+      "sourceReference": "Dhammapada 204 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4021,
+      "categoryId": 401,
+      "dayNumber": 21,
+      "originalText": "",
+      "translatedText": "It is good to tame the mind, which is difficult to hold in and flighty, rushing wherever it listeth; a tamed mind brings happiness.",
+      "sourceReference": "Dhammapada 35 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4022,
+      "categoryId": 402,
+      "dayNumber": 22,
+      "originalText": "",
+      "translatedText": "Let a man overcome anger by love, let him overcome evil by good; let him overcome the greedy by liberality, the liar by truth!",
+      "sourceReference": "Dhammapada 223 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4023,
+      "categoryId": 403,
+      "dayNumber": 23,
+      "originalText": "",
+      "translatedText": "But, like a beautiful flower, full of colour and full of scent, are the fine and fruitful words of him who acts accordingly.",
+      "sourceReference": "Dhammapada 52 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4024,
+      "categoryId": 404,
+      "dayNumber": 24,
+      "originalText": "",
+      "translatedText": "He who has tasted the sweetness of solitude and tranquillity, is free from fear and free from sin, while he tastes the sweetness of drinking in the law.",
+      "sourceReference": "Dhammapada 205 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4025,
+      "categoryId": 401,
+      "dayNumber": 25,
+      "originalText": "",
+      "translatedText": "Let the wise man guard his thoughts, for they are difficult to perceive, very artful, and they rush wherever they list: thoughts well guarded bring happiness.",
+      "sourceReference": "Dhammapada 36 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4026,
+      "categoryId": 402,
+      "dayNumber": 26,
+      "originalText": "",
+      "translatedText": "Speak the truth, do not yield to anger; give, if thou art asked for little; by these three steps thou wilt go near the gods.",
+      "sourceReference": "Dhammapada 224 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4027,
+      "categoryId": 403,
+      "dayNumber": 27,
+      "originalText": "",
+      "translatedText": "Long is the night to him who is awake; long is a mile to him who is tired; long is life to the foolish who do not know the true law.",
+      "sourceReference": "Dhammapada 60 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4028,
+      "categoryId": 404,
+      "dayNumber": 28,
+      "originalText": "",
+      "translatedText": "Cut out the love of self, like an autumn lotus, with thy hand! Cherish the road of peace. Nirvana has been shown by Sugata (Buddha).",
+      "sourceReference": "Dhammapada 285 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4029,
+      "categoryId": 401,
+      "dayNumber": 29,
+      "originalText": "",
+      "translatedText": "Whatever a hater may do to a hater, or an enemy to an enemy, a wrongly-directed mind will do us greater mischief.",
+      "sourceReference": "Dhammapada 42 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4030,
+      "categoryId": 402,
+      "dayNumber": 30,
+      "originalText": "",
+      "translatedText": "Beware of the anger of the tongue, and control thy tongue! Leave the sins of the tongue, and practise virtue with thy tongue!",
+      "sourceReference": "Dhammapada 232 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4031,
+      "categoryId": 403,
+      "dayNumber": 31,
+      "originalText": "",
+      "translatedText": "The fool who knows his foolishness, is wise at least so far. But a fool who thinks himself wise, he is called a fool indeed.",
+      "sourceReference": "Dhammapada 63 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4032,
+      "categoryId": 404,
+      "dayNumber": 32,
+      "originalText": "",
+      "translatedText": "If by leaving a small pleasure one sees a great pleasure, let a wise man leave the small pleasure, and look to the great.",
+      "sourceReference": "Dhammapada 290 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4033,
+      "categoryId": 401,
+      "dayNumber": 33,
+      "originalText": "",
+      "translatedText": "Not a mother, not a father will do so much, nor any other relative; a well-directed mind will do us greater service.",
+      "sourceReference": "Dhammapada 43 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4034,
+      "categoryId": 402,
+      "dayNumber": 34,
+      "originalText": "",
+      "translatedText": "Beware of the anger of the mind, and control thy mind! Leave the sins of the mind, and practise virtue with thy mind!",
+      "sourceReference": "Dhammapada 233 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4035,
+      "categoryId": 403,
+      "dayNumber": 35,
+      "originalText": "",
+      "translatedText": "Do not have evil-doers for friends, do not have low people for friends: have virtuous people for friends, have for friends the best of men.",
+      "sourceReference": "Dhammapada 78 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4036,
+      "categoryId": 404,
+      "dayNumber": 36,
+      "originalText": "",
+      "translatedText": "An evil deed is better left undone, for a man repents of it afterwards; a good deed is better done, for having done it, one does not repent.",
+      "sourceReference": "Dhammapada 314 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4037,
+      "categoryId": 401,
+      "dayNumber": 37,
+      "originalText": "",
+      "translatedText": "This mind of mine went formerly wandering about as it liked, as it listed, as it pleased; but I shall now hold it in thoroughly, as the rider who holds the hook holds in the furious elephant.",
+      "sourceReference": "Dhammapada 326 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4038,
+      "categoryId": 402,
+      "dayNumber": 38,
+      "originalText": "",
+      "translatedText": "The wise who control their body, who control their tongue, the wise who control their mind, are indeed well controlled.",
+      "sourceReference": "Dhammapada 234 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4039,
+      "categoryId": 403,
+      "dayNumber": 39,
+      "originalText": "",
+      "translatedText": "Well-makers lead the water (wherever they like); fletchers bend the arrow; carpenters bend a log of wood; wise people fashion themselves.",
+      "sourceReference": "Dhammapada 80 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4040,
+      "categoryId": 404,
+      "dayNumber": 40,
+      "originalText": "",
+      "translatedText": "The gift of the law exceeds all gifts; the sweetness of the law exceeds all sweetness; the delight in the law exceeds all delights; the extinction of thirst overcomes all pain.",
+      "sourceReference": "Dhammapada 354 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4041,
+      "categoryId": 401,
+      "dayNumber": 41,
+      "originalText": "",
+      "translatedText": "Be not thoughtless, watch your thoughts! Draw yourself out of the evil way, like an elephant sunk in mud.",
+      "sourceReference": "Dhammapada 327 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4042,
+      "categoryId": 402,
+      "dayNumber": 42,
+      "originalText": "",
+      "translatedText": "A man is not an elect (Ariya) because he injures living creatures; because he has pity on all living creatures, therefore is a man called Ariya.",
+      "sourceReference": "Dhammapada 270 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4043,
+      "categoryId": 403,
+      "dayNumber": 43,
+      "originalText": "",
+      "translatedText": "As a solid rock is not shaken by the wind, wise people falter not amidst blame and praise.",
+      "sourceReference": "Dhammapada 81 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4044,
+      "categoryId": 404,
+      "dayNumber": 44,
+      "originalText": "",
+      "translatedText": "Without knowledge there is no meditation, without meditation there is no knowledge: he who has knowledge and meditation is near unto Nirvana.",
+      "sourceReference": "Dhammapada 372 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4045,
+      "categoryId": 403,
+      "dayNumber": 45,
+      "originalText": "",
+      "translatedText": "Wise people, after they have listened to the laws, become serene, like a deep, smooth, and still lake.",
+      "sourceReference": "Dhammapada 82 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4046,
+      "categoryId": 404,
+      "dayNumber": 46,
+      "originalText": "",
+      "translatedText": "Rouse thyself by thyself, examine thyself by thyself, thus self-protected and attentive wilt thou live happily, O Bhikshu!",
+      "sourceReference": "Dhammapada 379 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4047,
+      "categoryId": 403,
+      "dayNumber": 47,
+      "originalText": "",
+      "translatedText": "Even though a speech be a thousand (of words), but made up of senseless words, one word of sense is better, which if a man hears, he becomes quiet.",
+      "sourceReference": "Dhammapada 100 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4048,
+      "categoryId": 404,
+      "dayNumber": 48,
+      "originalText": "",
+      "translatedText": "For self is the lord of self, self is the refuge of self; therefore curb thyself as the merchant curbs a good horse.",
+      "sourceReference": "Dhammapada 380 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4049,
+      "categoryId": 403,
+      "dayNumber": 49,
+      "originalText": "",
+      "translatedText": "If one man conquer in battle a thousand times thousand men, and if another conquer himself, he is the greatest of conquerors.",
+      "sourceReference": "Dhammapada 103 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4050,
+      "categoryId": 403,
+      "dayNumber": 50,
+      "originalText": "",
+      "translatedText": "Let no man think lightly of good, saying in his heart, It will not come nigh unto me. Even by the falling of water-drops a water-pot is filled; the wise man becomes full of good, even if he gather it little by little.",
+      "sourceReference": "Dhammapada 122 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4051,
+      "categoryId": 403,
+      "dayNumber": 51,
+      "originalText": "",
+      "translatedText": "Self is the lord of self, who else could be the lord? With self well subdued, a man finds a lord such as few can find.",
+      "sourceReference": "Dhammapada 160 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4052,
+      "categoryId": 403,
+      "dayNumber": 52,
+      "originalText": "",
+      "translatedText": "By oneself the evil is done, by oneself one suffers; by oneself evil is left undone, by oneself one is purified. Purity and impurity belong to oneself, no one can purify another.",
+      "sourceReference": "Dhammapada 165 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4053,
+      "categoryId": 403,
+      "dayNumber": 53,
+      "originalText": "",
+      "translatedText": "Not to commit any sin, to do good, and to purify one's mind, that is the teaching of (all) the Awakened.",
+      "sourceReference": "Dhammapada 183 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4054,
+      "categoryId": 403,
+      "dayNumber": 54,
+      "originalText": "",
+      "translatedText": "The fault of others is easily perceived, but that of oneself is difficult to perceive; a man winnows his neighbour's faults like chaff, but his own fault he hides, as a cheat hides the bad die from the gambler.",
+      "sourceReference": "Dhammapada 252 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4055,
+      "categoryId": 403,
+      "dayNumber": 55,
+      "originalText": "",
+      "translatedText": "A man is not learned because he talks much; he who is patient, free from hatred and fear, he is called learned.",
+      "sourceReference": "Dhammapada 258 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4056,
+      "categoryId": 403,
+      "dayNumber": 56,
+      "originalText": "",
+      "translatedText": "He in whom there is truth, virtue, love, restraint, moderation, he who is free from impurity and is wise, he is called an elder.",
+      "sourceReference": "Dhammapada 261 (Müller, 1881)",
+      "tags": ""
+    },
+    {
+      "id": 4057,
+      "categoryId": 403,
+      "dayNumber": 57,
+      "originalText": "",
+      "translatedText": "You yourself must make an effort. The Tathagatas (Buddhas) are only preachers. The thoughtful who enter the way are freed from the bondage of Mara.",
+      "sourceReference": "Dhammapada 276 (Müller, 1881)",
+      "tags": ""
+    }
+  ]
+}

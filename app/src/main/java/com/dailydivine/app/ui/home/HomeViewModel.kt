@@ -10,6 +10,8 @@ import com.dailydivine.app.data.repository.BookmarkRepository
 import com.dailydivine.app.data.repository.StreakRepository
 import com.dailydivine.app.data.repository.VerseRepository
 import com.dailydivine.app.domain.model.DailyVerse
+import com.dailydivine.app.domain.model.MilestoneBadge
+import com.dailydivine.app.notifications.NotificationHelper
 import com.dailydivine.app.domain.model.StreakInfo
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
@@ -21,8 +23,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.Locale
@@ -33,7 +38,9 @@ data class HomeUiState(
     val dailyVerse: DailyVerse? = null,
     val streak: StreakInfo? = null,
     val isLoading: Boolean = true,
-    val isSpeaking: Boolean = false
+    val isSpeaking: Boolean = false,
+    /** Set once when a streak milestone is first reached (F009-R10); cleared on dismiss. */
+    val milestoneReached: MilestoneBadge? = null
 )
 
 @HiltViewModel
@@ -42,7 +49,7 @@ class HomeViewModel @Inject constructor(
     private val verseRepository: VerseRepository,
     private val streakRepository: StreakRepository,
     private val bookmarkRepository: BookmarkRepository,
-    @ApplicationContext appContext: Context
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -78,7 +85,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadVerseAndStreak(religionIdRaw: Int?, installEpochDay: Long?) {
+    // The init collector and refresh() (app start) can fire together; without
+    // serialising, both could record "opened today" and both see a milestone
+    // as new. One load at a time.
+    private val loadMutex = Mutex()
+
+    private suspend fun loadVerseAndStreak(religionIdRaw: Int?, installEpochDay: Long?) =
+        loadMutex.withLock { loadVerseAndStreakLocked(religionIdRaw, installEpochDay) }
+
+    private suspend fun loadVerseAndStreakLocked(religionIdRaw: Int?, installEpochDay: Long?) {
         val religionId = religionIdRaw ?: Religions.ALL.first().id
         val installDate = installEpochDay?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()
 
@@ -86,12 +101,39 @@ class HomeViewModel @Inject constructor(
         verse?.let { streakRepository.recordOpenedToday(it.verse.id) }
         val streak = streakRepository.calculateStreak()
 
+        // F009-R10/R11: celebrate a milestone exactly once. lastMilestoneDays
+        // persists the highest one already celebrated, so reloading Home (or
+        // reopening the app the same day) never repeats it.
+        val prefs = userPreferences.state.first()
+        val reached = streak.currentMilestone
+            ?.takeIf { it.days == streak.currentStreak && it.days > prefs.lastMilestoneDays }
+        if (reached != null) {
+            userPreferences.setLastMilestoneDays(reached.days)
+            if (prefs.milestonesEnabled) NotificationHelper.postMilestone(appContext, reached.days, reached.name)
+        }
+
         _uiState.value = _uiState.value.copy(
             religion = Religions.byId(religionId),
             dailyVerse = verse,
             streak = streak,
-            isLoading = false
+            isLoading = false,
+            milestoneReached = reached ?: _uiState.value.milestoneReached
         )
+    }
+
+    /** Called each time the app comes to the foreground. This ViewModel can
+     *  outlive a whole day in memory, so without this the daily verse and the
+     *  "opened today" streak record would go stale across midnight. Safe to
+     *  repeat: recording an already-recorded day is a no-op. */
+    fun refresh() {
+        viewModelScope.launch {
+            val prefs = userPreferences.state.first()
+            loadVerseAndStreak(prefs.religionId, prefs.installEpochDay)
+        }
+    }
+
+    fun dismissMilestone() {
+        _uiState.value = _uiState.value.copy(milestoneReached = null)
     }
 
     /** F005-R07: play/stop the daily verse via on-device TTS. */

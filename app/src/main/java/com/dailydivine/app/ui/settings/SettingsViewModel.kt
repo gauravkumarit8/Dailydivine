@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
+import com.dailydivine.app.data.local.datastore.UserPrefsState
 import com.dailydivine.app.data.local.db.AppDatabase
 import com.dailydivine.app.data.repository.AlarmRepository
 import com.dailydivine.app.util.ReligionMeta
@@ -30,9 +31,19 @@ class SettingsViewModel @Inject constructor(
     private val _languageCode = MutableStateFlow("en")
     val languageCode: StateFlow<String> = _languageCode.asStateFlow()
 
+    private val _prefs = MutableStateFlow(UserPrefsState())
+    /** Full prefs snapshot, for the Notifications section's switches and time. */
+    val prefs: StateFlow<UserPrefsState> = _prefs.asStateFlow()
+
+    fun setDailyVerseEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setDailyVerseEnabled(enabled) } }
+    fun setDailyVerseTime(hour: Int, minute: Int) { viewModelScope.launch { userPreferences.setDailyVerseTime(hour, minute) } }
+    fun setStreakReminderEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setStreakReminderEnabled(enabled) } }
+    fun setMilestonesEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setMilestonesEnabled(enabled) } }
+
     init {
         viewModelScope.launch {
             userPreferences.state.collect { prefs ->
+                _prefs.value = prefs
                 _religion.value = prefs.religionId?.let { Religions.byId(it) }
                 _languageCode.value = prefs.languageCode
             }

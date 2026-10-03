@@ -26,7 +26,14 @@ data class UserPrefsState(
     val religionId: Int? = null,
     val languageCode: String = "en",
     val installEpochDay: Long? = null, // anchors the daily-verse day-number algorithm (API Contract 1)
-    val notificationsGranted: Boolean = false
+    val notificationsGranted: Boolean = false,
+    // F009 notification settings (R01/R02 morning verse, R06-R09 streak reminder, R10 milestones, R13 toggles)
+    val dailyVerseEnabled: Boolean = true,
+    val dailyVerseHour: Int = 7,    // F009-R02 default 7:00 AM
+    val dailyVerseMinute: Int = 0,
+    val streakReminderEnabled: Boolean = true,
+    val milestonesEnabled: Boolean = true,
+    val lastMilestoneDays: Int = 0  // highest milestone already celebrated, so each fires once
 )
 
 @Singleton
@@ -38,6 +45,12 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         val LANGUAGE_CODE = stringPreferencesKey("language_code")
         val INSTALL_EPOCH_DAY = longPreferencesKey("install_epoch_day")
         val NOTIFICATIONS_GRANTED = booleanPreferencesKey("notifications_granted")
+        val DAILY_VERSE_ENABLED = booleanPreferencesKey("daily_verse_enabled")
+        val DAILY_VERSE_HOUR = intPreferencesKey("daily_verse_hour")
+        val DAILY_VERSE_MINUTE = intPreferencesKey("daily_verse_minute")
+        val STREAK_REMINDER_ENABLED = booleanPreferencesKey("streak_reminder_enabled")
+        val MILESTONES_ENABLED = booleanPreferencesKey("milestones_enabled")
+        val LAST_MILESTONE_DAYS = intPreferencesKey("last_milestone_days")
     }
 
     val state: Flow<UserPrefsState> = context.dataStore.data.map { prefs ->
@@ -46,7 +59,13 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
             religionId = prefs[Keys.RELIGION_ID],
             languageCode = prefs[Keys.LANGUAGE_CODE] ?: "en",
             installEpochDay = prefs[Keys.INSTALL_EPOCH_DAY],
-            notificationsGranted = prefs[Keys.NOTIFICATIONS_GRANTED] ?: false
+            notificationsGranted = prefs[Keys.NOTIFICATIONS_GRANTED] ?: false,
+            dailyVerseEnabled = prefs[Keys.DAILY_VERSE_ENABLED] ?: true,
+            dailyVerseHour = prefs[Keys.DAILY_VERSE_HOUR] ?: 7,
+            dailyVerseMinute = prefs[Keys.DAILY_VERSE_MINUTE] ?: 0,
+            streakReminderEnabled = prefs[Keys.STREAK_REMINDER_ENABLED] ?: true,
+            milestonesEnabled = prefs[Keys.MILESTONES_ENABLED] ?: true,
+            lastMilestoneDays = prefs[Keys.LAST_MILESTONE_DAYS] ?: 0
         )
     }
 
@@ -60,6 +79,29 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
 
     suspend fun setNotificationsGranted(granted: Boolean) {
         context.dataStore.edit { it[Keys.NOTIFICATIONS_GRANTED] = granted }
+    }
+
+    suspend fun setDailyVerseEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.DAILY_VERSE_ENABLED] = enabled }
+    }
+
+    suspend fun setDailyVerseTime(hour: Int, minute: Int) {
+        context.dataStore.edit {
+            it[Keys.DAILY_VERSE_HOUR] = hour
+            it[Keys.DAILY_VERSE_MINUTE] = minute
+        }
+    }
+
+    suspend fun setStreakReminderEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.STREAK_REMINDER_ENABLED] = enabled }
+    }
+
+    suspend fun setMilestonesEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.MILESTONES_ENABLED] = enabled }
+    }
+
+    suspend fun setLastMilestoneDays(days: Int) {
+        context.dataStore.edit { it[Keys.LAST_MILESTONE_DAYS] = days }
     }
 
     /** Called once, on completing onboarding. Also stamps the install date

@@ -24,6 +24,23 @@ class StreakRepository @Inject constructor(private val streakDao: StreakDao) {
         }
     }
 
+    /** F009-R08: true if the app was already opened today (a streak entry exists). */
+    suspend fun hasOpenedToday(): Boolean =
+        streakDao.getEntryForDate(LocalDate.now().format(isoFormatter)) != null
+
+    /** F009-R07/R09: the streak as of YESTERDAY. calculateStreak() starts at
+     *  today and so returns 0 when the user hasn't opened the app yet today,
+     *  which is exactly the situation the 8 PM reminder runs in. */
+    suspend fun streakEndingYesterday(): Int {
+        var count = 0
+        var date = LocalDate.now().minusDays(1)
+        while (streakDao.getEntryForDate(date.format(isoFormatter)) != null) {
+            count++
+            date = date.minusDays(1)
+        }
+        return count
+    }
+
     /** F003: consecutive-day count walking backwards from today. */
     suspend fun calculateStreak(): StreakInfo {
         var current = 0

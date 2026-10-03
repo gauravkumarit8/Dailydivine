@@ -1,55 +1,448 @@
 {
   "religion": "Hinduism",
   "language": "en",
-  "version": 1,
+  "version": 2,
+  "source": "The Song Celestial (Bhagavad-Gita), tr. Sir Edwin Arnold, 1885. Public domain; Project Gutenberg #2388.",
   "categories": [
-    { "id": 101, "name": "Bhagavad Gita", "icon": "book_gita", "verseCount": 700 }
+    {
+      "id": 111,
+      "name": "Wisdom of the Soul",
+      "icon": "book_gita",
+      "verseCount": 11
+    },
+    {
+      "id": 112,
+      "name": "Duty & Action",
+      "icon": "book_gita",
+      "verseCount": 10
+    },
+    {
+      "id": 113,
+      "name": "Peace & Self-Mastery",
+      "icon": "book_gita",
+      "verseCount": 12
+    },
+    {
+      "id": 114,
+      "name": "Devotion & Virtue",
+      "icon": "book_gita",
+      "verseCount": 13
+    }
   ],
   "verses": [
     {
-      "id": 1001,
-      "categoryId": 101,
+      "id": 1101,
+      "categoryId": 111,
       "dayNumber": 1,
-      "originalText": "dhritarashtra uvacha: dharma-kshetre kuru-kshetre...",
-      "translatedText": "On the sacred field of Kurukshetra, assembled and eager for battle, what did my sons and the sons of Pandu do?",
-      "sourceReference": "Bhagavad Gita 1.1",
-      "tags": "dharma,duty,battlefield,beginning"
+      "originalText": "",
+      "translatedText": "Never the spirit was born; the spirit shall cease to be never;\nNever was time it was not; End and Beginning are dreams!\nBirthless and deathless and changeless remaineth the spirit for ever;\nDeath hath not touched it at all, dead though the house of it seems!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "soul,eternal,death"
     },
     {
-      "id": 1002,
-      "categoryId": 101,
+      "id": 1102,
+      "categoryId": 112,
       "dayNumber": 2,
-      "originalText": "na tv evaham jatu nasam...",
-      "translatedText": "Never was there a time when I did not exist, nor you, nor all these kings; nor in the future shall any of us cease to be.",
-      "sourceReference": "Bhagavad Gita 2.12",
-      "tags": "soul,eternity,existence"
+      "originalText": "",
+      "translatedText": "Find full reward\nOf doing right in right! Let right deeds be\nThy motive, not the fruit which comes from them.\nAnd live in action! Labour! Make thine acts\nThy piety, casting all self aside,\nContemning gain and merit; equable\nIn good or evil: equability\nIs Yog, is piety!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "action,motive"
     },
     {
-      "id": 1003,
-      "categoryId": 101,
+      "id": 1103,
+      "categoryId": 113,
       "dayNumber": 3,
-      "originalText": "na jayate mriyate va kadachin...",
-      "translatedText": "The soul is neither born, and nor does it die; nor having once existed, does it ever cease to be.",
-      "sourceReference": "Bhagavad Gita 2.20",
-      "tags": "soul,immortality"
+      "originalText": "",
+      "translatedText": "If one\nPonders on objects of the sense, there springs\nAttraction; from attraction grows desire,\nDesire flames to fierce passion, passion breeds\nRecklessness; then the memory--all betrayed--\nLets noble purpose go, and saps the mind,\nTill purpose, mind, and man are all undone.",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "desire,mind"
     },
     {
-      "id": 1004,
-      "categoryId": 101,
+      "id": 1104,
+      "categoryId": 114,
       "dayNumber": 4,
-      "originalText": "karmany evadhikaras te...",
-      "translatedText": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.",
-      "sourceReference": "Bhagavad Gita 2.47",
-      "tags": "duty,karma,detachment"
+      "originalText": "",
+      "translatedText": "And whoso thus\nDiscerneth Me in all, and all in Me,\nI never let him go; nor looseneth he\nHold upon Me; but, dwell he where he may,\nWhate'er his life, in Me he dwells and lives,\nBecause he knows and worships Me, Who dwell\nIn all which lives, and cleaves to Me in all.",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "presence,love"
     },
     {
-      "id": 1005,
-      "categoryId": 101,
+      "id": 1105,
+      "categoryId": 111,
       "dayNumber": 5,
-      "originalText": "yogah karmasu kaushalam...",
-      "translatedText": "Yoga is skill in action — performing one's duty with an even mind, undisturbed by success or failure.",
-      "sourceReference": "Bhagavad Gita 2.50",
-      "tags": "yoga,balance,action"
+      "originalText": "",
+      "translatedText": "Nay, but as when one layeth\nHis worn-out robes away,\nAnd taking new ones, sayeth,\n\"These will I wear to-day!\"\nSo putteth by the spirit\nLightly its garb of flesh,\nAnd passeth to inherit\nA residence afresh.",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "soul,renewal,death"
+    },
+    {
+      "id": 1106,
+      "categoryId": 112,
+      "dayNumber": 6,
+      "originalText": "",
+      "translatedText": "Yet, the right act\nIs less, far less, than the right-thinking mind.\nSeek refuge in thy soul; have there thy heaven!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "mind,inner-life"
+    },
+    {
+      "id": 1107,
+      "categoryId": 113,
+      "dayNumber": 7,
+      "originalText": "",
+      "translatedText": "But, if one deals with objects of the sense\nNot loving and not hating, making them\nServe his free soul, which rests serenely lord,\nLo! such a man comes to tranquillity;\nAnd out of that tranquillity shall rise\nThe end and healing of his earthly pains,\nSince the will governed sets the soul at peace.",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "peace,tranquillity"
+    },
+    {
+      "id": 1108,
+      "categoryId": 114,
+      "dayNumber": 8,
+      "originalText": "",
+      "translatedText": "Whoso shall offer Me in faith and love\nA leaf, a flower, a fruit, water poured forth,\nThat offering I accept, lovingly made\nWith pious will. Whate'er thou doest, Prince!\nEating or sacrificing, giving gifts,\nPraying or fasting, let it all be done\nFor Me, as Mine.",
+      "sourceReference": "The Song Celestial, Ch. IX (Arnold, 1885)",
+      "tags": "offering,devotion"
+    },
+    {
+      "id": 1109,
+      "categoryId": 111,
+      "dayNumber": 9,
+      "originalText": "",
+      "translatedText": "I say to thee weapons reach not the Life;\nFlame burns it not, waters cannot o'erwhelm,\nNor dry winds wither it. Impenetrable,\nUnentered, unassailed, unharmed, untouched,\nImmortal, all-arriving, stable, sure,\nInvisible, ineffable, by word\nAnd thought uncompassed, ever all itself,\nThus is the Soul declared!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "soul,eternal"
+    },
+    {
+      "id": 1110,
+      "categoryId": 112,
+      "dayNumber": 10,
+      "originalText": "",
+      "translatedText": "Do thine allotted task!\nWork is more excellent than idleness;\nThe body's life proceeds not, lacking work.",
+      "sourceReference": "The Song Celestial, Ch. III (Arnold, 1885)",
+      "tags": "work,duty"
+    },
+    {
+      "id": 1111,
+      "categoryId": 113,
+      "dayNumber": 11,
+      "originalText": "",
+      "translatedText": "In sorrows not dejected, and in joys\nNot overjoyed; dwelling outside the stress\nOf passion, fear, and anger; fixed in calms\nOf lofty contemplation;--such an one\nIs Muni, is the Sage, the true Recluse!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "calm,equanimity"
+    },
+    {
+      "id": 1112,
+      "categoryId": 114,
+      "dayNumber": 12,
+      "originalText": "",
+      "translatedText": "I am alike for all! I know not hate,\nI know not favour! What is made is Mine!\nBut them that worship Me with love, I love;\nThey are in Me, and I in them!",
+      "sourceReference": "The Song Celestial, Ch. IX (Arnold, 1885)",
+      "tags": "love,grace"
+    },
+    {
+      "id": 1113,
+      "categoryId": 111,
+      "dayNumber": 13,
+      "originalText": "",
+      "translatedText": "Nor I, nor thou, nor any one of these,\nEver was not, nor ever will not be,\nFor ever and for ever afterwards.\nAll, that doth live, lives always!",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "soul,eternal"
+    },
+    {
+      "id": 1114,
+      "categoryId": 112,
+      "dayNumber": 14,
+      "originalText": "",
+      "translatedText": "Finally, this is better, that one do\nHis own task as he may, even though he fail,\nThan take tasks not his own, though they seem good.\nTo die performing duty is no ill;\nBut who seeks other roads shall wander still.",
+      "sourceReference": "The Song Celestial, Ch. III (Arnold, 1885)",
+      "tags": "duty,courage"
+    },
+    {
+      "id": 1115,
+      "categoryId": 113,
+      "dayNumber": 15,
+      "originalText": "",
+      "translatedText": "And like the ocean, day by day receiving\nFloods from all lands, which never overflows\nIts boundary-line not leaping, and not leaving,\nFed by the rivers, but unswelled by those;--\n\nSo is the perfect one! to his soul's ocean\nThe world of sense pours streams of witchery;\nThey leave him as they find, without commotion,\nTaking their tribute, but remaining sea.",
+      "sourceReference": "The Song Celestial, Ch. II (Arnold, 1885)",
+      "tags": "desire,calm"
+    },
+    {
+      "id": 1116,
+      "categoryId": 114,
+      "dayNumber": 16,
+      "originalText": "",
+      "translatedText": "If one of evil life turn in his thought\nStraightly to Me, count him amidst the good;\nHe hath the high way chosen; he shall grow\nRighteous ere long; he shall attain that peace\nWhich changes not.",
+      "sourceReference": "The Song Celestial, Ch. IX (Arnold, 1885)",
+      "tags": "hope,grace"
+    },
+    {
+      "id": 1117,
+      "categoryId": 111,
+      "dayNumber": 17,
+      "originalText": "",
+      "translatedText": "Of many thousand mortals, one, perchance,\nStriveth for Truth; and of those few that strive--\nNay, and rise high--one only--here and there--\nKnoweth Me, as I am, the very Truth.",
+      "sourceReference": "The Song Celestial, Ch. VII (Arnold, 1885)",
+      "tags": "truth,seeking"
+    },
+    {
+      "id": 1118,
+      "categoryId": 112,
+      "dayNumber": 18,
+      "originalText": "",
+      "translatedText": "What the wise choose\nThe unwise people take; what best men do\nThe multitude will follow.",
+      "sourceReference": "The Song Celestial, Ch. III (Arnold, 1885)",
+      "tags": "example,leadership"
+    },
+    {
+      "id": 1119,
+      "categoryId": 113,
+      "dayNumber": 19,
+      "originalText": "",
+      "translatedText": "Yea, the world is strong,\nBut what discerns it stronger, and the mind\nStrongest; and high o'er all the ruling Soul.",
+      "sourceReference": "The Song Celestial, Ch. III (Arnold, 1885)",
+      "tags": "mind,strength"
+    },
+    {
+      "id": 1120,
+      "categoryId": 114,
+      "dayNumber": 20,
+      "originalText": "",
+      "translatedText": "Thou Prince of India!\nBe certain none can perish, trusting Me!",
+      "sourceReference": "The Song Celestial, Ch. IX (Arnold, 1885)",
+      "tags": "trust,hope"
+    },
+    {
+      "id": 1121,
+      "categoryId": 111,
+      "dayNumber": 21,
+      "originalText": "",
+      "translatedText": "I am the Spirit seated deep in every creature's heart;\nFrom Me they come; by Me they live; at My word they depart!",
+      "sourceReference": "The Song Celestial, Ch. X (Arnold, 1885)",
+      "tags": "presence,source"
+    },
+    {
+      "id": 1122,
+      "categoryId": 112,
+      "dayNumber": 22,
+      "originalText": "",
+      "translatedText": "Yea! let each play his part\nIn all he finds to do, with unyoked soul.",
+      "sourceReference": "The Song Celestial, Ch. III (Arnold, 1885)",
+      "tags": "purpose,service"
+    },
+    {
+      "id": 1123,
+      "categoryId": 113,
+      "dayNumber": 23,
+      "originalText": "",
+      "translatedText": "The world is overcome--aye! even here!\nBy such as fix their faith on Unity.",
+      "sourceReference": "The Song Celestial, Ch. V (Arnold, 1885)",
+      "tags": "unity,joy"
+    },
+    {
+      "id": 1124,
+      "categoryId": 114,
+      "dayNumber": 24,
+      "originalText": "",
+      "translatedText": "Who hateth nought\nOf all which lives, living himself benign,\nCompassionate, from arrogance exempt,\nExempt from love of self, unchangeable\nBy good or ill; patient, contented, firm\nIn faith, mastering himself, true to his word,\nSeeking Me, heart and soul; vowed unto Me,--\nThat man I love!",
+      "sourceReference": "The Song Celestial, Ch. XII (Arnold, 1885)",
+      "tags": "compassion,virtue"
+    },
+    {
+      "id": 1125,
+      "categoryId": 111,
+      "dayNumber": 25,
+      "originalText": "",
+      "translatedText": "The Light of Lights He is, in the heart of the Dark\nShining eternally. Wisdom He is\nAnd Wisdom's way, and Guide of all the wise,\nPlanted in every heart.",
+      "sourceReference": "The Song Celestial, Ch. XIII (Arnold, 1885)",
+      "tags": "light,wisdom"
+    },
+    {
+      "id": 1126,
+      "categoryId": 112,
+      "dayNumber": 26,
+      "originalText": "",
+      "translatedText": "Better thine own work is, though done with fault,\nThan doing others' work, ev'n excellently.",
+      "sourceReference": "The Song Celestial, Ch. XVIII (Arnold, 1885)",
+      "tags": "duty,contentment"
+    },
+    {
+      "id": 1127,
+      "categoryId": 113,
+      "dayNumber": 27,
+      "originalText": "",
+      "translatedText": "Be not over-glad\nAttaining joy, and be not over-sad\nEncountering grief, but, stayed on Brahma, still\nConstant let each abide!",
+      "sourceReference": "The Song Celestial, Ch. V (Arnold, 1885)",
+      "tags": "balance,joy,sorrow"
+    },
+    {
+      "id": 1128,
+      "categoryId": 114,
+      "dayNumber": 28,
+      "originalText": "",
+      "translatedText": "Who troubleth not his kind,\nAnd is not troubled by them; clear of wrath,\nLiving too high for gladness, grief, or fear,\nThat man I love!",
+      "sourceReference": "The Song Celestial, Ch. XII (Arnold, 1885)",
+      "tags": "peace,gentleness"
+    },
+    {
+      "id": 1129,
+      "categoryId": 111,
+      "dayNumber": 29,
+      "originalText": "",
+      "translatedText": "There is \"true\" Knowledge. Learn thou it is this:\nTo see one changeless Life in all the Lives,\nAnd in the Separate, One Inseparable.",
+      "sourceReference": "The Song Celestial, Ch. XVIII (Arnold, 1885)",
+      "tags": "knowledge,unity"
+    },
+    {
+      "id": 1130,
+      "categoryId": 112,
+      "dayNumber": 30,
+      "originalText": "",
+      "translatedText": "He that acts in thought of Brahm,\nDetaching end from act, with act content,\nThe world of sense can no more stain his soul\nThan waters mar th' enamelled lotus-leaf.",
+      "sourceReference": "The Song Celestial, Ch. V (Arnold, 1885)",
+      "tags": "detachment,calm"
+    },
+    {
+      "id": 1131,
+      "categoryId": 113,
+      "dayNumber": 31,
+      "originalText": "",
+      "translatedText": "Let each man raise\nThe Self by Soul, not trample down his Self,\nSince Soul that is Self's friend may grow Self's foe.",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "self,growth"
+    },
+    {
+      "id": 1132,
+      "categoryId": 114,
+      "dayNumber": 32,
+      "originalText": "",
+      "translatedText": "Near to renunciation--very near--\nDwelleth Eternal Peace!",
+      "sourceReference": "The Song Celestial, Ch. XII (Arnold, 1885)",
+      "tags": "peace,renunciation"
+    },
+    {
+      "id": 1133,
+      "categoryId": 111,
+      "dayNumber": 33,
+      "originalText": "",
+      "translatedText": "When Righteousness\nDeclines, O Bharata! when Wickedness\nIs strong, I rise, from age to age, and take\nVisible shape, and move a man with men,\nSuccouring the good, thrusting the evil back,\nAnd setting Virtue on her seat again.",
+      "sourceReference": "The Song Celestial, Ch. IV (Arnold, 1885)",
+      "tags": "righteousness,hope"
+    },
+    {
+      "id": 1134,
+      "categoryId": 112,
+      "dayNumber": 34,
+      "originalText": "",
+      "translatedText": "The sacrifice\nWhich Knowledge pays is better than great gifts\nOffered by wealth, since gifts' worth--O my Prince!\nLies in the mind which gives, the will that serves:\nAnd these are gained by reverence, by strong search,\nBy humble heed of those who see the Truth\nAnd teach it.",
+      "sourceReference": "The Song Celestial, Ch. IV (Arnold, 1885)",
+      "tags": "giving,knowledge"
+    },
+    {
+      "id": 1135,
+      "categoryId": 113,
+      "dayNumber": 35,
+      "originalText": "",
+      "translatedText": "Steadfast a lamp burns sheltered from the wind;\nSuch is the likeness of the Yogi's mind\nShut from sense-storms and burning bright to Heaven.",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "meditation,focus"
+    },
+    {
+      "id": 1136,
+      "categoryId": 114,
+      "dayNumber": 36,
+      "originalText": "",
+      "translatedText": "Humbleness, truthfulness, and harmlessness,\nPatience and honour, reverence for the wise.",
+      "sourceReference": "The Song Celestial, Ch. XIII (Arnold, 1885)",
+      "tags": "humility,virtue"
+    },
+    {
+      "id": 1137,
+      "categoryId": 111,
+      "dayNumber": 37,
+      "originalText": "",
+      "translatedText": "There is no purifier like thereto\nIn all this world, and he who seeketh it\nShall find it--being grown perfect--in himself.",
+      "sourceReference": "The Song Celestial, Ch. IV (Arnold, 1885)",
+      "tags": "knowledge,purity"
+    },
+    {
+      "id": 1138,
+      "categoryId": 112,
+      "dayNumber": 38,
+      "originalText": "",
+      "translatedText": "The gift lovingly given, when one shall say\n\"Now must I gladly give!\" when he who takes\nCan render nothing back; made in due place,\nDue time, and to a meet recipient,\nIs gift of Sattwan, fair and profitable.",
+      "sourceReference": "The Song Celestial, Ch. XVII (Arnold, 1885)",
+      "tags": "giving,generosity"
+    },
+    {
+      "id": 1139,
+      "categoryId": 113,
+      "dayNumber": 39,
+      "originalText": "",
+      "translatedText": "But for earthly needs\nReligion is not his who too much fasts\nOr too much feasts, nor his who sleeps away\nAn idle mind; nor his who wears to waste\nHis strength in vigils. Nay, Arjuna! call\nThat the true piety which most removes\nEarth-aches and ills, where one is moderate\nIn eating and in resting, and in sport;\nMeasured in wish and act; sleeping betimes,\nWaking betimes for duty.",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "balance,moderation"
+    },
+    {
+      "id": 1140,
+      "categoryId": 114,
+      "dayNumber": 40,
+      "originalText": "",
+      "translatedText": "Fearlessness, singleness of soul, the will\nAlways to strive for wisdom; opened hand\nAnd governed appetites; and piety,\nAnd love of lonely study; humbleness,\nUprightness, heed to injure nought which lives,\nTruthfulness, slowness unto wrath, a mind\nThat lightly letteth go what others prize;",
+      "sourceReference": "The Song Celestial, Ch. XVI (Arnold, 1885)",
+      "tags": "virtue,character"
+    },
+    {
+      "id": 1141,
+      "categoryId": 111,
+      "dayNumber": 41,
+      "originalText": "",
+      "translatedText": "Moreover, Son of Pandu! wert thou worst\nOf all wrong-doers, this fair ship of Truth\nShould bear thee safe and dry across the sea\nOf thy transgressions.",
+      "sourceReference": "The Song Celestial, Ch. IV (Arnold, 1885)",
+      "tags": "hope,forgiveness"
+    },
+    {
+      "id": 1142,
+      "categoryId": 113,
+      "dayNumber": 42,
+      "originalText": "",
+      "translatedText": "Hero long-armed! beyond denial, hard\nMan's heart is to restrain, and wavering;\nYet may it grow restrained by habit, Prince!\nBy wont of self-command.",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "mind,habit,patience"
+    },
+    {
+      "id": 1143,
+      "categoryId": 114,
+      "dayNumber": 43,
+      "originalText": "",
+      "translatedText": "The Doors of Hell\nAre threefold, whereby men to ruin pass,--\nThe door of Lust, the door of Wrath, the door\nOf Avarice. Let a man shun those three!",
+      "sourceReference": "The Song Celestial, Ch. XVI (Arnold, 1885)",
+      "tags": "warning,anger,greed"
+    },
+    {
+      "id": 1144,
+      "categoryId": 113,
+      "dayNumber": 44,
+      "originalText": "",
+      "translatedText": "He is not lost, thou Son of Pritha! No!\nNor earth, nor heaven is forfeit, even for him,\nBecause no heart that holds one right desire\nTreadeth the road of loss!",
+      "sourceReference": "The Song Celestial, Ch. VI (Arnold, 1885)",
+      "tags": "perseverance,hope"
+    },
+    {
+      "id": 1145,
+      "categoryId": 114,
+      "dayNumber": 45,
+      "originalText": "",
+      "translatedText": "Words causing no man woe, words ever true,\nGentle and pleasing words, and those ye say\nIn murmured reading of a Sacred Writ,--\nThese make the true religiousness of Speech.",
+      "sourceReference": "The Song Celestial, Ch. XVII (Arnold, 1885)",
+      "tags": "speech,kindness"
+    },
+    {
+      "id": 1146,
+      "categoryId": 114,
+      "dayNumber": 46,
+      "originalText": "",
+      "translatedText": "Serenity of soul, benignity,\nSway of the silent Spirit, constant stress\nTo sanctify the Nature,--these things make\nGood rite, and true religiousness of Mind.",
+      "sourceReference": "The Song Celestial, Ch. XVII (Arnold, 1885)",
+      "tags": "mind,serenity"
     }
   ]
 }

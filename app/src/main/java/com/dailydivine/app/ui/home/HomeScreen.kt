@@ -2,6 +2,9 @@ package com.dailydivine.app.ui.home
 
 import android.content.Intent
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,10 +30,32 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    // No LaunchedEffect/load() call needed -- HomeViewModel reactively
-    // observes UserPreferences in its own init block and loads
-    // automatically, including re-loading if the religion changes in
-    // Settings while this screen's ViewModel instance is retained.
+    // HomeViewModel reactively observes UserPreferences in its own init block
+    // (religion/install-date changes). On top of that, refresh whenever the
+    // app returns to the foreground so a long-lived ViewModel never shows
+    // yesterday's verse or misses recording today as opened.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) viewModel.refresh()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    state.milestoneReached?.let { badge ->
+        AlertDialog(
+            onDismissRequest = viewModel::dismissMilestone,
+            title = { Text("Congratulations!") },
+            text = {
+                Text(
+                    (if (badge.days == 1) "You've reached 1 day" else "You've reached ${badge.days} days") +
+                        " \u2014 ${badge.name}.\n${badge.description}"
+                )
+            },
+            confirmButton = { TextButton(onClick = viewModel::dismissMilestone) { Text("Thank you") } }
+        )
+    }
 
     Column(
         modifier = Modifier

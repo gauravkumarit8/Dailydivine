@@ -588,6 +588,47 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Still open:** Hindu content replacement and expansion; Islam/Buddhism/Sikhism/Judaism/Spiritual content (each needs a verified public-domain source: e.g. Dhammapada in Max Muller's 1881 translation, JPS 1917 for Tanakh, Pickthall 1930 for the Quran, Macauliffe 1909 for Sikh scripture; licensing differs by country, so confirm); verse history screen; Library search is a plain substring match (no ranking); streak milestones/badges; notifications; journal; Sprint 7 items.
 
+### 2026-09-29 (d) — Hinduism content replaced with public-domain Arnold translation
+
+**Why:** the 5 sample Hindu verses had unverifiable (probably copyrighted) wording; flagged in entry (c). **Now:** `hinduism_en.json` v2 = 46 passages from Sir Edwin Arnold, *The Song Celestial* (1885), Project Gutenberg #2388 (page metadata states "Public domain in the USA"), in four categories: Wisdom of the Soul (11), Duty & Action (10), Peace & Self-Mastery (12), Devotion & Virtue (13). Chapters used: II-VII, IX, X, XII, XIII, XVI-XVIII. Arnold's text is not verse-numbered, so citations read "The Song Celestial, Ch. IV (Arnold, 1885)". Poetic line breaks are preserved.
+
+**Provenance caveat (honest):** unlike the KJV builder, these passages were **hand-copied** from the Gutenberg HTML (sandbox cannot reach gutenberg.org), via `tools/build_hinduism_en.py`. I copied carefully but this is not machine-verified: spot-check several passages against gutenberg.org/ebooks/2388 before release.
+
+**Existing installs (important):** the migration manager only inserts new verses, never deletes. New ids are 1101+ and categories 111-114, but the old verses (ids 1001-1005, category 101) remain on any install that already had them, and the unique (religionId, dayNumber) index will silently ignore new verses colliding on days 1-5. **Do Settings > Clear all data once (or reinstall)** on your phone. Fresh installs are fine. Not an issue for users who never had v1. (If we ever need to retire shipped verses for real users, the manager needs a `retiredVerseIds` feature; deliberately not built now.)
+
+**Also fixed:** share-as-image used a fixed 56px font and would clip 10+ line passages; it now shrinks the font (down to 28px) until the text fits. Alarm ring preview flattens line breaks before taking the first sentence.
+
+**Verification:** brace/paren sweep, XML and JSON parsed, contiguous day numbers and unique ids asserted by the build script, tests checked (they use fakes, not the asset files). Not compiled here; CI is the compile check.
+
+**Still open:** Buddhism (Muller 1881 Dhammapada), Judaism (JPS 1917), Islam (Pickthall 1930; rights vary by country, verify), Sikhism (Macauliffe 1909), Spiritual/Universal; retired-verse support; notifications; streak milestones; journal.
+
+### 2026-09-29 (e) — Buddhism content (Dhammapada, Müller 1881)
+
+`buddhism_en.json` v1: **57 verses** from F. Max Müller's 1881 Dhammapada translation (Sacred Books of the East vol. X; Project Gutenberg #2017), four categories: Mind & Thought (11), Love & Anger (11), Wisdom & Right Living (22), Peace & Happiness (13). Cited by real verse number, e.g. "Dhammapada 183 (Müller, 1881)". Registered in `Religions.kt` (Buddhism no longer shows "coming soon"). Builder: `tools/build_buddhism_en.py` (asserts every selected verse has text, day numbers contiguous, ids unique).
+
+**Provenance caveat (same as Hinduism):** hand-copied from the Gutenberg HTML, not machine-extracted, so spot-check a handful against gutenberg.org/ebooks/2017. Gutenberg's text drops diacritics. Müller's 1881 wording is dated Victorian English; modern translations (e.g. Buddharakkhita, Thanissaro) are still copyrighted, so the PD one is the only safe choice for now.
+
+**No migration problem:** Buddhism was never loaded before, so installs just pick it up on selection (the launch-time migration from entry (c) handles it).
+
+**Content status:** Hinduism 46, Christianity 79, Buddhism 57. Still empty: Islam, Sikhism, Judaism, Spiritual.
+
+### 2026-09-29 (f) — Notifications (F009) and streak milestones
+
+**Built.** Three notification types on three channels (Daily verse = default, Streak reminders = low, Milestones = default; the Alarm channel stays in `AlarmService`).
+- **Daily verse (R01-R05):** WorkManager one-time work that renews itself each day (chosen over PeriodicWork because periodic work drifts inside its flex window). Shows the first 100 characters (line breaks flattened), tap opens the app, has a "Read" action. Default 7:00 AM, editable in Settings. `finally` always re-arms tomorrow, so an exception can't end the chain.
+- **Streak reminder (R06-R09):** 8 PM, only if the app wasn't opened today AND the streak going into today is over 3 days. Uses the new `StreakRepository.streakEndingYesterday()`: the existing `calculateStreak()` starts at today and returns 0 when the app hasn't been opened yet, which is exactly the reminder's situation.
+- **Milestones (R10/R11):** detected when Home loads; each milestone fires once (`lastMilestoneDays` persisted), as a notification plus an in-app congratulations dialog.
+- **Controls (R13/R15):** Settings > Notifications: independent switches, delivery-time picker, and a banner with an "Open system settings" button if the system has notifications off. Debug builds also get "send test notifications now".
+- **Plumbing:** workers reach Hilt singletons via an `@EntryPoint` (no `@HiltWorker`, so WorkManager's default initializer in the manifest is untouched). `MainViewModel` keeps scheduled work in sync with prefs: KEEP on app launch (opening the app never pushes a pending run back, but a dead chain is revived), REPLACE on real setting changes, cancel-all when data is cleared.
+
+**Bug found and fixed along the way.** Home only recorded "opened today" when its ViewModel first loaded. A ViewModel kept alive in memory across midnight never recorded the new day and showed yesterday's verse, which would also have made the streak reminder wrong. Home now refreshes on every app start (`ON_START`), serialised with a mutex so the start-up load and the refresh can't both treat a milestone as new.
+
+**Tests:** `NotificationSchedulerTest` (5 cases: later today, already past, exactly on the minute, seconds before, crossing midnight). The delay math was also cross-checked independently in Python. Not compiled or run here; CI runs it.
+
+**Not done / simplified (deliberate):** quiet hours (R14); the milestone deep link goes to Home, not a badge screen (R12; no badge screen or Lottie animation yet); daily-verse time defaults to 7:00 rather than "same as alarm time" (R02); streak freeze still unbuilt; notifications use system icons (no custom drawable yet); delivery is inexact (Doze can delay by minutes, so AC1 "arrives at configured time" means approximately); `longestStreak`/`totalDaysActive` are still just the current streak.
+
+**Verification:** brace/paren sweep, duplicate-import check, XML parsed, call-site signatures compared (`getDailyVerse`, `getEntryForDate`, `UserPrefsState` defaults). Not compiled here; CI is the compile check, then a device test.
+
 ---
 
 ## What's Next (as of this session)

@@ -54,7 +54,15 @@ class ShareImageGenerator(private val context: Context) {
             isAntiAlias = true
         }
         val quoted = "\u201C$verseText\u201D"
-        val verseLayout = buildStaticLayout(quoted, versePaint, textWidth)
+        // Long passages (some verses run 10+ lines) must still fit the square:
+        // shrink the font in steps until the text block fits between the top
+        // margin and the source/watermark area, down to a readable floor.
+        val maxVerseHeight = size - 2 * 200
+        var verseLayout = buildStaticLayout(quoted, versePaint, textWidth)
+        while (verseLayout.height > maxVerseHeight && versePaint.textSize > 28f) {
+            versePaint.textSize -= 4f
+            verseLayout = buildStaticLayout(quoted, versePaint, textWidth)
+        }
 
         val sourcePaint = TextPaint().apply {
             color = Color.WHITE

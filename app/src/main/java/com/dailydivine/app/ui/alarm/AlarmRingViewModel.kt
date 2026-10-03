@@ -42,7 +42,9 @@ class AlarmRingViewModel @Inject constructor(
      *  first sentence (up to the first '.', '!', or '?'), capped at 120
      *  chars so an unusually long first sentence doesn't overflow the
      *  ring screen's limited space. */
-    private fun firstSentence(text: String): String {
+    private fun firstSentence(rawText: String): String {
+        // Verse text keeps its poetic line breaks; flatten them for this one-line preview.
+        val text = rawText.replace(Regex("\\s*\\n\\s*"), " ")
         val endIdx = text.indexOfFirst { it == '.' || it == '!' || it == '?' }
         val candidate = if (endIdx in 0 until 200) text.substring(0, endIdx + 1) else text
         return if (candidate.length > 120) candidate.take(117) + "..." else candidate

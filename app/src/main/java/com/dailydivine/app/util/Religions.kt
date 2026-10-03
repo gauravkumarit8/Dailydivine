@@ -11,8 +11,9 @@ data class ReligionMeta(
     val name: String,
     val tagline: String,
     /** assets/content/<file> — null where no content exists yet. Hinduism has
-     *  5 sample verses (licensing of their translation is UNVERIFIED, see
-     *  CHECKLIST); Christianity has 79 verses from the public-domain KJV.
+     *  46 passages from Arnold's public-domain "Song Celestial" (1885);
+     *  Christianity has 79 verses from the public-domain KJV; Buddhism has
+     *  57 Dhammapada verses (Max Müller, 1881, public domain).
      *  PRD Section 11.3 needs 11 files total. */
     val contentAssetEn: String?,
     val languages: List<Pair<String, String>> // (display name, code)
@@ -37,7 +38,7 @@ object Religions {
         ),
         ReligionMeta(
             id = 4, name = "Buddhism", tagline = "Path to enlightenment",
-            contentAssetEn = null,
+            contentAssetEn = "buddhism_en.json",
             languages = listOf("English" to "en", "Thai" to "th", "Japanese" to "ja", "Sinhala" to "si")
         ),
         ReligionMeta(

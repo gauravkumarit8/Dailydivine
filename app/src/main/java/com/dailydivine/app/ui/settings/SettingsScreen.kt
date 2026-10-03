@@ -1,7 +1,16 @@
 package com.dailydivine.app.ui.settings
 
 import androidx.compose.foundation.clickable
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationManagerCompat
+import com.dailydivine.app.notifications.NotificationHelper
+import com.dailydivine.app.ui.components.TimePickerDialog
+import java.util.Locale
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,8 +31,12 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
     val languageCode by viewModel.languageCode.collectAsState()
     var showClearConfirm by remember { mutableStateOf(false) }
     var showReligionPicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val prefs by viewModel.prefs.collectAsState()
+    val context = LocalContext.current
+    val systemNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) {
         Text("Settings", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(24.dp))
 
@@ -40,7 +53,75 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
         // Religion is editable (F001-R04). Language stays read-only until
         // more than English content/UI strings exist.
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
+        Text("Notifications", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+
+        if (!systemNotificationsOn) {
+            // F009: the toggles below only take effect if the system allows
+            // notifications for the app (Android 13+ asks at onboarding).
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(
+                        "Notifications are turned off for DailyDivine in system settings, so none of these will appear.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    TextButton(onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    }) { Text("Open system settings") }
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        ListItem(
+            headlineContent = { Text("Daily verse") },
+            supportingContent = { Text("A morning notification with your verse") },
+            trailingContent = {
+                Switch(checked = prefs.dailyVerseEnabled, onCheckedChange = viewModel::setDailyVerseEnabled)
+            }
+        )
+        if (prefs.dailyVerseEnabled) {
+            ListItem(
+                modifier = Modifier.clickable { showTimePicker = true },
+                headlineContent = { Text("Delivery time") },
+                supportingContent = { Text(formatTime12h(prefs.dailyVerseHour, prefs.dailyVerseMinute)) },
+                trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
+            )
+        }
+        ListItem(
+            headlineContent = { Text("Streak reminder") },
+            supportingContent = { Text("8 PM nudge if you haven't opened the app and your streak is over 3 days") },
+            trailingContent = {
+                Switch(checked = prefs.streakReminderEnabled, onCheckedChange = viewModel::setStreakReminderEnabled)
+            }
+        )
+        ListItem(
+            headlineContent = { Text("Milestones") },
+            supportingContent = { Text("Celebrate when you reach a streak milestone") },
+            trailingContent = {
+                Switch(checked = prefs.milestonesEnabled, onCheckedChange = viewModel::setMilestonesEnabled)
+            }
+        )
+
+        if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            // Debug builds only: preview all three notification types now.
+            TextButton(onClick = {
+                NotificationHelper.postDailyVerse(
+                    context,
+                    "The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures.",
+                    "Test"
+                )
+                NotificationHelper.postStreakReminder(context, 5)
+                NotificationHelper.postMilestone(context, 7, "Week Warrior")
+            }) { Text("Debug: send test notifications now") }
+        }
+
+        Spacer(Modifier.height(32.dp))
 
         OutlinedButton(
             onClick = { showClearConfirm = true },
@@ -86,6 +167,15 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
         )
     }
 
+    if (showTimePicker) {
+        TimePickerDialog(
+            initialHour = prefs.dailyVerseHour,
+            initialMinute = prefs.dailyVerseMinute,
+            onDismiss = { showTimePicker = false },
+            onConfirm = { hour, minute -> viewModel.setDailyVerseTime(hour, minute) }
+        )
+    }
+
     if (showClearConfirm) {
         AlertDialog(
             onDismissRequest = { showClearConfirm = false },
@@ -102,4 +192,9 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
             }
         )
     }
+}
+
+private fun formatTime12h(hour: Int, minute: Int): String {
+    val h12 = if (hour % 12 == 0) 12 else hour % 12
+    return String.format(Locale.getDefault(), "%d:%02d %s", h12, minute, if (hour < 12) "AM" else "PM")
 }
