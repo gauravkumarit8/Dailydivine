@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.audio.SpeakResult
 import com.dailydivine.app.audio.TTSManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.repository.BookmarkRepository
@@ -46,7 +47,9 @@ data class HomeUiState(
     val milestoneReached: MilestoneBadge? = null,
     /** F011: today's reflection text and optional mood emoji. */
     val reflection: String = "",
-    val mood: String? = null
+    val mood: String? = null,
+    /** One-shot message for the UI (e.g. no TTS voice installed); cleared after it is shown. */
+    val ttsMessage: String? = null
 )
 
 @HiltViewModel
@@ -65,7 +68,9 @@ class HomeViewModel @Inject constructor(
     // F005: owned by the ViewModel (not the Composable) so playback survives
     // recomposition and is cleanly shut down exactly once, in onCleared().
     private val ttsManager = TTSManager(appContext)
-    private var ttsReady = false
+    @Volatile private var ttsReady = false
+    // Declared above init on purpose (see the ORDER MATTERS note below).
+    private var autoReadDone = false
 
     private val shareImageGenerator = ShareImageGenerator(appContext)
 
@@ -203,14 +208,45 @@ class HomeViewModel @Inject constructor(
         if (_uiState.value.isSpeaking) {
             ttsManager.stop()
             _uiState.value = _uiState.value.copy(isSpeaking = false)
-        } else if (ttsReady) {
+            return
+        }
+        viewModelScope.launch {
+            val rate = userPreferences.state.first().ttsRate // F012-R06
             _uiState.value = _uiState.value.copy(isSpeaking = true)
-            ttsManager.speak(
+            // Speak in the VERSE's language, not the phone's default locale.
+            val result = ttsManager.speak(
                 verse.translatedText,
-                Locale.getDefault(),
+                Locale.forLanguageTag(verse.languageCode),
+                rate = rate,
                 onDone = { _uiState.value = _uiState.value.copy(isSpeaking = false) }
             )
+            if (result != SpeakResult.STARTED) {
+                _uiState.value = _uiState.value.copy(
+                    isSpeaking = false,
+                    ttsMessage = when (result) {
+                        SpeakResult.ENGINE_NOT_READY -> "The voice is still starting. Try again in a moment."
+                        else -> "No voice is installed for this language. Add one in your phone's text-to-speech settings."
+                    }
+                )
+            }
         }
+    }
+
+    /** F004-R18: after "Wake Up & Read" with TTS on, read the verse once. Waits
+     *  briefly for the engine (it was only just created when the app launched
+     *  from the alarm) and never repeats within this ViewModel's life. */
+    fun autoRead() {
+        if (autoReadDone) return
+        autoReadDone = true
+        viewModelScope.launch {
+            var waited = 0
+            while (!ttsReady && waited < 5000) { delay(100); waited += 100 }
+            if (!_uiState.value.isSpeaking) togglePlayVerse()
+        }
+    }
+
+    fun clearTtsMessage() {
+        _uiState.value = _uiState.value.copy(ttsMessage = null)
     }
 
     /** F007: bookmark toggle on the daily verse. */

@@ -25,6 +25,13 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { mainViewModel.startDestination.value == null }
 
         super.onCreate(savedInstanceState)
+        // F009-R12. savedInstanceState == null: only on a genuine launch from the
+        // notification, not again after a rotation or process restore.
+        val openBadgesOnStart = savedInstanceState == null &&
+            intent?.getBooleanExtra(EXTRA_OPEN_BADGES, false) == true
+        // F004-R18: launched from the alarm's "Wake Up & Read" with TTS on.
+        val autoReadOnStart = savedInstanceState == null &&
+            intent?.getBooleanExtra(EXTRA_AUTO_READ, false) == true
         setContent {
             val startDestination by mainViewModel.startDestination.collectAsState()
             val religionId by mainViewModel.currentReligionId.collectAsState()
@@ -37,9 +44,18 @@ class MainActivity : ComponentActivity() {
                 // actually renders this, since the splash screen held above
                 // blocks the very first frame until it resolves.
                 startDestination?.let { destination ->
-                    DailyDivineNavGraph(startDestination = destination)
+                    DailyDivineNavGraph(
+                        startDestination = destination,
+                        openBadgesOnStart = openBadgesOnStart,
+                        autoReadOnStart = autoReadOnStart
+                    )
                 }
             }
         }
+    }
+
+    companion object {
+        const val EXTRA_OPEN_BADGES = "open_badges"
+        const val EXTRA_AUTO_READ = "auto_read"
     }
 }

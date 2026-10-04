@@ -7,6 +7,19 @@ import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.dailydivine.app.alarm.AlarmScheduler
+import com.dailydivine.app.alarm.AlarmTones
+import com.dailydivine.app.alarm.formatRingsIn
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,6 +50,15 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     var editingToneFor by remember { mutableStateOf<Alarm?>(null) }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Keeps the "Rings in ..." line current while the screen is open.
+    var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(30_000)
+            nowMs = System.currentTimeMillis()
+        }
+    }
 
     // Same fix as AlarmSetupScreen (onboarding): re-check exact-alarm
     // permission status whenever this screen resumes, e.g. after the user
@@ -120,11 +142,13 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(alarms, key = { it.id }) { alarm ->
                         AlarmRow(
                             alarm = alarm,
+                            nowMs = nowMs,
+                            onDayToggle = { day -> viewModel.toggleDay(alarm, day) },
                             onToggle = { viewModel.toggleEnabled(alarm) },
                             onTimeClick = { editingAlarm = alarm },
                             onToneClick = { editingToneFor = alarm },
@@ -162,39 +186,106 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
 @Composable
 private fun AlarmRow(
     alarm: Alarm,
+    nowMs: Long,
+    onDayToggle: (Int) -> Unit,
     onToggle: () -> Unit,
     onTimeClick: () -> Unit,
     onToneClick: () -> Unit,
     onTtsToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
+    val repeatDays = AlarmScheduler.parseRepeatDays(alarm.repeatDays)
+    val subtitle = if (alarm.isEnabled) {
+        val next = AlarmScheduler.computeNextTriggerTime(alarm.hour, alarm.minute, alarm.repeatDays, 0L, nowMs)
+        formatRingsIn(next - nowMs)
+    } else {
+        "Off"
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (alarm.isEnabled) 2.dp else 0.dp)
+    ) {
+        Column(Modifier.padding(20.dp).alpha(if (alarm.isEnabled) 1f else 0.6f)) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
                     Text(
                         formatTime12h(alarm.hour, alarm.minute),
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineLarge
                     )
-                    Text(alarm.label, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "${alarm.label} \u00B7 $subtitle",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 Switch(checked = alarm.isEnabled, onCheckedChange = { onToggle() })
             }
-            Spacer(Modifier.height(4.dp))
-            TextButton(onClick = onToneClick) {
-                Text("Tone: ${com.dailydivine.app.alarm.AlarmTones.byId(alarm.alarmToneId).name}")
+
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                DAY_LABELS.forEachIndexed { index, (letter, fullName) ->
+                    val isoDay = index + 1
+                    DayToggle(letter, fullName, selected = isoDay in repeatDays) { onDayToggle(isoDay) }
+                }
             }
+
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onToneClick) {
+                Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Tone: ${AlarmTones.byId(alarm.alarmToneId).name}")
+            }
+
+            Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+            Spacer(Modifier.height(8.dp))
+
+            // F004-R18: the verse is read aloud AFTER you tap "Wake Up & Read".
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.weight(1f)) {
+                    Text("Read verse aloud", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Speaks today's verse after you tap Wake Up & Read",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(checked = alarm.isTTSEnabled, onCheckedChange = { onTtsToggle() })
+            }
+
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 TextButton(onClick = onTimeClick) { Text("Change time") }
                 Spacer(Modifier.weight(1f))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("TTS", style = MaterialTheme.typography.bodySmall)
-                    Switch(checked = alarm.isTTSEnabled, onCheckedChange = { onTtsToggle() })
-                }
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete alarm")
                 }
             }
         }
+    }
+}
+
+private val DAY_LABELS = listOf(
+    "M" to "Monday", "T" to "Tuesday", "W" to "Wednesday", "T" to "Thursday",
+    "F" to "Friday", "S" to "Saturday", "S" to "Sunday"
+)
+
+/** One weekday circle (F004-R08). 40 dp: seven fit across a phone-width card. */
+@Composable
+private fun DayToggle(letter: String, fullName: String, selected: Boolean, onClick: () -> Unit) {
+    val primary = MaterialTheme.colorScheme.primary
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(if (selected) primary else primary.copy(alpha = 0.08f))
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = if (selected) "$fullName, repeats" else "$fullName, off" },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            letter,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface
+        )
     }
 }

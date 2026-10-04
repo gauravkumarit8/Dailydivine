@@ -113,37 +113,47 @@ class AlarmScheduler(private val context: Context) {
         )
     }
 
-    /**
-     * Next trigger time strictly after now + [minLeadMs], on one of the days in
-     * [repeatDaysJson] (ISO weekdays, 1 = Monday ... 7 = Sunday, e.g. "[1,2,3,4,5]").
-     * An empty/unparseable list is treated as "every day".
-     */
-    internal fun calculateNextTriggerTime(
-        hour: Int, minute: Int, repeatDaysJson: String, minLeadMs: Long = 0L
-    ): Long {
-        val days = parseRepeatDays(repeatDaysJson)
-        val earliest = System.currentTimeMillis() + minLeadMs
-        val candidate = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        // At most 8 steps: today + a full week always contains a matching day.
-        repeat(8) {
-            val isoDay = (candidate.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1 // Calendar: Sun=1 -> ISO: Mon=1..Sun=7
-            if (candidate.timeInMillis > earliest && isoDay in days) return candidate.timeInMillis
-            candidate.add(Calendar.DAY_OF_YEAR, 1)
-        }
-        return candidate.timeInMillis
-    }
-
-    private fun parseRepeatDays(json: String): Set<Int> {
-        val parsed = Regex("\\d+").findAll(json).map { it.value.toInt() }.filter { it in 1..7 }.toSet()
-        return if (parsed.isEmpty()) (1..7).toSet() else parsed
-    }
+    private fun calculateNextTriggerTime(
+        hour: Int, minute: Int, repeatDaysJson: String, minLeadMs: Long
+    ): Long = computeNextTriggerTime(hour, minute, repeatDaysJson, minLeadMs)
 
     companion object {
+        /**
+         * Next trigger time strictly after now + [minLeadMs], on one of the days in
+         * [repeatDaysJson] (ISO weekdays, 1 = Monday ... 7 = Sunday, e.g. "[1,2,3,4,5]").
+         * An empty/unparseable list is treated as "every day". Pure (the clock is a
+         * parameter) so it is unit-tested, and public so the UI can show "Rings in ...".
+         */
+        fun computeNextTriggerTime(
+            hour: Int, minute: Int, repeatDaysJson: String,
+            minLeadMs: Long = 0L, nowMs: Long = System.currentTimeMillis()
+        ): Long {
+            val days = parseRepeatDays(repeatDaysJson)
+            val earliest = nowMs + minLeadMs
+            val candidate = Calendar.getInstance().apply {
+                timeInMillis = nowMs
+                set(Calendar.HOUR_OF_DAY, hour)
+                set(Calendar.MINUTE, minute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            // At most 8 steps: today + a full week always contains a matching day.
+            repeat(8) {
+                val isoDay = (candidate.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1 // Calendar: Sun=1 -> ISO: Mon=1..Sun=7
+                if (candidate.timeInMillis > earliest && isoDay in days) return candidate.timeInMillis
+                candidate.add(Calendar.DAY_OF_YEAR, 1)
+            }
+            return candidate.timeInMillis
+        }
+
+        /** "[1,2,3]" -> {1,2,3}; empty or unparseable -> every day. */
+        fun parseRepeatDays(json: String): Set<Int> {
+            val parsed = Regex("\\d+").findAll(json).map { it.value.toInt() }.filter { it in 1..7 }.toSet()
+            return if (parsed.isEmpty()) (1..7).toSet() else parsed
+        }
+
+        fun formatRepeatDays(days: Set<Int>): String = days.sorted().joinToString(",", "[", "]")
+
         const val EXTRA_ALARM_ID = "ALARM_ID"
         const val EXTRA_ALARM_TONE = "ALARM_TONE"
         const val EXTRA_TTS_ENABLED = "TTS_ENABLED"

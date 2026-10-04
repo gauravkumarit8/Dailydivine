@@ -123,13 +123,20 @@ class AlarmRingActivity : ComponentActivity() {
 
     /** F004-R17: dismisses the alarm and opens the daily verse (Home). */
     private fun wakeUpAndRead() {
-        stopAlarmService()
-        startActivity(
-            Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-        )
-        finish()
+        stopAlarmService() // silence first; the lookup below must never delay that
+        lifecycleScope.launch {
+            // F004-R18: if this alarm has TTS on, Home reads the verse aloud once.
+            // A failed lookup just means no auto-read; it must never block waking up.
+            val readAloud = runCatching { alarmRepository.getAlarmById(alarmId)?.isTTSEnabled == true }
+                .getOrDefault(false)
+            startActivity(
+                Intent(this@AlarmRingActivity, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    if (readAloud) putExtra(MainActivity.EXTRA_AUTO_READ, true)
+                }
+            )
+            finish()
+        }
     }
 }
 

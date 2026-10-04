@@ -675,6 +675,27 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Status:** 🟡 fix delivered; if the user still crashes after this build, the stack trace is needed, because this was diagnosed by reading, not from a log.
 
+### 2026-10-04 — Alarm TTS made real, repeat days UI, alarm card polish, voice speed
+
+**User question:** "what is the TTS toggle on the alarm card; is it implemented; will it work?" **Honest answer: it was NOT implemented.** `Alarm.isTTSEnabled` was stored and passed into the ring Intent as `EXTRA_TTS_ENABLED`, but nothing ever read it, so the switch did nothing (AC7 / F004-R18 unmet). Onboarding defaults it ON, so every user who finished onboarding had a dead switch. Should have been flagged in the original status; it was listed as "implemented" in the handoff.
+
+**Fixed.**
+- **F004-R18 / AC7:** tapping *Wake Up & Read* looks up the alarm; if TTS is on, MainActivity is launched with `auto_read`, flows through `NavGraph` to Home, and `HomeViewModel.autoRead()` speaks the verse once (waits up to 5 s for the engine, which was only just created; guarded so it never repeats). The alarm is silenced *before* the DB lookup so waking up is never delayed; a failed lookup just means no auto-read.
+- **TTS honesty (F005-R06):** `TTSManager.speak` now returns `SpeakResult` (STARTED / ENGINE_NOT_READY / LANGUAGE_UNAVAILABLE) instead of failing silently; Home shows a toast ("voice still starting" / "no voice installed for this language").
+- **Language:** previously `Locale.getDefault()` (the phone's language). Now the verse's own `languageCode` (the long-standing follow-up).
+- **F012-R06:** Settings > Voice > Reading speed (Slow 0.75x / Normal / Fast 1.25x), persisted; used by Home playback and auto-read.
+- **Label clarity:** alarm card "TTS" is now "Read verse aloud" with the line "Speaks today's verse after you tap Wake Up & Read"; onboarding wording matches.
+
+**Also found and fixed: repeat days had no UI.** The scheduler has honored `repeatDays` since the alarm audit, but nothing let a user set it, so every alarm was permanently daily (F004-R08). The alarm card now has seven day circles (M-S), at least one must stay selected (an empty set would be read as "every day", which would look like the tap did the opposite), with TalkBack descriptions.
+
+**Polish.** Alarm card redesign: large time, live "Rings in 7h 30m" line (refreshes every 30 s), dimmed when off, tone row with icon, clearer spacing. Next-trigger maths extracted to a pure public `AlarmScheduler.computeNextTriggerTime(..., nowMs)` so it could finally be unit-tested.
+
+**Tests (new, 21 cases).** `AlarmSchedulerTest` (11: today/tomorrow, weekday skipping weekend, Fri before/after, Sunday = ISO 7, strictly-after at the exact minute, re-arm lead, empty/garbage = daily, parse/format) and `AlarmTimeFormatTest` (4 groups). Every expectation was cross-checked against an independent Python implementation (all true). Not compiled/run here; CI runs them.
+
+**Not done / limits to know.** TTS needs a voice installed on the phone (usually Google TTS is present; other languages may need a download) and the verse content is English-only today. The debug "ring a test alarm" button does not auto-read (its alarm id has no saved TTS setting): test with a real alarm 2 minutes out. Auto-read speaks over the lock screen if the phone is still locked when Home opens. Settings has no TTS voice picker (F012-R05) or pitch.
+
+**Verification:** brace/paren, duplicate imports, XML/JSON, call-site greps (`speak`, `calculateNextTriggerTime`, `TTSManager(`), plus the new **property-after-`init` scan** (lesson from the launch crash): clean. Not compiled here.
+
 ---
 
 ## What's Next (as of this session)

@@ -108,6 +108,26 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
             }
         )
 
+        Spacer(Modifier.height(24.dp))
+        Text("Voice", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        ListItem(
+            headlineContent = { Text("Reading speed") },
+            supportingContent = { Text("How fast verses are read aloud") }
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            listOf("Slow" to 0.75f, "Normal" to 1.0f, "Fast" to 1.25f).forEach { (label, rate) ->
+                FilterChip(
+                    selected = prefs.ttsRate == rate,
+                    onClick = { viewModel.setTtsRate(rate) },
+                    label = { Text(label) }
+                )
+            }
+        }
+
         if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             // Debug builds only: preview all three notification types now.
             TextButton(onClick = {

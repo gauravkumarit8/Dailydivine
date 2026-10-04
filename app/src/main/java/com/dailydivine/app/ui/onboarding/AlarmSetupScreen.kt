@@ -77,7 +77,7 @@ fun AlarmSetupScreen(
         Spacer(Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Read verse aloud when alarm rings", modifier = Modifier.weight(1f))
+            Text("Read the verse aloud after I wake up", modifier = Modifier.weight(1f))
             Switch(checked = ttsEnabled, onCheckedChange = onTtsToggle)
         }
 

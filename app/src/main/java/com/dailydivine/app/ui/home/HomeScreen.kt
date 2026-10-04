@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.sp
 import com.dailydivine.app.domain.model.MOOD_EMOJIS
+import com.dailydivine.app.ui.components.MilestoneCelebration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -31,7 +32,12 @@ import kotlinx.coroutines.launch
 /** Screen S07 (PRD Section 9): Home — greeting, daily verse card, reflection
  *  input, streak card, next-alarm banner. */
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    onOpenBadges: () -> Unit = {},
+    /** F004-R18: true when the app was opened via the alarm's "Wake Up & Read" with TTS on. */
+    autoRead: Boolean = false,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
     val state by viewModel.uiState.collectAsState()
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
@@ -40,6 +46,16 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // (religion/install-date changes). On top of that, refresh whenever the
     // app returns to the foreground so a long-lived ViewModel never shows
     // yesterday's verse or misses recording today as opened.
+    LaunchedEffect(state.ttsMessage) {
+        state.ttsMessage?.let {
+            android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_LONG).show()
+            viewModel.clearTtsMessage()
+        }
+    }
+    LaunchedEffect(autoRead, state.dailyVerse != null) {
+        if (autoRead && state.dailyVerse != null) viewModel.autoRead()
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -54,16 +70,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     }
 
     state.milestoneReached?.let { badge ->
-        AlertDialog(
-            onDismissRequest = viewModel::dismissMilestone,
-            title = { Text("Congratulations!") },
-            text = {
-                Text(
-                    (if (badge.days == 1) "You've reached 1 day" else "You've reached ${badge.days} days") +
-                        " \u2014 ${badge.name}.\n${badge.description}"
-                )
-            },
-            confirmButton = { TextButton(onClick = viewModel::dismissMilestone) { Text("Thank you") } }
+        MilestoneCelebration(
+            badge = badge,
+            onDismiss = viewModel::dismissMilestone,
+            onViewBadges = {
+                viewModel.dismissMilestone()
+                onOpenBadges()
+            }
         )
     }
 
@@ -136,7 +149,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             )
 
             Spacer(Modifier.height(16.dp))
-            state.streak?.let { StreakCard(it) }
+            state.streak?.let { StreakCard(it, onClick = onOpenBadges) }
             Spacer(Modifier.height(24.dp))
         }
     }
@@ -254,9 +267,11 @@ private fun DailyVerseCard(
 }
 
 @Composable
-private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo) {
+private fun StreakCard(streak: com.dailydivine.app.domain.model.StreakInfo, onClick: () -> Unit) {
+    // Modifier.clickable rather than Card(onClick = ...): that overload is
+    // experimental in this BOM and needs an @OptIn.
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(Modifier.padding(20.dp)) {

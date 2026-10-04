@@ -95,6 +95,20 @@ class AlarmListViewModel @Inject constructor(
         }
     }
 
+    /** F004-R08: choose which weekdays the alarm repeats on (ISO 1 = Mon .. 7 = Sun).
+     *  At least one day must stay selected: an empty set would be treated as
+     *  "every day" by the scheduler, which would look like the tap did the opposite. */
+    fun toggleDay(alarm: Alarm, isoDay: Int) {
+        val days = AlarmScheduler.parseRepeatDays(alarm.repeatDays).toMutableSet()
+        if (!days.add(isoDay)) {
+            if (days.size == 1) return
+            days.remove(isoDay)
+        }
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(repeatDays = AlarmScheduler.formatRepeatDays(days)))
+        }
+    }
+
     fun toggleTts(alarm: Alarm) {
         viewModelScope.launch {
             alarmRepository.updateAndReschedule(alarm.copy(isTTSEnabled = !alarm.isTTSEnabled))

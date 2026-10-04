@@ -2,6 +2,7 @@ package com.dailydivine.app.data.local.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -33,7 +34,8 @@ data class UserPrefsState(
     val dailyVerseMinute: Int = 0,
     val streakReminderEnabled: Boolean = true,
     val milestonesEnabled: Boolean = true,
-    val lastMilestoneDays: Int = 0  // highest milestone already celebrated, so each fires once
+    val lastMilestoneDays: Int = 0, // highest milestone already celebrated, so each fires once
+    val ttsRate: Float = 1.0f       // F012-R06 voice speed: 0.75 slow, 1.0 normal, 1.25 fast
 )
 
 @Singleton
@@ -51,6 +53,7 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         val STREAK_REMINDER_ENABLED = booleanPreferencesKey("streak_reminder_enabled")
         val MILESTONES_ENABLED = booleanPreferencesKey("milestones_enabled")
         val LAST_MILESTONE_DAYS = intPreferencesKey("last_milestone_days")
+        val TTS_RATE = floatPreferencesKey("tts_rate")
     }
 
     val state: Flow<UserPrefsState> = context.dataStore.data.map { prefs ->
@@ -65,7 +68,8 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
             dailyVerseMinute = prefs[Keys.DAILY_VERSE_MINUTE] ?: 0,
             streakReminderEnabled = prefs[Keys.STREAK_REMINDER_ENABLED] ?: true,
             milestonesEnabled = prefs[Keys.MILESTONES_ENABLED] ?: true,
-            lastMilestoneDays = prefs[Keys.LAST_MILESTONE_DAYS] ?: 0
+            lastMilestoneDays = prefs[Keys.LAST_MILESTONE_DAYS] ?: 0,
+            ttsRate = prefs[Keys.TTS_RATE] ?: 1.0f
         )
     }
 
@@ -98,6 +102,10 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
 
     suspend fun setMilestonesEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.MILESTONES_ENABLED] = enabled }
+    }
+
+    suspend fun setTtsRate(rate: Float) {
+        context.dataStore.edit { it[Keys.TTS_RATE] = rate }
     }
 
     suspend fun setLastMilestoneDays(days: Int) {

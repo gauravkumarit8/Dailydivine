@@ -3,6 +3,7 @@ package com.dailydivine.app.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -16,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.dailydivine.app.ui.alarm.AlarmListScreen
+import com.dailydivine.app.ui.badges.BadgesScreen
 import com.dailydivine.app.ui.home.HomeScreen
 import com.dailydivine.app.ui.library.LibraryScreen
 import com.dailydivine.app.ui.onboarding.*
@@ -34,7 +36,11 @@ fun DailyDivineNavGraph(
     // throws "navigation destination onboarding/welcome is not a direct
     // child of this NavGraph" on every launch -- see Screen.kt's comment
     // and CHECKLIST.md for the full story.
-    startDestination: String = Screen.OnboardingGraph.route
+    startDestination: String = Screen.OnboardingGraph.route,
+    /** F009-R12: set when the app was opened from the milestone notification. */
+    openBadgesOnStart: Boolean = false,
+    /** F004-R18: set when opened via the alarm's "Wake Up & Read" with TTS on. */
+    autoReadOnStart: Boolean = false
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -120,7 +126,15 @@ fun DailyDivineNavGraph(
             }
 
             // Main app (bottom-nav destinations)
-            composable(Screen.Home.route) { HomeScreen() }
+            composable(Screen.Home.route) {
+                HomeScreen(
+                    onOpenBadges = { navController.navigate(Screen.Badges.route) },
+                    autoRead = autoReadOnStart
+                )
+            }
+            composable(Screen.Badges.route) {
+                BadgesScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.Library.route) { LibraryScreen() }
             composable(Screen.Alarm.route) { AlarmListScreen() }
             composable(Screen.Settings.route) {
@@ -131,6 +145,15 @@ fun DailyDivineNavGraph(
                         }
                     }
                 )
+            }
+        }
+
+        // F009-R12: milestone notification tapped -> land on the badges screen
+        // (Home stays underneath so Back returns there). Only for returning
+        // users: during onboarding there is no streak to show.
+        LaunchedEffect(Unit) {
+            if (openBadgesOnStart && startDestination == Screen.Home.route) {
+                navController.navigate(Screen.Badges.route)
             }
         }
     }

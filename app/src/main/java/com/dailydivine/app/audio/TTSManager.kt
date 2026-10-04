@@ -7,10 +7,13 @@ import java.util.Locale
 
 /** F005: wraps Android's native TextToSpeech engine (works fully offline,
  *  per F005-R05, once the device's language voice data is installed). */
+/** Outcome of [TTSManager.speak]: the UI must be able to tell the user WHY nothing played. */
+enum class SpeakResult { STARTED, ENGINE_NOT_READY, LANGUAGE_UNAVAILABLE }
+
 class TTSManager(private val context: Context) {
 
     private var tts: TextToSpeech? = null
-    private var isInitialized = false
+    @Volatile private var isInitialized = false
     private var onDoneCallback: (() -> Unit)? = null
 
     fun initialize(onReady: () -> Unit) {
@@ -41,15 +44,22 @@ class TTSManager(private val context: Context) {
     /** @param onDone called once speech genuinely finishes (or errors) --
      *  replaces the previous "fire and forget" behavior where callers had
      *  no way to know when playback actually ended. */
-    fun speak(text: String, language: Locale, rate: Float = 1.0f, pitch: Float = 1.0f, onDone: (() -> Unit)? = null) {
-        if (!isInitialized) return
-        onDoneCallback = onDone
-        tts?.let {
-            it.language = language
-            it.setSpeechRate(rate)
-            it.setPitch(pitch)
-            it.speak(text, TextToSpeech.QUEUE_FLUSH, null, "verse_id")
+    fun speak(
+        text: String, language: Locale, rate: Float = 1.0f, pitch: Float = 1.0f, onDone: (() -> Unit)? = null
+    ): SpeakResult {
+        val engine = tts
+        if (!isInitialized || engine == null) return SpeakResult.ENGINE_NOT_READY
+        // F005-R06: setLanguage returns an error code instead of throwing when the
+        // voice data isn't installed; previously that failed silently (no sound).
+        val langResult = engine.setLanguage(language)
+        if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+            return SpeakResult.LANGUAGE_UNAVAILABLE
         }
+        onDoneCallback = onDone
+        engine.setSpeechRate(rate)
+        engine.setPitch(pitch)
+        engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "verse_id")
+        return SpeakResult.STARTED
     }
 
     fun stop() { tts?.stop() }

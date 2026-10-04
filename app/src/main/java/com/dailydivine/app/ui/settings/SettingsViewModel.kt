@@ -38,6 +38,7 @@ class SettingsViewModel @Inject constructor(
     fun setDailyVerseEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setDailyVerseEnabled(enabled) } }
     fun setDailyVerseTime(hour: Int, minute: Int) { viewModelScope.launch { userPreferences.setDailyVerseTime(hour, minute) } }
     fun setStreakReminderEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setStreakReminderEnabled(enabled) } }
+    fun setTtsRate(rate: Float) { viewModelScope.launch { userPreferences.setTtsRate(rate) } }
     fun setMilestonesEnabled(enabled: Boolean) { viewModelScope.launch { userPreferences.setMilestonesEnabled(enabled) } }
 
     init {
