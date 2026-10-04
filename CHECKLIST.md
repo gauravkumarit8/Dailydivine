@@ -645,6 +645,36 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Verification:** brace/paren sweep, duplicate-import check, XML parsed, DAO implementors grepped. Not compiled here.
 
+### 2026-09-29 (h) — Streak & Badges screen, milestone celebration, streak-stat fix
+
+**Bug fixed first.** `StreakRepository.calculateStreak()` reported `longestStreak` and `totalDaysActive` as simply the *current* streak (a TODO from Sprint 3). Consequences: Home's "Day N of your journey" was really the current streak, and any "badge earned" logic would have taken badges back the moment a streak broke. Extracted a pure `StreakCalculator` (current = consecutive days ending today; longest = best run anywhere in history, never below current; total = distinct days opened) and the repository now uses it via a new `StreakDao.getAllDates()`.
+
+**Built.**
+- **Streak & Badges screen** (route `badges`, reached by tapping the Home streak card or the milestone notification): Current / Longest / Total stats with an 800 ms count-up, progress to the next milestone, and all 10 PRD badges in a grid. A badge counts as earned if the *longest* streak reached it; unearned badges are grey with a lock and show "Reach N days".
+- **Milestone celebration (F003-R06):** replaces the plain dialog from the notifications round with a full-screen overlay: 2 s confetti, the badge popping in with scale + bounce (PRD animation table), and "View my badges".
+- **Deep link (F009-R12):** the milestone notification now opens the badges screen (extra `open_badges`; only on a genuine launch from the notification, not after rotation; only for returning users; Back returns to Home).
+- Badge unlock bounce on earned tiles (PRD animation table).
+
+**Honest deviation: confetti is not Lottie.** The PRD specifies a Lottie confetti. No Lottie asset is bundled and none could be fetched offline, so it is drawn natively on a Compose `Canvas` (70 particles, fixed seed so it is identical each time). `lottie-compose` stays as a dependency; swapping in a `LottieAnimation` later does not touch any caller. Also, `Card(onClick=)` is experimental in this BOM, so the clickable streak card uses `Modifier.clickable`.
+
+**Tests:** new `StreakCalculatorTest` (8 cases: empty, first open, consecutive, missed day, old-run-beats-current, "yesterday is not today", duplicates, month/year boundary). All 8 expectations were cross-checked by running the same algorithm independently in Python (all true). **Adding `getAllDates()` to `StreakDao` would have broken the unit-test compile** because `JournalRepositoryTest.FakeStreakDao` implements that interface; found by grep and fixed (second time this pattern has bitten, so: any new DAO method means grep `: *Dao {` in tests first). Not compiled or run here; CI runs them.
+
+**Not done (deliberate):** streak freeze (F003-R07..R09: free users 1/month, premium 1/week) needs per-user freeze tracking plus premium gating; deferred to Sprint 7 with billing. `streakEndingYesterday()` (for the 8 PM reminder) still uses its own loop rather than the calculator (works, could be unified). Badge share-image and the home-screen widget streak counter (F003 AC6) not built.
+
+**Verification:** brace/paren sweep, duplicate-import check, XML/JSON parsed, call sites grepped (`HomeScreen`, `StreakCard`, `calculateStreak`, `DailyDivineNavGraph`), DAO implementors grepped. Not compiled here.
+
+### 2026-10-03 — Launch crash: HomeViewModel property-initialisation order (PROBABLE cause, not yet confirmed by a stack trace)
+
+**Symptom (user):** app crashes when opened, after installing the notifications + journal + badges builds.
+
+**Root cause (strong reasoning, not proven; awaiting `adb logcat -b crash`):** in `HomeViewModel`, `loadMutex` (added in the notifications round) and `saveJob`/`pendingDate` (journal round) were declared *below* the `init` block. Kotlin initialises properties top to bottom, and `init` immediately starts collecting `userPreferences.state`. DataStore can emit an already-cached value without suspending (MainViewModel has already read it by the time Home is created), so the collector can reach `loadMutex.withLock` before `loadMutex` has been assigned: a `NullPointerException` inside the constructor, thrown the moment Home is built. It would not show on every device/timing, which is why it slipped through; CI cannot see it.
+
+**Fix:** the three properties now sit above `init`, with a comment explaining why the order matters. Swept every class with an `init` block for the same pattern: `HomeViewModel` was the only offender (`MainViewModel`, `SettingsViewModel`, `BadgesViewModel`, `AlarmRingViewModel`, `OnboardingViewModel` declare everything they use before `init`).
+
+**Lesson / standing habit (add to the verification list):** when adding a property to a class that has an `init` block, declare it above `init`; grep for properties after `init` before every delivery.
+
+**Status:** 🟡 fix delivered; if the user still crashes after this build, the stack trace is needed, because this was diagnosed by reading, not from a log.
+
 ---
 
 ## What's Next (as of this session)

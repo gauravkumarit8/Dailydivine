@@ -69,6 +69,21 @@ class HomeViewModel @Inject constructor(
 
     private val shareImageGenerator = ShareImageGenerator(appContext)
 
+    // ORDER MATTERS: these must be declared ABOVE the init block. Kotlin
+    // initialises properties top to bottom, and init starts collecting prefs.
+    // DataStore can emit an already-cached value without suspending, so the
+    // collector can reach loadMutex before a declaration placed below init has
+    // run, and that is a NullPointerException inside this constructor, i.e. a
+    // crash the moment Home opens.
+    // The init collector and refresh() (app start) can fire together; without
+    // serialising, both could record "opened today" and both see a milestone
+    // as new. One load at a time.
+    private val loadMutex = Mutex()
+
+    // F011 journal autosave state (see onReflectionChanged).
+    private var saveJob: Job? = null
+    private var pendingDate: LocalDate? = null
+
     init {
         ttsManager.initialize { ttsReady = true }
 
@@ -91,11 +106,6 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
-
-    // The init collector and refresh() (app start) can fire together; without
-    // serialising, both could record "opened today" and both see a milestone
-    // as new. One load at a time.
-    private val loadMutex = Mutex()
 
     private suspend fun loadVerseAndStreak(religionIdRaw: Int?, installEpochDay: Long?) =
         loadMutex.withLock { loadVerseAndStreakLocked(religionIdRaw, installEpochDay) }
@@ -147,9 +157,6 @@ class HomeViewModel @Inject constructor(
     }
 
     // ---- F011 journal: debounced autosave (R03, 500 ms) ----
-    private var saveJob: Job? = null
-    private var pendingDate: LocalDate? = null
-
     fun onReflectionChanged(text: String) {
         _uiState.value = _uiState.value.copy(reflection = text)
         // Remember the day the text was written, so a save that fires just
