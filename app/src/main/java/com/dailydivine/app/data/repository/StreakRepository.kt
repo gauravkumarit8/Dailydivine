@@ -2,6 +2,7 @@ package com.dailydivine.app.data.repository
 
 import com.dailydivine.app.data.local.dao.StreakDao
 import com.dailydivine.app.data.local.entity.StreakEntry
+import com.dailydivine.app.domain.StreakCalculator
 import com.dailydivine.app.domain.model.StreakInfo
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -43,14 +44,11 @@ class StreakRepository @Inject constructor(private val streakDao: StreakDao) {
 
     /** F003: consecutive-day count walking backwards from today. */
     suspend fun calculateStreak(): StreakInfo {
-        var current = 0
-        var date = LocalDate.now()
-        while (true) {
-            val entry = streakDao.getEntryForDate(date.format(isoFormatter))
-            if (entry == null) break
-            current++
-            date = date.minusDays(1)
+        val dates = streakDao.getAllDates().mapNotNull {
+            try { LocalDate.parse(it, isoFormatter) } catch (e: Exception) { null }
         }
+        val stats = StreakCalculator.compute(dates, LocalDate.now())
+        val current = stats.current
         val currentMilestone = StreakInfo.MILESTONES.lastOrNull { it.days <= current }
         val nextMilestone = StreakInfo.MILESTONES.firstOrNull { it.days > current }
         val progress = if (nextMilestone != null) {
@@ -60,8 +58,8 @@ class StreakRepository @Inject constructor(private val streakDao: StreakDao) {
 
         return StreakInfo(
             currentStreak = current,
-            longestStreak = current, // TODO: track separately once historical max is needed
-            totalDaysActive = current,
+            longestStreak = stats.longest,
+            totalDaysActive = stats.total,
             currentMilestone = currentMilestone,
             nextMilestone = nextMilestone,
             progressToNext = progress.coerceIn(0f, 1f),

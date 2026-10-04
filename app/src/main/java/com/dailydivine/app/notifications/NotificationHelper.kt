@@ -75,17 +75,18 @@ object NotificationHelper {
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle("Congratulations!") // F009-R11
                 .setContentText("You've reached $dayWord! \u2014 $badgeName")
-                .setContentIntent(openAppIntent(context, 2))
+                .setContentIntent(openAppIntent(context, 2, openBadges = true)) // F009-R12
                 .setAutoCancel(true)
                 .build()
         )
     }
 
-    private fun openAppIntent(context: Context, requestCode: Int): PendingIntent =
+    private fun openAppIntent(context: Context, requestCode: Int, openBadges: Boolean = false): PendingIntent =
         PendingIntent.getActivity(
             context, requestCode,
             Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                if (openBadges) putExtra(MainActivity.EXTRA_OPEN_BADGES, true)
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

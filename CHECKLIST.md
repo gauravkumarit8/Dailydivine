@@ -696,6 +696,16 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Verification:** brace/paren, duplicate imports, XML/JSON, call-site greps (`speak`, `calculateNextTriggerTime`, `TTSManager(`), plus the new **property-after-`init` scan** (lesson from the launch crash): clean. Not compiled here.
 
+### 2026-10-04 (b) — CI compile failure: files from an earlier round missing in the repo; delivery method changed
+
+**Symptom (CI `testDebugUnitTest`):** `Unresolved reference: MilestoneCelebration` (HomeScreen.kt), and `badges` / `Badges` / `BadgesScreen` (NavGraph.kt).
+
+**Root cause:** the repo had this round's `HomeScreen.kt` and `NavGraph.kt` (which reference the badges feature) but not the badges-round files they depend on: `ui/badges/*`, `ui/components/{BadgeMedal,Confetti,MilestoneCelebration}.kt`, `Screen.Badges` in `Screen.kt`, `domain/StreakCalculator.kt` and related DAO/test changes. Those were delivered in the badges round, but the later rounds' PowerShell commands listed **only that round's changed files** (the launch-crash round and the TTS round), so a skipped round could never self-heal. **My delivery process was the weak point**, not the code: verified the delivered tree is complete (88 Kotlin files, 0 unresolved project imports).
+
+**Process fix:** (1) from now on every round ships a **full mirror** command (`app\src`, `licenses`, `tools`, CHECKLIST) instead of a per-round file list, so the repo always matches the zip regardless of what was skipped; (2) new `tools/check_imports.py` (cross-file import resolution sweep; run in the sandbox before every delivery and runnable locally with `python tools/check_imports.py`). Added to the standing verification list next to the brace sweep, the XML sweep, the signature grep and the property-after-`init` scan.
+
+**Status:** 🟡 awaiting a green CI run after the mirror sync.
+
 ---
 
 ## What's Next (as of this session)

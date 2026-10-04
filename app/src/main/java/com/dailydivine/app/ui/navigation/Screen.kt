@@ -20,4 +20,8 @@ sealed class Screen(val route: String) {
     object Library : Screen("library")
     object Alarm : Screen("alarm")
     object Settings : Screen("settings")
+
+    /** Streak & Badges (F003). Not a bottom-nav tab: reached from the Home streak card
+     *  and from the milestone notification (F009-R12). */
+    object Badges : Screen("badges")
 }

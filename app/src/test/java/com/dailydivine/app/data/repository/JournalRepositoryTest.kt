@@ -35,6 +35,7 @@ class JournalRepositoryTest {
             }
         }
         override suspend fun getEntryForDate(date: String): StreakEntry? = rows.value.firstOrNull { it.date == date }
+        override suspend fun getAllDates(): List<String> = rows.value.map { it.date }.sorted()
         override fun getAllEntries(): Flow<List<StreakEntry>> =
             MutableStateFlow(rows.value.sortedByDescending { it.date })
         override fun getRecentEntries(days: Int): Flow<List<StreakEntry>> = getAllEntries()

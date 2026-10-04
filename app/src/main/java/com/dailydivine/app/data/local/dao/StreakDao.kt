@@ -21,6 +21,9 @@ interface StreakDao {
     @Query("SELECT * FROM streaks WHERE date = :date LIMIT 1")
     suspend fun getEntryForDate(date: String): StreakEntry?
 
+    @Query("SELECT date FROM streaks ORDER BY date")
+    suspend fun getAllDates(): List<String>
+
     @Query("SELECT * FROM streaks ORDER BY date DESC")
     fun getAllEntries(): Flow<List<StreakEntry>>
 
