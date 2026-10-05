@@ -37,6 +37,7 @@ private class Particle(
  */
 @Composable
 fun ConfettiOverlay(modifier: Modifier = Modifier, durationMs: Int = 2000) {
+    if (rememberReduceMotion()) return // A11Y-09: purely decorative, so omit entirely
     val progress = remember { Animatable(0f) }
     LaunchedEffect(Unit) { progress.animateTo(1f, tween(durationMs, easing = LinearEasing)) }
 

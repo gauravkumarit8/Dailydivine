@@ -20,7 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.sp
+import com.dailydivine.app.ui.components.rememberReduceMotion
 import com.dailydivine.app.ui.theme.VerseTextStyle
+import com.dailydivine.app.ui.theme.darkenUntilContrast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -148,13 +150,16 @@ private fun AlarmRingScreen(
     onWakeUpAndRead: () -> Unit
 ) {
     // S08: religion-themed gradient (primary fading to a deeper shade of itself).
-    val primary = MaterialTheme.colorScheme.primary
-    val gradient = Brush.verticalGradient(listOf(primary, lerp(primary, Color.Black, 0.55f)))
+    // All text here is white, so the gradient's lightest colour must give white >= 4.5:1,
+    // in light AND dark theme (dark theme's primary is lightened for text elsewhere).
+    val top = darkenUntilContrast(MaterialTheme.colorScheme.primary, listOf(Color.White))
+    val gradient = Brush.verticalGradient(listOf(top, lerp(top, Color.Black, 0.45f)))
+    val reduceMotion = rememberReduceMotion()
 
     // S08: gentle pulse on the primary button.
     val pulse by rememberInfiniteTransition(label = "pulse").animateFloat(
         initialValue = 1f,
-        targetValue = 1.04f,
+        targetValue = if (reduceMotion) 1f else 1.04f, // A11Y-09
         animationSpec = infiniteRepeatable(tween(1100), RepeatMode.Reverse),
         label = "pulseScale"
     )
@@ -177,7 +182,7 @@ private fun AlarmRingScreen(
         Text(
             "Time for your morning blessing",
             style = MaterialTheme.typography.titleMedium,
-            color = Color.White.copy(alpha = 0.9f),
+            color = Color.White,
             textAlign = TextAlign.Center
         )
 
@@ -198,7 +203,7 @@ private fun AlarmRingScreen(
 
         Button(
             onClick = onWakeUpAndRead,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = primary),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = top),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 56.dp)

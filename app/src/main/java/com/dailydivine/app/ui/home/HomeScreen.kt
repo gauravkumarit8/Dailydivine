@@ -7,7 +7,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.dailydivine.app.domain.model.MOOD_EMOJIS
+import com.dailydivine.app.domain.model.MOOD_LABELS
 import com.dailydivine.app.ui.components.MilestoneCelebration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -188,17 +193,20 @@ private fun ReflectionCard(
             )
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MOOD_EMOJIS.forEach { emoji ->
+                MOOD_EMOJIS.forEachIndexed { index, emoji ->
                     val selected = emoji == mood
+                    val label = MOOD_LABELS[index]
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
+                            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp) // A11Y-02, grows with font size
                             .clip(CircleShape)
                             .background(
                                 if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
                                 else androidx.compose.ui.graphics.Color.Transparent
                             )
-                            .clickable { onMoodSelect(emoji) },
+                            .selectable(selected = selected, role = Role.RadioButton, onClick = { onMoodSelect(emoji) })
+                            // A11Y-04: selection is announced, not only shown by the tint.
+                            .semantics { contentDescription = "Feeling $label" },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(emoji, fontSize = 24.sp)

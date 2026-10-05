@@ -17,15 +17,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
+import com.dailydivine.app.ui.theme.darkenUntilContrast
 
 /** Round badge: religion-coloured gradient with a trophy when earned, grey with a lock when not. */
 @Composable
 fun BadgeMedal(earned: Boolean, size: Dp, modifier: Modifier = Modifier) {
-    val primary = MaterialTheme.colorScheme.primary
+    // The icon is white, so the medal must be dark enough for white (4.5:1) in both themes.
+    val base = darkenUntilContrast(MaterialTheme.colorScheme.primary, listOf(Color.White))
     val brush = if (earned) {
-        Brush.linearGradient(listOf(primary, lerp(primary, Color.Black, 0.4f)))
+        Brush.linearGradient(listOf(base, lerp(base, Color.Black, 0.4f)))
     } else {
-        Brush.linearGradient(listOf(Color(0xFFBDBDBD), Color(0xFF9E9E9E)))
+        Brush.linearGradient(listOf(Color(0xFF757575), Color(0xFF616161))) // white lock stays >= 4.5:1
     }
     Box(
         modifier = modifier.size(size).clip(CircleShape).background(brush),

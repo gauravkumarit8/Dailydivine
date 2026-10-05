@@ -9,7 +9,9 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -207,7 +209,14 @@ private fun AlarmRow(
         elevation = CardDefaults.cardElevation(defaultElevation = if (alarm.isEnabled) 2.dp else 0.dp)
     ) {
         Column(Modifier.padding(20.dp).alpha(if (alarm.isEnabled) 1f else 0.6f)) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            // toggleable on the whole row: TalkBack reads "7:00 AM, Morning, Rings in 7h, switch, on"
+            // as ONE control instead of an unlabeled switch next to some text.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(value = alarm.isEnabled, role = Role.Switch, onValueChange = { onToggle() })
+            ) {
                 Column(Modifier.weight(1f)) {
                     Text(
                         formatTime12h(alarm.hour, alarm.minute),
@@ -219,7 +228,7 @@ private fun AlarmRow(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Switch(checked = alarm.isEnabled, onCheckedChange = { onToggle() })
+                Switch(checked = alarm.isEnabled, onCheckedChange = null)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -241,7 +250,12 @@ private fun AlarmRow(
             Spacer(Modifier.height(8.dp))
 
             // F004-R18: the verse is read aloud AFTER you tap "Wake Up & Read".
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(value = alarm.isTTSEnabled, role = Role.Switch, onValueChange = { onTtsToggle() })
+            ) {
                 Column(Modifier.weight(1f)) {
                     Text("Read verse aloud", style = MaterialTheme.typography.bodyLarge)
                     Text(
@@ -250,7 +264,7 @@ private fun AlarmRow(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Switch(checked = alarm.isTTSEnabled, onCheckedChange = { onTtsToggle() })
+                Switch(checked = alarm.isTTSEnabled, onCheckedChange = null)
             }
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -285,7 +299,7 @@ private fun DayToggle(letter: String, fullName: String, selected: Boolean, onCli
         Text(
             letter,
             style = MaterialTheme.typography.labelLarge,
-            color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface
+            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
         )
     }
 }

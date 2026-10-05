@@ -9,3 +9,6 @@ data class JournalHistoryItem(val entry: StreakEntry, val verse: Verse?)
 
 /** F011-R05: optional mood selector choices. */
 val MOOD_EMOJIS = listOf("\uD83D\uDE0A", "\uD83D\uDE0C", "\uD83D\uDE4F", "\uD83D\uDE14", "\uD83D\uDE1F")
+
+/** Spoken names, same order as [MOOD_EMOJIS] (A11Y-03/05). */
+val MOOD_LABELS = listOf("Happy", "Calm", "Grateful", "Sad", "Worried")

@@ -1,6 +1,8 @@
 package com.dailydivine.app.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
@@ -10,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationManagerCompat
 import com.dailydivine.app.notifications.NotificationHelper
 import com.dailydivine.app.ui.components.TimePickerDialog
-import java.util.Locale
+import com.dailydivine.app.util.formatTime12h
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -79,10 +81,13 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
         }
 
         ListItem(
+            modifier = Modifier.toggleable(
+                value = prefs.dailyVerseEnabled, role = Role.Switch, onValueChange = viewModel::setDailyVerseEnabled
+            ),
             headlineContent = { Text("Daily verse") },
             supportingContent = { Text("A morning notification with your verse") },
             trailingContent = {
-                Switch(checked = prefs.dailyVerseEnabled, onCheckedChange = viewModel::setDailyVerseEnabled)
+                Switch(checked = prefs.dailyVerseEnabled, onCheckedChange = null)
             }
         )
         if (prefs.dailyVerseEnabled) {
@@ -94,17 +99,23 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
             )
         }
         ListItem(
+            modifier = Modifier.toggleable(
+                value = prefs.streakReminderEnabled, role = Role.Switch, onValueChange = viewModel::setStreakReminderEnabled
+            ),
             headlineContent = { Text("Streak reminder") },
             supportingContent = { Text("8 PM nudge if you haven't opened the app and your streak is over 3 days") },
             trailingContent = {
-                Switch(checked = prefs.streakReminderEnabled, onCheckedChange = viewModel::setStreakReminderEnabled)
+                Switch(checked = prefs.streakReminderEnabled, onCheckedChange = null)
             }
         )
         ListItem(
+            modifier = Modifier.toggleable(
+                value = prefs.milestonesEnabled, role = Role.Switch, onValueChange = viewModel::setMilestonesEnabled
+            ),
             headlineContent = { Text("Milestones") },
             supportingContent = { Text("Celebrate when you reach a streak milestone") },
             trailingContent = {
-                Switch(checked = prefs.milestonesEnabled, onCheckedChange = viewModel::setMilestonesEnabled)
+                Switch(checked = prefs.milestonesEnabled, onCheckedChange = null)
             }
         )
 
@@ -212,9 +223,4 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
             }
         )
     }
-}
-
-private fun formatTime12h(hour: Int, minute: Int): String {
-    val h12 = if (hour % 12 == 0) 12 else hour % 12
-    return String.format(Locale.getDefault(), "%d:%02d %s", h12, minute, if (hour < 12) "AM" else "PM")
 }

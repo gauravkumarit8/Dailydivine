@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dailydivine.app.domain.model.MilestoneBadge
 import com.dailydivine.app.domain.model.StreakInfo
 import com.dailydivine.app.ui.components.BadgeMedal
+import com.dailydivine.app.ui.components.rememberReduceMotion
 
 /** Streak & Badges screen (PRD screenshot list #7, F003, F009-R12 deep-link target). */
 @Composable
@@ -80,9 +81,11 @@ private fun StatsRow(streak: StreakInfo) {
 @Composable
 private fun StatTile(label: String, value: Int, modifier: Modifier) {
     // PRD animation table: streak counter counts up over 800 ms.
+    val reduceMotion = rememberReduceMotion()
     var started by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { started = true }
-    val shown by animateIntAsState(if (started) value else 0, tween(800), label = "count")
+    val animated by animateIntAsState(if (started) value else 0, tween(800), label = "count")
+    val shown = if (reduceMotion) value else animated // A11Y-09: no count-up
 
     Card(modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column(Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -114,9 +117,10 @@ private fun ProgressCard(streak: StreakInfo) {
 @Composable
 private fun BadgeTile(badge: MilestoneBadge, earned: Boolean, modifier: Modifier) {
     // PRD animation table: badge unlock = scale + bounce (earned badges only).
-    val scale = remember { Animatable(if (earned) 0.6f else 1f) }
+    val reduceMotion = rememberReduceMotion()
+    val scale = remember { Animatable(if (earned && !reduceMotion) 0.6f else 1f) }
     LaunchedEffect(earned) {
-        if (earned) scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
+        if (earned && !reduceMotion) scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
     }
     Card(modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = if (earned) 2.dp else 0.dp)) {
         Column(

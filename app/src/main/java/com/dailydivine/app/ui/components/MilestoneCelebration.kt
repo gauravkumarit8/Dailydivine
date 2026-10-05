@@ -39,9 +39,10 @@ fun MilestoneCelebration(
                     modifier = Modifier.padding(28.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val scale = remember { Animatable(0.3f) }
+                    val reduceMotion = rememberReduceMotion()
+                    val scale = remember { Animatable(if (reduceMotion) 1f else 0.3f) }
                     LaunchedEffect(Unit) {
-                        scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
+                        if (!reduceMotion) scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
                     }
                     BadgeMedal(
                         earned = true,

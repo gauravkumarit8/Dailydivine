@@ -706,6 +706,34 @@ Started the new session by cloning the repo and tracing the whole alarm path (Sc
 
 **Status:** 🟡 awaiting a green CI run after the mirror sync.
 
+### 2026-10-04 (c) — Pre-CI static review (no compiler available): what was checked, what was found
+
+Because several rounds were never compiled here, a systematic review was done before CI's first full compile.
+- **Declarations vs. usages:** `StreakEntry` fields vs. `JournalRepositoryTest` constructors; all 7 `StreakDao` methods vs. the test fake; `StreakInfo`/`MilestoneBadge` members vs. `BadgesScreen`; `isoFormatter`; `TimePickerDialog` closes itself after confirm (so Settings' picker does not stay open). All consistent.
+- **Dependencies:** `work-runtime-ktx:2.9.0`, `mockk`, `junit`, `coroutines-test`, Hilt 2.50 all present; no warnings-as-errors flag.
+- **New sweeps (both saved in `tools/`, both clean):** `check_imports.py` (every project import resolves; 88 files) and `check_symbols.py` (a file USING a project class or distinctively-named top-level function from another package without importing it).
+- **Found:** `SettingsScreen` carried a private duplicate of the shared `formatTime12h` (same output); removed, now uses `util.formatTime12h`. Not an error, but duplicated logic.
+- **Read end-to-end:** `HomeViewModel` (patched by string edits across five rounds): declaration order correct, types consistent.
+
+**Standing pre-delivery checklist (all run in the sandbox):** brace/paren balance; XML validity; JSON validity; duplicate imports; `tools/check_imports.py`; `tools/check_symbols.py`; property-after-`init` scan; DAO-implementor grep whenever a DAO method is added; grep call sites when a signature changes. **None of these replaces a compile**: CI plus a device run remain the real proof.
+
+### 2026-10-04 (d) — Accessibility pass (PRD section 21 / 20.3)
+
+**Measured first, then fixed.** WCAG contrast of the PRD palettes (white-on-primary and primary text on white / the tinted page): **Hinduism 3.16:1 and Sikhism 3.79:1 FAILED the PRD's own 4.5:1 minimum** (also 2.88 / 3.46 on the tinted page); the other five passed. Dark theme had never been checked at all (Christianity's blue on the dark surface is ~3:1).
+
+**Fixes.**
+- **Contrast (new `ui/theme/Contrast.kt`):** brand colours are nudged only as far as needed, never replaced. A colour that already passes is returned *unchanged* (Christianity, Buddhism, Judaism etc. are exactly as designed). Estimated result: Hinduism ~`#C5431A` (~5.0:1), Sikhism ~`#C54500` (~4.95:1). Dark theme: primary is *lightened* until it passes on all three M3 dark container colours, and `onPrimary` is chosen automatically (dark text on a light primary).
+- **Ring screen / badges:** white text sits on a gradient that is darkened to guarantee white >= 4.5:1 in either theme; locked-badge grey darkened so the white lock icon passes; subtitle text no longer 90% alpha.
+- **A11Y-09 Reduce Motion (new `rememberReduceMotion()`):** if the system animator scale is 0, confetti is omitted and the ring-screen pulse, badge bounce, medal pop and streak count-up all snap to their end state.
+- **A11Y-05 TalkBack / A11Y-06 Switch Access:** every switch is now one labelled control (`toggleable`, role Switch): "Daily verse, switch, on" and "7:00 AM, ..., switch, on" instead of an unlabelled switch beside loose text. Mood emojis are radio buttons named "Feeling Calm" etc. with selection announced (A11Y-04: state not conveyed by colour alone); weekday circles already had names. Mood buttons grow with font size (min 48 dp) instead of clipping (A11Y-07).
+- **Theme consistency:** `primaryContainer` was never set, so the onboarding religion picker's selected card showed Material's default lavender in every religion; it is now tinted from the religion's colour with readable text.
+
+**Tests (new `ContrastTest`, 9 cases):** every palette in light and dark passes 4.5:1 for primary-on-white, primary-on-surface, white-on-primary, primary-on-dark-containers, text-on-dark-primary and text-on-selected-card; passing palettes are exactly unchanged; failing ones only get darker. The loop's termination guarantees the invariant; numbers cross-checked in Python (worst dark selected-card contrast ~8.8:1).
+
+**Honest limits (not verified on a device):** nothing here was run with TalkBack, a 200% font size or dark mode on a real phone; contrast is verified by calculation, not by eye. At very large font sizes the seven weekday circles (fixed 40 dp) may crowd. They are below the 48 dp touch target (A11Y-02): a deliberate trade-off so seven fit across a phone; revisit with a two-row layout. Onboarding screens were not reviewed in detail. No images need `contentDescription` beyond decorative icons (set to null on purpose). A11Y-11 (announce errors) has nothing to apply to yet (no validated forms).
+
+**Verification:** brace/paren, duplicate imports, XML/JSON, `check_imports.py` and `check_symbols.py` (91 files), property-after-`init` scan: all clean. Not compiled here.
+
 ---
 
 ## What's Next (as of this session)
