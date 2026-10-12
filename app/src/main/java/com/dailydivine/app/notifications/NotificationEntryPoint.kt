@@ -3,6 +3,7 @@ package com.dailydivine.app.notifications
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.repository.StreakRepository
 import com.dailydivine.app.data.repository.VerseRepository
+import com.dailydivine.app.wallpaper.WallpaperUpdater
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -18,4 +19,5 @@ interface NotificationEntryPoint {
     fun userPreferences(): UserPreferences
     fun verseRepository(): VerseRepository
     fun streakRepository(): StreakRepository
+    fun wallpaperUpdater(): WallpaperUpdater
 }

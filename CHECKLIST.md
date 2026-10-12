@@ -734,6 +734,23 @@ Because several rounds were never compiled here, a systematic review was done be
 
 **Verification:** brace/paren, duplicate imports, XML/JSON, `check_imports.py` and `check_symbols.py` (91 files), property-after-`init` scan: all clean. Not compiled here.
 
+### 2026-10-05 — Onboarding refresh + NEW FEATURE: daily verse wallpaper (home / lock screen)
+
+**New requirement from the user (not in the PRD):** the phone wallpaper changes daily to that day's verse; the user can upload their own background and the app keeps updating the verse on it; home screen and/or lock screen, user's choice.
+
+**Daily wallpaper (built).**
+- **Where:** Settings > Personalise > Daily wallpaper (route `wallpaper`). Live preview of exactly what would be applied; apply to **Off / Home / Lock / Both**; background = **theme gradient** (religion colour, darkened to guarantee white text >= 4.5:1) or **the user's own photo**; verse position **Upper / Middle / Lower** (home screens are busy with icons, lock screens show a clock near the top, so the user can move the text); daily update time (default 5:00 AM); "Update wallpaper now"; last-updated date.
+- **How it works:** `WallpaperRenderer` draws the verse (serif, shrink-to-fit up to 10+ line passages, shadow for legibility; photos centre-cropped and dimmed ~45%); `WallpaperUpdater` (Singleton + mutex) sets it with `WallpaperManager.setBitmap(..., FLAG_SYSTEM and/or FLAG_LOCK)`. Daily work uses the same self-renewing WorkManager pattern as notifications (`WallpaperScheduler`/`WallpaperWorker`, via the existing Hilt entry point). **Because WorkManager is inexact and Doze can delay it, the app also catches up every time it comes to the foreground** (`HomeViewModel.refresh`), so the wallpaper is current as soon as the user opens the app.
+- **Photo upload:** system photo picker (no storage permission; the app sees only the chosen photo). The photo is copied to private app storage, EXIF-rotated upright, and capped at 3200 px with a decoded-pixel budget (a 108 MP photo would otherwise be ~430 MB), so a later background run never depends on an expiring content:// Uri. "Clear all data" deletes it.
+- **Consent & honesty:** OFF by default; first enable shows "Replace your wallpaper?" because the app **cannot restore the previous wallpaper**; the screen says so plainly, and says turning it off leaves the last wallpaper in place. Unknown stored values fall back to OFF (never applies by accident). Only new permission: `SET_WALLPAPER` (normal, install-time, no prompt).
+- **Tests:** `WallpaperRulesTest` (14 cases: update rules, target parsing and screen mapping, text-position safe band, photo sample size for 12/48/108 MP incl. memory budget and power-of-two). Expectations cross-checked in Python (all true). Rendering itself (Canvas/StaticLayout) needs a device, as does `setBitmap`.
+
+**Not verified / limits (be honest with the user):** NOT run on a device. Some phones (custom lock-screen or theme engines, managed/work profiles) ignore or override lock-screen changes; `setBitmap` may fail on such devices (reported to the user as "this phone wouldn't let DailyDivine change the wallpaper"). Launchers may crop a screen-sized bitmap slightly differently. Not built: a true live wallpaper service, rotating several photos, font choice, a different background per day, undo/restore of the previous wallpaper, premium gating (billing doesn't exist yet; decide whether this is a premium feature before release). Play Store: the listing/data-safety text should state that the app sets the wallpaper.
+
+**Onboarding refresh (all 5 screens, signatures unchanged so navigation is untouched).** New shared `OnboardingScaffold` (step indicator "Step N of 5" announced by TalkBack, heading, scrolling content so large fonts never push buttons off-screen, pinned action area), `HeroMedal`, `FeatureRow`. Welcome: hero + three benefit rows. Religion: 2-column cards, each in its **own religion colour**, selected = border + tint + check, selectable radio semantics. Language: one selectable row per language and an honest note that verses are English-only for now. Alarm: big tappable time card (48 sp), labelled toggle for read-aloud, exact-alarm banner kept. Notifications: hero + three benefit rows. All logic (permission launcher, lifecycle re-check, time picker) preserved.
+
+**Verification:** brace/paren, duplicate imports, XML/JSON, `check_imports.py` + `check_symbols.py` (101 files), property-after-`init` scan: all clean. No DAO methods added. Not compiled here.
+
 ---
 
 ## What's Next (as of this session)

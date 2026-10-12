@@ -3,6 +3,7 @@ package com.dailydivine.app.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.content.ContentMigrationManager
+import com.dailydivine.app.wallpaper.WallpaperBackgroundStore
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.datastore.UserPrefsState
 import com.dailydivine.app.data.local.db.AppDatabase
@@ -22,7 +23,8 @@ class SettingsViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val alarmRepository: AlarmRepository,
     private val appDatabase: AppDatabase,
-    private val contentMigrationManager: ContentMigrationManager
+    private val contentMigrationManager: ContentMigrationManager,
+    private val wallpaperBackgroundStore: WallpaperBackgroundStore
 ) : ViewModel() {
 
     private val _religion = MutableStateFlow<ReligionMeta?>(null)
@@ -84,6 +86,7 @@ class SettingsViewModel @Inject constructor(
             alarmRepository.getAllAlarms().first().forEach { alarmRepository.delete(it) }
             appDatabase.clearAllTables()
             userPreferences.clearAll()
+            wallpaperBackgroundStore.delete() // the user's own photo is personal data too
             onDone()
         }
     }

@@ -18,6 +18,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.dailydivine.app.ui.alarm.AlarmListScreen
 import com.dailydivine.app.ui.badges.BadgesScreen
+import com.dailydivine.app.ui.wallpaper.WallpaperScreen
 import com.dailydivine.app.ui.home.HomeScreen
 import com.dailydivine.app.ui.library.LibraryScreen
 import com.dailydivine.app.ui.onboarding.*
@@ -132,6 +133,9 @@ fun DailyDivineNavGraph(
                     autoRead = autoReadOnStart
                 )
             }
+            composable(Screen.Wallpaper.route) {
+                WallpaperScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.Badges.route) {
                 BadgesScreen(onBack = { navController.popBackStack() })
             }
@@ -139,6 +143,7 @@ fun DailyDivineNavGraph(
             composable(Screen.Alarm.route) { AlarmListScreen() }
             composable(Screen.Settings.route) {
                 SettingsScreen(
+                    onOpenWallpaper = { navController.navigate(Screen.Wallpaper.route) },
                     onDataCleared = {
                         navController.navigate(Screen.OnboardingGraph.route) {
                             popUpTo(navController.graph.id) { inclusive = true } // clear the whole back stack, fresh start

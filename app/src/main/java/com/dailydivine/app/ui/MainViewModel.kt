@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.notifications.NotificationScheduler
+import com.dailydivine.app.wallpaper.WallpaperScheduler
+import com.dailydivine.app.wallpaper.WallpaperTarget
 import com.dailydivine.app.util.Religions
 import com.dailydivine.app.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -74,6 +76,21 @@ class MainViewModel @Inject constructor(
                         if (k.dailyVerse) scheduler.scheduleDailyVerse(k.hour, k.minute, replace) else scheduler.cancelDailyVerse()
                         if (k.streakReminder) scheduler.scheduleStreakReminder(replace) else scheduler.cancelStreakReminder()
                     }
+                }
+        }
+
+        // Daily wallpaper: schedule only while it is turned on (and onboarding is done).
+        // Same KEEP-on-launch / REPLACE-on-change rule as the notifications above.
+        viewModelScope.launch {
+            val scheduler = WallpaperScheduler(appContext)
+            var first = true
+            userPreferences.state
+                .map { Triple(it.onboardingCompleted && WallpaperTarget.fromName(it.wallpaperTarget) != WallpaperTarget.OFF, it.wallpaperHour, it.wallpaperMinute) }
+                .distinctUntilChanged()
+                .collect { (active, hour, minute) ->
+                    val replace = !first
+                    first = false
+                    if (active) scheduler.schedule(hour, minute, replace) else scheduler.cancel()
                 }
         }
 

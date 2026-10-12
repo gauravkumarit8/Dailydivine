@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dailydivine.app.util.Religions
+import com.dailydivine.app.wallpaper.WallpaperTarget
 
 /**
  * Screen S12 (PRD Section 9): Settings. Most sections (Alarm config lives
@@ -28,7 +29,11 @@ import com.dailydivine.app.util.Religions
  * (F012-R16 clear-all) since those are already fully backed by real data.
  */
 @Composable
-fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    onDataCleared: () -> Unit,
+    onOpenWallpaper: () -> Unit = {},
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
     val religion by viewModel.religion.collectAsState()
     val languageCode by viewModel.languageCode.collectAsState()
     var showClearConfirm by remember { mutableStateOf(false) }
@@ -54,6 +59,19 @@ fun SettingsScreen(onDataCleared: () -> Unit, viewModel: SettingsViewModel = hil
         )
         // Religion is editable (F001-R04). Language stays read-only until
         // more than English content/UI strings exist.
+
+        Spacer(Modifier.height(24.dp))
+        Text("Personalise", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        ListItem(
+            modifier = Modifier.clickable(onClick = onOpenWallpaper),
+            headlineContent = { Text("Daily wallpaper") },
+            supportingContent = {
+                val target = WallpaperTarget.fromName(prefs.wallpaperTarget)
+                Text(if (target == WallpaperTarget.OFF) "Off" else "On: ${target.label}")
+            },
+            trailingContent = { Text("Set up", color = MaterialTheme.colorScheme.primary) }
+        )
 
         Spacer(Modifier.height(24.dp))
         Text("Notifications", style = MaterialTheme.typography.titleLarge)

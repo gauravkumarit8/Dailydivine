@@ -5,7 +5,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -64,21 +68,50 @@ fun AlarmSetupScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Text("Set Your Morning Blessing", style = MaterialTheme.typography.headlineMedium)
-        Text("Wake up to divine wisdom every day", style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(24.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(formatTime12h(alarmHour, alarmMinute), style = MaterialTheme.typography.headlineSmall)
-            Spacer(Modifier.width(12.dp))
-            TextButton(onClick = { showTimePicker = true }) { Text("Change") }
+    OnboardingScaffold(
+        step = 4,
+        title = "Set Your Morning Blessing",
+        subtitle = "Wake up to divine wisdom every day",
+        actions = {
+            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) { Text("Set Alarm \u2192") }
+            TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) { Text("Skip, I'll set up later") }
+        }
+    ) {
+        // The whole card is the control: a big, easy target instead of a small "Change" link.
+        Card(
+            modifier = Modifier.fillMaxWidth().clickable(onClickLabel = "Change alarm time") { showTimePicker = true },
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(28.dp).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    formatTime12h(alarmHour, alarmMinute),
+                    style = MaterialTheme.typography.headlineLarge.copy(fontSize = 48.sp, lineHeight = 56.sp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text("Tap to change", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
         Spacer(Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Read the verse aloud after I wake up", modifier = Modifier.weight(1f))
-            Switch(checked = ttsEnabled, onCheckedChange = onTtsToggle)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp)
+                .toggleable(value = ttsEnabled, role = Role.Switch, onValueChange = onTtsToggle)
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text("Read the verse aloud after I wake up", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Plays after you tap Wake Up & Read",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = ttsEnabled, onCheckedChange = null)
         }
 
         // v1.1 / F004-R25: graceful reliability banner instead of a silent
@@ -103,10 +136,6 @@ fun AlarmSetupScreen(
                 }
             }
         }
-
-        Spacer(Modifier.weight(1f))
-        Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) { Text("Set Alarm →") }
-        TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) { Text("Skip, I'll set up later") }
     }
 
     if (showTimePicker) {

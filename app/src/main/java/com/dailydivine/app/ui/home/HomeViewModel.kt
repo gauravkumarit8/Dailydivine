@@ -14,6 +14,7 @@ import com.dailydivine.app.data.repository.VerseRepository
 import com.dailydivine.app.domain.model.DailyVerse
 import com.dailydivine.app.domain.model.MilestoneBadge
 import com.dailydivine.app.notifications.NotificationHelper
+import com.dailydivine.app.wallpaper.WallpaperUpdater
 import com.dailydivine.app.domain.model.StreakInfo
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
@@ -59,6 +60,7 @@ class HomeViewModel @Inject constructor(
     private val streakRepository: StreakRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val journalRepository: JournalRepository,
+    private val wallpaperUpdater: WallpaperUpdater,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -158,6 +160,12 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val prefs = userPreferences.state.first()
             loadVerseAndStreak(prefs.religionId, prefs.installEpochDay)
+        }
+        // Daily wallpaper catch-up: WorkManager is inexact and may have been delayed by Doze,
+        // so also apply today's wallpaper when the app is opened. A cheap no-op when the
+        // feature is off or today's is already applied.
+        viewModelScope.launch {
+            try { wallpaperUpdater.updateIfNeeded() } catch (e: Exception) { /* never affect Home */ }
         }
     }
 

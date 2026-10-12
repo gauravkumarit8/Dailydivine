@@ -24,4 +24,7 @@ sealed class Screen(val route: String) {
     /** Streak & Badges (F003). Not a bottom-nav tab: reached from the Home streak card
      *  and from the milestone notification (F009-R12). */
     object Badges : Screen("badges")
+
+    /** Daily wallpaper settings; reached from Settings. */
+    object Wallpaper : Screen("wallpaper")
 }

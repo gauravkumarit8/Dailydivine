@@ -35,7 +35,14 @@ data class UserPrefsState(
     val streakReminderEnabled: Boolean = true,
     val milestonesEnabled: Boolean = true,
     val lastMilestoneDays: Int = 0, // highest milestone already celebrated, so each fires once
-    val ttsRate: Float = 1.0f       // F012-R06 voice speed: 0.75 slow, 1.0 normal, 1.25 fast
+    val ttsRate: Float = 1.0f,      // F012-R06 voice speed: 0.75 slow, 1.0 normal, 1.25 fast
+    // Daily wallpaper (new feature): OFF by default, so nothing ever changes without consent.
+    val wallpaperTarget: String = "OFF",          // OFF | HOME | LOCK | BOTH
+    val wallpaperUseCustom: Boolean = false,      // true = user's own photo, false = religion gradient
+    val wallpaperHour: Int = 5,                   // daily update time (5:00 AM)
+    val wallpaperMinute: Int = 0,
+    val wallpaperTextPosition: String = "MIDDLE", // UPPER | MIDDLE | LOWER
+    val wallpaperLastEpochDay: Long = -1L         // day today's wallpaper was last applied
 )
 
 @Singleton
@@ -54,6 +61,12 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         val MILESTONES_ENABLED = booleanPreferencesKey("milestones_enabled")
         val LAST_MILESTONE_DAYS = intPreferencesKey("last_milestone_days")
         val TTS_RATE = floatPreferencesKey("tts_rate")
+        val WALLPAPER_TARGET = stringPreferencesKey("wallpaper_target")
+        val WALLPAPER_USE_CUSTOM = booleanPreferencesKey("wallpaper_use_custom")
+        val WALLPAPER_HOUR = intPreferencesKey("wallpaper_hour")
+        val WALLPAPER_MINUTE = intPreferencesKey("wallpaper_minute")
+        val WALLPAPER_TEXT_POSITION = stringPreferencesKey("wallpaper_text_position")
+        val WALLPAPER_LAST_EPOCH_DAY = longPreferencesKey("wallpaper_last_epoch_day")
     }
 
     val state: Flow<UserPrefsState> = context.dataStore.data.map { prefs ->
@@ -69,7 +82,13 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
             streakReminderEnabled = prefs[Keys.STREAK_REMINDER_ENABLED] ?: true,
             milestonesEnabled = prefs[Keys.MILESTONES_ENABLED] ?: true,
             lastMilestoneDays = prefs[Keys.LAST_MILESTONE_DAYS] ?: 0,
-            ttsRate = prefs[Keys.TTS_RATE] ?: 1.0f
+            ttsRate = prefs[Keys.TTS_RATE] ?: 1.0f,
+            wallpaperTarget = prefs[Keys.WALLPAPER_TARGET] ?: "OFF",
+            wallpaperUseCustom = prefs[Keys.WALLPAPER_USE_CUSTOM] ?: false,
+            wallpaperHour = prefs[Keys.WALLPAPER_HOUR] ?: 5,
+            wallpaperMinute = prefs[Keys.WALLPAPER_MINUTE] ?: 0,
+            wallpaperTextPosition = prefs[Keys.WALLPAPER_TEXT_POSITION] ?: "MIDDLE",
+            wallpaperLastEpochDay = prefs[Keys.WALLPAPER_LAST_EPOCH_DAY] ?: -1L
         )
     }
 
@@ -103,6 +122,14 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
     suspend fun setMilestonesEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.MILESTONES_ENABLED] = enabled }
     }
+
+    suspend fun setWallpaperTarget(name: String) { context.dataStore.edit { it[Keys.WALLPAPER_TARGET] = name } }
+    suspend fun setWallpaperUseCustom(value: Boolean) { context.dataStore.edit { it[Keys.WALLPAPER_USE_CUSTOM] = value } }
+    suspend fun setWallpaperTime(hour: Int, minute: Int) {
+        context.dataStore.edit { it[Keys.WALLPAPER_HOUR] = hour; it[Keys.WALLPAPER_MINUTE] = minute }
+    }
+    suspend fun setWallpaperTextPosition(name: String) { context.dataStore.edit { it[Keys.WALLPAPER_TEXT_POSITION] = name } }
+    suspend fun setWallpaperLastEpochDay(day: Long) { context.dataStore.edit { it[Keys.WALLPAPER_LAST_EPOCH_DAY] = day } }
 
     suspend fun setTtsRate(rate: Float) {
         context.dataStore.edit { it[Keys.TTS_RATE] = rate }
