@@ -4,9 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.dailydivine.app.jobs.DailyAlarmScheduler
+import com.dailydivine.app.jobs.DailyJob
+import com.dailydivine.app.jobs.planFor
+import com.dailydivine.app.jobs.runDailyVerse
+import com.dailydivine.app.jobs.runStreakReminder
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
 
 private const val TAG = "NotificationWorkers"
 
@@ -14,52 +18,44 @@ private fun entryPoint(context: Context): NotificationEntryPoint =
     EntryPointAccessors.fromApplication(context.applicationContext, NotificationEntryPoint::class.java)
 
 /**
- * F009-R01..R05: morning verse notification. Always re-arms tomorrow's run in
- * `finally`, so an exception today can never silently end the daily chain.
+ * BACKUP trigger for the morning verse notification (the primary one is the Doze-proof alarm in
+ * jobs/DailyAlarmScheduler). Always re-arms tomorrow's run in `finally`, and also re-arms the alarm
+ * if it is missing, so either mechanism can revive the other.
  */
 class DailyVerseWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val ep = entryPoint(applicationContext)
         val prefs = ep.userPreferences().state.first()
-        val active = prefs.onboardingCompleted && prefs.dailyVerseEnabled
+        val plan = planFor(DailyJob.DAILY_VERSE, prefs)
         try {
-            if (active && prefs.religionId != null) {
-                val installDate = prefs.installEpochDay?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()
-                val daily = ep.verseRepository().getDailyVerse(prefs.religionId, installDate, LocalDate.now())
-                daily?.let {
-                    NotificationHelper.postDailyVerse(applicationContext, it.verse.translatedText, it.verse.sourceReference)
-                }
-            }
+            runDailyVerse(applicationContext, prefs, ep.userPreferences(), ep.verseRepository())
         } catch (e: Exception) {
             Log.e(TAG, "Daily verse notification failed", e)
         } finally {
-            if (active) {
-                NotificationScheduler(applicationContext)
-                    .scheduleDailyVerse(prefs.dailyVerseHour, prefs.dailyVerseMinute, replace = true)
+            if (plan.active) {
+                NotificationScheduler(applicationContext).scheduleDailyVerse(plan.hour, plan.minute, replace = true)
+                DailyAlarmScheduler(applicationContext).schedule(DailyJob.DAILY_VERSE, plan.hour, plan.minute, replace = true)
             }
         }
         return Result.success()
     }
 }
 
-/**
- * F009-R06..R09: 8 PM streak reminder. Sent only if the app has NOT been
- * opened today (R08) and the streak going into today is above 3 days (R09).
- */
+/** BACKUP trigger for the 8 PM streak reminder; see [DailyVerseWorker]. */
 class StreakReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val ep = entryPoint(applicationContext)
         val prefs = ep.userPreferences().state.first()
-        val active = prefs.onboardingCompleted && prefs.streakReminderEnabled
+        val plan = planFor(DailyJob.STREAK_REMINDER, prefs)
         try {
-            if (active && !ep.streakRepository().hasOpenedToday()) {
-                val streak = ep.streakRepository().streakEndingYesterday()
-                if (streak > 3) NotificationHelper.postStreakReminder(applicationContext, streak)
-            }
+            runStreakReminder(applicationContext, prefs, ep.userPreferences(), ep.streakRepository())
         } catch (e: Exception) {
             Log.e(TAG, "Streak reminder failed", e)
         } finally {
-            if (active) NotificationScheduler(applicationContext).scheduleStreakReminder(replace = true)
+            if (plan.active) {
+                NotificationScheduler(applicationContext).scheduleStreakReminder(replace = true)
+                DailyAlarmScheduler(applicationContext).schedule(DailyJob.STREAK_REMINDER, plan.hour, plan.minute, replace = true)
+            }
         }
         return Result.success()
     }

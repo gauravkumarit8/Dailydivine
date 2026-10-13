@@ -26,6 +26,35 @@ enum class TextPosition(val label: String, val centerFraction: Float) {
     }
 }
 
+/** Plain-language line for "Last check", e.g. "today 5:02 AM, background alarm: wallpaper updated". */
+fun describeLastCheck(
+    millis: Long, sourceName: String, resultName: String, nowMillis: Long,
+    zone: java.time.ZoneId = java.time.ZoneId.systemDefault()
+): String? {
+    if (millis <= 0L) return null
+    val whenDt = java.time.Instant.ofEpochMilli(millis).atZone(zone)
+    val nowDate = java.time.Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalDate()
+    val time = whenDt.format(java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.ENGLISH))
+    val day = if (whenDt.toLocalDate() == nowDate) "today"
+              else whenDt.format(java.time.format.DateTimeFormatter.ofPattern("d MMM", java.util.Locale.ENGLISH))
+    val source = when (sourceName) {
+        "ALARM" -> "background alarm"
+        "WORK" -> "background job"
+        "APP_OPEN" -> "you opened the app"
+        "MANUAL" -> "Update now"
+        else -> "unknown"
+    }
+    val result = when (resultName) {
+        "APPLIED" -> "wallpaper updated"
+        "UP_TO_DATE" -> "already up to date"
+        "FAILED" -> "the phone refused the change"
+        "NO_VERSE" -> "no verse available yet"
+        "DISABLED" -> "turned off"
+        else -> resultName.lowercase()
+    }
+    return "$day $time, $source: $result"
+}
+
 /** Pure rules, kept free of Android so they are unit-tested. */
 object WallpaperRules {
     /** Update when the feature is on and today's wallpaper has not been applied yet. */

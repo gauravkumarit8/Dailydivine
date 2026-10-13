@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
+import com.dailydivine.app.jobs.DailyAlarmScheduler
+import com.dailydivine.app.jobs.plansFor
 import com.dailydivine.app.notifications.NotificationScheduler
 import com.dailydivine.app.wallpaper.WallpaperScheduler
 import com.dailydivine.app.wallpaper.WallpaperTarget
@@ -77,6 +79,18 @@ class MainViewModel @Inject constructor(
                         if (k.streakReminder) scheduler.scheduleStreakReminder(replace) else scheduler.cancelStreakReminder()
                     }
                 }
+        }
+
+        // PRIMARY trigger for all three daily jobs: Doze-proof alarms (the WorkManager chains
+        // above and below are the backup). Armed only while a job is on. Always re-armed (also on
+        // every app launch): a fired alarm leaves its PendingIntent behind, so "already exists"
+        // cannot tell a live chain from a dead one, and re-setting the same wall-clock time is harmless.
+        viewModelScope.launch {
+            val alarms = DailyAlarmScheduler(appContext)
+            userPreferences.state
+                .map { plansFor(it) }
+                .distinctUntilChanged()
+                .collect { plans -> alarms.sync(plans, replace = true) }
         }
 
         // Daily wallpaper: schedule only while it is turned on (and onboarding is done).

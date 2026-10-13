@@ -768,6 +768,26 @@ Limit: live endpoints cannot be called from the sandbox, so uptime/rate limits/t
 
 **Verification:** brace/paren, XML/JSON, `check_imports.py`, `check_symbols.py` (101 files). No Kotlin logic changed beyond the registry entry. Not compiled here.
 
+### 2026-10-13 — Bug: daily wallpaper only changes when the app is opened (also affects daily-verse and streak notifications)
+
+**Symptom (user):** the wallpaper does not change by itself; it updates once the app is opened.
+
+**Root cause (strong reasoning from the code, not proven on the device):** the wallpaper, the daily-verse notification and the 8 PM streak reminder were all scheduled as WorkManager one-time work with an hours-long initial delay. WorkManager rides JobScheduler: on an idle phone overnight (Doze, App Standby buckets, OEM battery managers) such a job runs only in a maintenance window, which can be hours after the requested time, or when the user next wakes the phone. The user's alarms never showed the problem because they use `setAlarmClock`, the one call Doze exempts. The app-open catch-up (`HomeViewModel.refresh`) is why the wallpaper "fixed itself" on opening. **The daily notifications very likely had the same lateness; they were never reported because the user may not have waited for them.**
+
+**Fix.**
+- New `jobs` package: `DailyJob` (WALLPAPER / DAILY_VERSE / STREAK_REMINDER), `DailyAlarmScheduler` (AlarmManager `setAndAllowWhileIdle`, delivered in Doze, no extra permission), `DailyJobReceiver` (Hilt, `goAsync`; runs the job, then ALWAYS arms tomorrow's alarm in `finally`). This is now the **primary** trigger; the WorkManager chains stay as a **backup** and each mechanism re-arms the other, so either can revive a dead chain.
+- Jobs are idempotent per day (`wallpaperLastEpochDay`, new `lastVerseNotifEpochDay` / `lastStreakNotifEpochDay`): if both triggers fire, the user gets one wallpaper update and one notification.
+- `BootReceiver` now also re-arms the daily alarms after reboot and on `MY_PACKAGE_REPLACED` (app update), because AlarmManager forgets alarms on reboot.
+- **Design correction found while writing it:** I first used "skip if a PendingIntent exists" on app launch. A PendingIntent persists after its alarm has fired, so that cannot tell a live chain from a dead one. Launch/boot now always re-arm (safe: the trigger is an absolute wall-clock time). A 30 s minimum delay stops a job re-arming itself for "now".
+- **Diagnostics in the app:** Wallpaper screen shows "Last check: today 5:02 AM, background alarm: wallpaper updated" (who triggered the last run and the result), so the next report can say exactly whether the background path ran. Plus a battery tip card with a button to allow background activity (shown only while the feature is on and the app is restricted).
+- Tests: `DailyJobPlanTest` (8: distinct PendingIntent request codes, unknown job names ignored, nothing scheduled before onboarding, each job's switch and time) and `WallpaperLastCheckTest` (6). Expectations cross-checked in Python.
+
+**Limits (honest).** Doze can still delay `setAndAllowWhileIdle` by several minutes (it is inexact by design; exactness would need the exact-alarm permission and is not worth it for a wallpaper). Aggressive OEM task killers (MIUI, ColorOS, Funtouch and similar) treat swiping the app away like a force-stop and clear ALL alarms and jobs until the app is opened again; the app cannot override that: the battery card and the phone's "autostart/unrestricted battery" setting are the only remedies. **Not tested on a device.**
+
+**Verification:** brace/paren, duplicate imports, XML, `check_imports.py` + `check_symbols.py` (107 files), property-after-`init` scan: clean. A scripted edit failed halfway on a wrong relative path; the state was re-verified marker by marker before continuing. Not compiled here.
+
+**Device diagnostics (PowerShell, phone connected):** `adb shell dumpsys alarm | Select-String -Context 0,8 dailydivine` (is the alarm armed?), `adb shell dumpsys jobscheduler | Select-String -Context 0,10 dailydivine` (is the WorkManager backup queued?), `adb shell am get-standby-bucket com.dailydivine.app` (a "rare" or "restricted" bucket explains lateness).
+
 ---
 
 ## What's Next (as of this session)

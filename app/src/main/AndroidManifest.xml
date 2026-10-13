@@ -65,8 +65,15 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <!-- Daily wallpaper / verse notification / streak reminder, fired by
+             AlarmManager.setAndAllowWhileIdle so it runs on time even in Doze. -->
+        <receiver
+            android:name=".jobs.DailyJobReceiver"
+            android:exported="false" />
 
         <!-- F004-R23: foreground service owns tone playback + the v1.1
              escalation/auto-snooze loop (AlarmEscalationController) -->

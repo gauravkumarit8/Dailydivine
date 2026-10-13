@@ -42,7 +42,15 @@ data class UserPrefsState(
     val wallpaperHour: Int = 5,                   // daily update time (5:00 AM)
     val wallpaperMinute: Int = 0,
     val wallpaperTextPosition: String = "MIDDLE", // UPPER | MIDDLE | LOWER
-    val wallpaperLastEpochDay: Long = -1L         // day today's wallpaper was last applied
+    val wallpaperLastEpochDay: Long = -1L,        // day today's wallpaper was last applied
+    // Diagnostics: when/why the wallpaper job last ran, so "it only updates when I open the app"
+    // can be answered from the app itself (Wallpaper screen > "Last check").
+    val wallpaperLastAttemptMillis: Long = 0L,
+    val wallpaperLastAttemptSource: String = "",  // ALARM | WORK | APP_OPEN | MANUAL
+    val wallpaperLastAttemptResult: String = "",  // APPLIED | UP_TO_DATE | DISABLED | NO_VERSE | FAILED
+    // Idempotence: the alarm and the WorkManager backup can both fire; post each notification once a day.
+    val lastVerseNotifEpochDay: Long = -1L,
+    val lastStreakNotifEpochDay: Long = -1L
 )
 
 @Singleton
@@ -67,6 +75,11 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         val WALLPAPER_MINUTE = intPreferencesKey("wallpaper_minute")
         val WALLPAPER_TEXT_POSITION = stringPreferencesKey("wallpaper_text_position")
         val WALLPAPER_LAST_EPOCH_DAY = longPreferencesKey("wallpaper_last_epoch_day")
+        val WALLPAPER_LAST_ATTEMPT_MILLIS = longPreferencesKey("wallpaper_last_attempt_millis")
+        val WALLPAPER_LAST_ATTEMPT_SOURCE = stringPreferencesKey("wallpaper_last_attempt_source")
+        val WALLPAPER_LAST_ATTEMPT_RESULT = stringPreferencesKey("wallpaper_last_attempt_result")
+        val LAST_VERSE_NOTIF_EPOCH_DAY = longPreferencesKey("last_verse_notif_epoch_day")
+        val LAST_STREAK_NOTIF_EPOCH_DAY = longPreferencesKey("last_streak_notif_epoch_day")
     }
 
     val state: Flow<UserPrefsState> = context.dataStore.data.map { prefs ->
@@ -88,7 +101,12 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
             wallpaperHour = prefs[Keys.WALLPAPER_HOUR] ?: 5,
             wallpaperMinute = prefs[Keys.WALLPAPER_MINUTE] ?: 0,
             wallpaperTextPosition = prefs[Keys.WALLPAPER_TEXT_POSITION] ?: "MIDDLE",
-            wallpaperLastEpochDay = prefs[Keys.WALLPAPER_LAST_EPOCH_DAY] ?: -1L
+            wallpaperLastEpochDay = prefs[Keys.WALLPAPER_LAST_EPOCH_DAY] ?: -1L,
+            wallpaperLastAttemptMillis = prefs[Keys.WALLPAPER_LAST_ATTEMPT_MILLIS] ?: 0L,
+            wallpaperLastAttemptSource = prefs[Keys.WALLPAPER_LAST_ATTEMPT_SOURCE] ?: "",
+            wallpaperLastAttemptResult = prefs[Keys.WALLPAPER_LAST_ATTEMPT_RESULT] ?: "",
+            lastVerseNotifEpochDay = prefs[Keys.LAST_VERSE_NOTIF_EPOCH_DAY] ?: -1L,
+            lastStreakNotifEpochDay = prefs[Keys.LAST_STREAK_NOTIF_EPOCH_DAY] ?: -1L
         )
     }
 
@@ -129,6 +147,15 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         context.dataStore.edit { it[Keys.WALLPAPER_HOUR] = hour; it[Keys.WALLPAPER_MINUTE] = minute }
     }
     suspend fun setWallpaperTextPosition(name: String) { context.dataStore.edit { it[Keys.WALLPAPER_TEXT_POSITION] = name } }
+    suspend fun setWallpaperLastAttempt(millis: Long, source: String, result: String) {
+        context.dataStore.edit {
+            it[Keys.WALLPAPER_LAST_ATTEMPT_MILLIS] = millis
+            it[Keys.WALLPAPER_LAST_ATTEMPT_SOURCE] = source
+            it[Keys.WALLPAPER_LAST_ATTEMPT_RESULT] = result
+        }
+    }
+    suspend fun setLastVerseNotifEpochDay(day: Long) { context.dataStore.edit { it[Keys.LAST_VERSE_NOTIF_EPOCH_DAY] = day } }
+    suspend fun setLastStreakNotifEpochDay(day: Long) { context.dataStore.edit { it[Keys.LAST_STREAK_NOTIF_EPOCH_DAY] = day } }
     suspend fun setWallpaperLastEpochDay(day: Long) { context.dataStore.edit { it[Keys.WALLPAPER_LAST_EPOCH_DAY] = day } }
 
     suspend fun setTtsRate(rate: Float) {

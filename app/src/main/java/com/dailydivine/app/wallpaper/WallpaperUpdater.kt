@@ -36,22 +36,40 @@ class WallpaperUpdater @Inject constructor(
 ) {
     enum class Result { APPLIED, UP_TO_DATE, DISABLED, NO_VERSE, FAILED }
 
+    /** Who asked for this run; recorded so the Wallpaper screen can show whether the background job really fires. */
+    enum class Trigger { ALARM, WORK, APP_OPEN, MANUAL }
+
     private val renderer = WallpaperRenderer()
     private val mutex = Mutex()
 
     /** Cheap no-op unless the feature is on and today's wallpaper hasn't been applied. */
-    suspend fun updateIfNeeded(): Result = mutex.withLock {
+    suspend fun updateIfNeeded(trigger: Trigger = Trigger.APP_OPEN): Result = mutex.withLock {
         val prefs = userPreferences.state.first()
         val target = WallpaperTarget.fromName(prefs.wallpaperTarget)
-        if (target == WallpaperTarget.OFF) return Result.DISABLED
-        if (!WallpaperRules.needsUpdate(target, prefs.wallpaperLastEpochDay, LocalDate.now().toEpochDay())) {
-            return Result.UP_TO_DATE
+        val result = when {
+            target == WallpaperTarget.OFF -> Result.DISABLED
+            !WallpaperRules.needsUpdate(target, prefs.wallpaperLastEpochDay, LocalDate.now().toEpochDay()) -> Result.UP_TO_DATE
+            else -> applyLocked()
         }
-        applyLocked()
+        record(trigger, result)
+        result
     }
 
     /** "Update now": applies regardless of whether today's was already applied. */
-    suspend fun updateNow(): Result = mutex.withLock { applyLocked() }
+    suspend fun updateNow(): Result = mutex.withLock {
+        val result = applyLocked()
+        record(Trigger.MANUAL, result)
+        result
+    }
+
+    /** Every background run is recorded (that is what the diagnostics are for); app-open checks
+     *  that found nothing to do would only be noise. */
+    private suspend fun record(trigger: Trigger, result: Result) {
+        val background = trigger == Trigger.ALARM || trigger == Trigger.WORK
+        if (background || result == Result.APPLIED || result == Result.FAILED || result == Result.NO_VERSE) {
+            userPreferences.setWallpaperLastAttempt(System.currentTimeMillis(), trigger.name, result.name)
+        }
+    }
 
     private suspend fun applyLocked(): Result = withContext(Dispatchers.Default) {
         val prefs = userPreferences.state.first()

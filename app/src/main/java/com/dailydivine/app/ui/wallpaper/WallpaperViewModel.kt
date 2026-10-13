@@ -30,6 +30,9 @@ data class WallpaperUiState(
     val minute: Int = 0,
     val position: TextPosition = TextPosition.MIDDLE,
     val lastUpdatedEpochDay: Long = -1L,
+    val lastAttemptMillis: Long = 0L,
+    val lastAttemptSource: String = "",
+    val lastAttemptResult: String = "",
     val preview: Bitmap? = null,
     val busy: Boolean = false,
     /** One-shot message for a Toast; cleared once shown. */
@@ -60,7 +63,10 @@ class WallpaperViewModel @Inject constructor(
                     hour = p.wallpaperHour,
                     minute = p.wallpaperMinute,
                     position = TextPosition.fromName(p.wallpaperTextPosition),
-                    lastUpdatedEpochDay = p.wallpaperLastEpochDay
+                    lastUpdatedEpochDay = p.wallpaperLastEpochDay,
+                    lastAttemptMillis = p.wallpaperLastAttemptMillis,
+                    lastAttemptSource = p.wallpaperLastAttemptSource,
+                    lastAttemptResult = p.wallpaperLastAttemptResult
                 )
             }
         }
