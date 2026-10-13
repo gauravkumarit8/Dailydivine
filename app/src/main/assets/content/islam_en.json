@@ -1,0 +1,340 @@
+{
+  "religion": "Islam",
+  "language": "en",
+  "version": 1,
+  "source": "The Meaning of the Glorious Koran, tr. Marmaduke Pickthall (1930). Public domain; text via Tanzil.net / github.com/fawazahmed0/quran-api.",
+  "categories": [
+    {
+      "id": 301,
+      "name": "Mercy & Forgiveness",
+      "icon": "book_quran",
+      "verseCount": 6
+    },
+    {
+      "id": 302,
+      "name": "Patience & Trust",
+      "icon": "book_quran",
+      "verseCount": 12
+    },
+    {
+      "id": 303,
+      "name": "Guidance & Knowledge",
+      "icon": "book_quran",
+      "verseCount": 7
+    },
+    {
+      "id": 304,
+      "name": "Character & Kindness",
+      "icon": "book_quran",
+      "verseCount": 9
+    }
+  ],
+  "verses": [
+    {
+      "id": 3001,
+      "categoryId": 301,
+      "dayNumber": 1,
+      "originalText": "",
+      "translatedText": "Say: O My slaves who have been prodigal to their own hurt! Despair not of the mercy of Allah, Who forgiveth all sins. Lo! He is the Forgiving, the Merciful",
+      "sourceReference": "Quran 39:53 (Pickthall, 1930)",
+      "tags": "mercy,hope,forgiveness"
+    },
+    {
+      "id": 3002,
+      "categoryId": 302,
+      "dayNumber": 2,
+      "originalText": "",
+      "translatedText": "O ye who believe! Seek help in steadfastness and prayer. Lo! Allah is with the steadfast",
+      "sourceReference": "Quran 2:153 (Pickthall, 1930)",
+      "tags": "patience,prayer"
+    },
+    {
+      "id": 3003,
+      "categoryId": 303,
+      "dayNumber": 3,
+      "originalText": "",
+      "translatedText": "In the name of Allah, the Beneficent, the Merciful\nPraise be to Allah, Lord of the Worlds\nThe Beneficent, the Merciful\nMaster of the Day of Judgment\nThee (alone) we worship; Thee (alone) we ask for help\nShow us the straight path\nThe path of those whom Thou hast favoured; Not the (path) of those who earn Thine anger nor of those who go astray",
+      "sourceReference": "Quran 1:1-7 (Pickthall, 1930)",
+      "tags": "guidance,prayer"
+    },
+    {
+      "id": 3004,
+      "categoryId": 304,
+      "dayNumber": 4,
+      "originalText": "",
+      "translatedText": "Lo! Allah enjoineth justice and kindness, and giving to kinsfolk, and forbiddeth lewdness and abomination and wickedness. He exhorteth you in order that ye may take heed",
+      "sourceReference": "Quran 16:90 (Pickthall, 1930)",
+      "tags": "justice,kindness"
+    },
+    {
+      "id": 3005,
+      "categoryId": 301,
+      "dayNumber": 5,
+      "originalText": "",
+      "translatedText": "And when those who believe in Our revelations come unto thee, say: Peace be unto you! Your Lord hath prescribed for Himself mercy, that whoso of you doeth evil through ignorance and repenteth afterward thereof and doeth right, (for him) lo! He is Forgiving, Merciful",
+      "sourceReference": "Quran 6:54 (Pickthall, 1930)",
+      "tags": "mercy,forgiveness"
+    },
+    {
+      "id": 3006,
+      "categoryId": 302,
+      "dayNumber": 6,
+      "originalText": "",
+      "translatedText": "Say: O My bondmen who believe! Observe your duty to your Lord. For those who do good in this world there is good, and Allah's earth is spacious. Verily the steadfast will be paid their wages without stint",
+      "sourceReference": "Quran 39:10 (Pickthall, 1930)",
+      "tags": "patience,reward"
+    },
+    {
+      "id": 3007,
+      "categoryId": 303,
+      "dayNumber": 7,
+      "originalText": "",
+      "translatedText": "Allah! There is no deity save Him, the Alive, the Eternal. Neither slumber nor sleep overtaketh Him. Unto Him belongeth whatsoever is in the heavens and whatsoever is in the earth. Who is he that intercedeth with Him save by His leave? He knoweth that which is in front of them and that which is behind them, while they encompass nothing of His knowledge save what He will. His throne includeth the heavens and the earth, and He is never weary of preserving them. He is the Sublime, the Tremendous",
+      "sourceReference": "Quran 2:255 (Pickthall, 1930)",
+      "tags": "faith,protection"
+    },
+    {
+      "id": 3008,
+      "categoryId": 304,
+      "dayNumber": 8,
+      "originalText": "",
+      "translatedText": "O mankind! Lo! We have created you male and female, and have made you nations and tribes that ye may know one another. Lo! the noblest of you, in the sight of Allah, is the best in conduct. Lo! Allah is Knower, Aware",
+      "sourceReference": "Quran 49:13 (Pickthall, 1930)",
+      "tags": "humanity,piety"
+    },
+    {
+      "id": 3009,
+      "categoryId": 301,
+      "dayNumber": 9,
+      "originalText": "",
+      "translatedText": "And when My servants question thee concerning Me, then surely I am nigh. I answer the prayer of the suppliant when he crieth unto Me. So let them hear My call and let them trust in Me, in order that they may be led aright",
+      "sourceReference": "Quran 2:186 (Pickthall, 1930)",
+      "tags": "nearness,prayer"
+    },
+    {
+      "id": 3010,
+      "categoryId": 302,
+      "dayNumber": 10,
+      "originalText": "",
+      "translatedText": "But lo! with hardship goeth ease\nLo! with hardship goeth ease",
+      "sourceReference": "Quran 94:5-6 (Pickthall, 1930)",
+      "tags": "hardship,hope,ease"
+    },
+    {
+      "id": 3011,
+      "categoryId": 303,
+      "dayNumber": 11,
+      "originalText": "",
+      "translatedText": "Then exalted be Allah, the True King! And hasten not (O Muhammad) with the Qur'an ere its revelation hath been perfected unto thee, and say: My Lord! Increase me in knowledge",
+      "sourceReference": "Quran 20:114 (Pickthall, 1930)",
+      "tags": "knowledge,prayer"
+    },
+    {
+      "id": 3012,
+      "categoryId": 304,
+      "dayNumber": 12,
+      "originalText": "",
+      "translatedText": "The good deed and the evil deed are not alike. Repel the evil deed with one which is better, then lo! he, between whom and thee there was enmity (will become) as though he was a bosom friend",
+      "sourceReference": "Quran 41:34 (Pickthall, 1930)",
+      "tags": "kindness,forgiveness"
+    },
+    {
+      "id": 3013,
+      "categoryId": 301,
+      "dayNumber": 13,
+      "originalText": "",
+      "translatedText": "Yet whoso doeth evil or wrongeth his own soul, then seeketh pardon of Allah, will find Allah Forgiving, Merciful",
+      "sourceReference": "Quran 4:110 (Pickthall, 1930)",
+      "tags": "forgiveness,repentance"
+    },
+    {
+      "id": 3014,
+      "categoryId": 302,
+      "dayNumber": 14,
+      "originalText": "",
+      "translatedText": "Thy Lord hath not forsaken thee nor doth He hate thee\nAnd verily the latter portion will be better for thee than the former\nAnd verily thy Lord will give unto thee so that thou wilt be content",
+      "sourceReference": "Quran 93:3-5 (Pickthall, 1930)",
+      "tags": "comfort,hope"
+    },
+    {
+      "id": 3015,
+      "categoryId": 303,
+      "dayNumber": 15,
+      "originalText": "",
+      "translatedText": "Is he who payeth adoration in the watches of the night, prostrate and standing, bewaring of the Hereafter and hoping for the mercy of his Lord, (to be accounted equal with a disbeliever)? Say (unto them, O Muhammad): Are those who know equal with those who know not? But only men of understanding will pay heed",
+      "sourceReference": "Quran 39:9 (Pickthall, 1930)",
+      "tags": "knowledge"
+    },
+    {
+      "id": 3016,
+      "categoryId": 304,
+      "dayNumber": 16,
+      "originalText": "",
+      "translatedText": "Thy Lord hath decreed, that ye worship none save Him, and (that ye show) kindness to parents. If one of them or both of them attain old age with thee, say not \"Fie\" unto them nor repulse them, but speak unto them a gracious word",
+      "sourceReference": "Quran 17:23 (Pickthall, 1930)",
+      "tags": "parents,kindness"
+    },
+    {
+      "id": 3017,
+      "categoryId": 301,
+      "dayNumber": 17,
+      "originalText": "",
+      "translatedText": "Announce, (O Muhammad) unto My slaves that verily I am the Forgiving, the Merciful",
+      "sourceReference": "Quran 15:49 (Pickthall, 1930)",
+      "tags": "forgiveness,mercy"
+    },
+    {
+      "id": 3018,
+      "categoryId": 302,
+      "dayNumber": 18,
+      "originalText": "",
+      "translatedText": "And trust thou in the Living One Who dieth not, and hymn His praise. He sufficeth as the Knower of His bondmen's sins",
+      "sourceReference": "Quran 25:58 (Pickthall, 1930)",
+      "tags": "trust"
+    },
+    {
+      "id": 3019,
+      "categoryId": 303,
+      "dayNumber": 19,
+      "originalText": "",
+      "translatedText": "Say: He is Allah, the One\nAllah, the eternally Besought of all\nHe begetteth not nor was begotten\nAnd there is none comparable unto Him",
+      "sourceReference": "Quran 112:1-4 (Pickthall, 1930)",
+      "tags": "unity,faith"
+    },
+    {
+      "id": 3020,
+      "categoryId": 304,
+      "dayNumber": 20,
+      "originalText": "",
+      "translatedText": "The (faithful) slaves of the Beneficent are they who walk upon the earth modestly, and when the foolish ones address them answer: Peace",
+      "sourceReference": "Quran 25:63 (Pickthall, 1930)",
+      "tags": "humility,peace"
+    },
+    {
+      "id": 3021,
+      "categoryId": 301,
+      "dayNumber": 21,
+      "originalText": "",
+      "translatedText": "And lo! verily I am Forgiving toward him who repenteth and believeth and doeth good, and afterward walketh aright",
+      "sourceReference": "Quran 20:82 (Pickthall, 1930)",
+      "tags": "repentance,forgiveness"
+    },
+    {
+      "id": 3022,
+      "categoryId": 302,
+      "dayNumber": 22,
+      "originalText": "",
+      "translatedText": "Those unto whom men said: Lo! the people have gathered against you, therefor fear them. (The threat of danger) but increased the faith of them and they cried: Allah is Sufficient for us! Most Excellent is He in Whom we trust",
+      "sourceReference": "Quran 3:173 (Pickthall, 1930)",
+      "tags": "trust,protection"
+    },
+    {
+      "id": 3023,
+      "categoryId": 303,
+      "dayNumber": 23,
+      "originalText": "",
+      "translatedText": "O ye who believe! when it is said unto you, Make room! in assemblies, then make room; Allah will make way for you (hereafter). And when it is said, Come up higher! go up higher; Allah will exalt those who believe among you, and those who have knowledge, to high ranks. Allah is Informed of what ye do",
+      "sourceReference": "Quran 58:11 (Pickthall, 1930)",
+      "tags": "knowledge,rank"
+    },
+    {
+      "id": 3024,
+      "categoryId": 304,
+      "dayNumber": 24,
+      "originalText": "",
+      "translatedText": "O ye who believe! Be steadfast witnesses for Allah in equity, and let not hatred of any people seduce you that ye deal not justly. Deal justly, that is nearer to your duty. Observe your duty to Allah. Lo! Allah is Informed of what ye do",
+      "sourceReference": "Quran 5:8 (Pickthall, 1930)",
+      "tags": "justice"
+    },
+    {
+      "id": 3025,
+      "categoryId": 302,
+      "dayNumber": 25,
+      "originalText": "",
+      "translatedText": "Say: Naught befalleth us save that which Allah hath decreed for us. He is our Protecting Friend. In Allah let believers put their trust",
+      "sourceReference": "Quran 9:51 (Pickthall, 1930)",
+      "tags": "trust,acceptance"
+    },
+    {
+      "id": 3026,
+      "categoryId": 303,
+      "dayNumber": 26,
+      "originalText": "",
+      "translatedText": "Read: In the name of thy Lord Who createth\nCreateth man from a clot\nRead: And thy Lord is the Most Bounteous\nWho teacheth by the pen\nTeacheth man that which he knew not",
+      "sourceReference": "Quran 96:1-5 (Pickthall, 1930)",
+      "tags": "knowledge,reading"
+    },
+    {
+      "id": 3027,
+      "categoryId": 304,
+      "dayNumber": 27,
+      "originalText": "",
+      "translatedText": "It was by the mercy of Allah that thou wast lenient with them (O Muhammad), for if thou hadst been stern and fierce of heart they would have dispersed from round about thee. So pardon them and ask forgiveness for them and consult with them upon the conduct of affairs. And when thou art resolved, then put thy trust in Allah. Lo! Allah loveth those who put their trust (in Him)",
+      "sourceReference": "Quran 3:159 (Pickthall, 1930)",
+      "tags": "gentleness,leadership"
+    },
+    {
+      "id": 3028,
+      "categoryId": 302,
+      "dayNumber": 28,
+      "originalText": "",
+      "translatedText": "Allah tasketh not a soul beyond its scope. For it (is only) that which it hath earned, and against it (only) that which it hath deserved. Our Lord! Condemn us not if we forget, or miss the mark! Our Lord! Lay not on us such a burden as thou didst lay on those before us! Our Lord! Impose not on us that which we have not the strength to bear! Pardon us, absolve us and have mercy on us, Thou, our Protector, and give us victory over the disbelieving folk",
+      "sourceReference": "Quran 2:286 (Pickthall, 1930)",
+      "tags": "burdens,mercy"
+    },
+    {
+      "id": 3029,
+      "categoryId": 304,
+      "dayNumber": 29,
+      "originalText": "",
+      "translatedText": "Turn not thy cheek in scorn toward folk, nor walk with pertness in the land. Lo! Allah loveth not each braggart boaster\nBe modest in thy bearing and subdue thy voice. Lo! the harshest of all voices is the voice of the ass",
+      "sourceReference": "Quran 31:18-19 (Pickthall, 1930)",
+      "tags": "humility,manners"
+    },
+    {
+      "id": 3030,
+      "categoryId": 302,
+      "dayNumber": 30,
+      "originalText": "",
+      "translatedText": "And when your Lord proclaimed: If ye give thanks, I will give you more; but if ye are thankless, lo! My punishment is dire",
+      "sourceReference": "Quran 14:7 (Pickthall, 1930)",
+      "tags": "gratitude"
+    },
+    {
+      "id": 3031,
+      "categoryId": 304,
+      "dayNumber": 31,
+      "originalText": "",
+      "translatedText": "And of His signs is this: He created for you helpmeets from yourselves that ye might find rest in them, and He ordained between you love and mercy. Lo! herein indeed are portents for folk who reflect",
+      "sourceReference": "Quran 30:21 (Pickthall, 1930)",
+      "tags": "love,family"
+    },
+    {
+      "id": 3032,
+      "categoryId": 302,
+      "dayNumber": 32,
+      "originalText": "",
+      "translatedText": "Therefore remember Me, I will remember you. Give thanks to Me, and reject not Me",
+      "sourceReference": "Quran 2:152 (Pickthall, 1930)",
+      "tags": "remembrance"
+    },
+    {
+      "id": 3033,
+      "categoryId": 302,
+      "dayNumber": 33,
+      "originalText": "",
+      "translatedText": "Who have believed and whose hearts have rest in the remembrance of Allah. Verily in the remembrance of Allah do hearts find rest",
+      "sourceReference": "Quran 13:28 (Pickthall, 1930)",
+      "tags": "peace,remembrance"
+    },
+    {
+      "id": 3034,
+      "categoryId": 302,
+      "dayNumber": 34,
+      "originalText": "",
+      "translatedText": "O ye who believe! Endure, outdo all others in endurance, be ready, and observe your duty to Allah, in order that ye may succeed",
+      "sourceReference": "Quran 3:200 (Pickthall, 1930)",
+      "tags": "patience,perseverance"
+    }
+  ]
+}

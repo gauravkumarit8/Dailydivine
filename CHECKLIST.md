@@ -751,6 +751,23 @@ Because several rounds were never compiled here, a systematic review was done be
 
 **Verification:** brace/paren, duplicate imports, XML/JSON, `check_imports.py` + `check_symbols.py` (101 files), property-after-`init` scan: all clean. No DAO methods added. Not compiled here.
 
+### 2026-10-12 — Pulled latest main; public-APIs research; Islam content (Pickthall)
+
+**Repo state.** Fresh clone of `main` (HEAD `5b2f21e`) is **byte-identical to the tree delivered last round** (160 files, zero diffs), so the full-mirror sync landed. CI result could not be read (GitHub's anonymous API rate limit was exhausted); **still need the user's CI result** (first full compile since the badges round).
+
+**Research: public-apis/public-apis and alternatives** (full write-up in `licenses/API_RESEARCH.md`). Conclusions:
+1. The list is a directory of APIs, **not of content licences**. The aggregated Quran dataset has no licence field for any of its 492 editions and mixes modern copyrighted translations with public-domain ones. Sefaria records a licence per version (JPS 1917 = Public Domain; JPS 1985 and 2023 = CC-BY-NC, unusable commercially).
+2. **Scripture must not be a runtime API dependency** (offline alarm/verse/wallpaper, API churn, per-version rights). Chosen approach, same as KJV/Arnold/Muller: use APIs and datasets at **build time behind a licence gate**, ship JSON.
+3. Most "helpful" extras can be computed **offline**: Hijri calendar (`HijrahChronology`), Hebrew calendar (`android.icu.util.HebrewCalendar`), Easter (Computus), prayer times and sun/moon (Adhan MIT, commons-suncalc Apache 2.0). Only Hindu festivals (lunisolar panchang) genuinely need an external dataset.
+4. Quote-of-the-day APIs: avoid for scripture (attribution, rate limits, murky provenance); for a Spiritual category curate public-domain classics.
+Limit: live endpoints cannot be called from the sandbox, so uptime/rate limits/terms must be re-checked at integration time.
+
+**Islam content (new): 34 Quran passages, Pickthall 1930, public domain.** Four categories: Mercy & Forgiveness (6), Patience & Trust (12), Guidance & Knowledge (7), Character & Kindness (9). Built by `tools/build_islam_en.py`, **machine-extracted by reference** (aborts on a missing reference), cited "Quran 94:5-6 (Pickthall, 1930)". English only: Arabic deliberately excluded (Tanzil's Arabic is CC BY 3.0 with a no-modification clause and attribution/link requirements). Dataset drops verse-final punctuation; not patched, multi-verse passages use one line per verse. **Review caught two bad selections** (printed every passage and read them): 65:2-3 opens with divorce rulings; 7:156 opens with Moses's prayer and a punishment clause; replaced with 6:54 and 93:3-5; 40:60 skipped (hell clause). Registered in `Religions.kt`. **The editorial selection must still be vetted by a Muslim reviewer before release.** Pickthall's 1930 English is archaic.
+
+**Content status:** Hinduism 46, Christianity 79, Buddhism 57, **Islam 34**. Still empty: Judaism (needs sandbox access to `storage.googleapis.com`, Sefaria's export host), Sikhism (blocked on translation permission, see API_RESEARCH.md), Spiritual.
+
+**Verification:** brace/paren, XML/JSON, `check_imports.py`, `check_symbols.py` (101 files). No Kotlin logic changed beyond the registry entry. Not compiled here.
+
 ---
 
 ## What's Next (as of this session)
