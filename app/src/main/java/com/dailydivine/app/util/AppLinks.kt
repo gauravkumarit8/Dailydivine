@@ -10,5 +10,5 @@ object AppLinks {
     const val SITE_URL = "https://gauravkumarit8.github.io/Dailydivine/"
     const val PRIVACY_URL = SITE_URL + "privacy.html"
     const val TERMS_URL = SITE_URL + "terms.html"
-    const val SUPPORT_EMAIL = "REPLACE_ME_EMAIL"
+    const val SUPPORT_EMAIL = "gaurav954624@gmail.com"
 }
