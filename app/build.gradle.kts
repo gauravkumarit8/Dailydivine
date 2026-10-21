@@ -8,7 +8,12 @@ plugins {
 // Release versioning comes from the release workflow (-PappVersionCode / -PappVersionName).
 // Local and CI debug builds fall back to these defaults. Keep the default versionCode at or
 // above any build already installed on a test phone: Android refuses to install a LOWER one.
-val appVersionCode: Int = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 2
+val appVersionCode: Int = (findProperty("appVersionCode") as String?)?.let { raw ->
+    // Android (and Google Play) reject 0 and negative numbers. Fail here with a plain message
+    // instead of a long Gradle stack trace.
+    raw.toIntOrNull()?.takeIf { it >= 1 }
+        ?: throw GradleException("appVersionCode must be a whole number of 1 or more, but got \"$raw\". Use 1 for the first Play upload, then 2, 3, ...")
+} ?: 2
 val appVersionName: String = (findProperty("appVersionName") as String?) ?: "1.0.0"
 
 android {

@@ -64,7 +64,7 @@ Upload `play-store/assets/icon-512.png`, the feature graphic and **your own phon
 ## 6. Build the signed bundle
 Actions > **Release AAB (Google Play)** > Run workflow:
 - `version_name`: `1.0.0`
-- `version_code`: `1` (must be higher for every later upload: 2, 3, ...)
+- `version_code`: `1` (**never 0**: Android rejects it; must be higher for every later upload: 2, 3, ...)
 
 The workflow stops with a clear message if a placeholder, a forbidden permission, a wrong targetSdk or a missing secret is found.
 Download the artifact `DailyDivine-release-aab` (the `.aab`, `mapping.txt` and the merged manifest).

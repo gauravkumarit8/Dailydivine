@@ -819,6 +819,18 @@ Limit: live endpoints cannot be called from the sandbox, so uptime/rate limits/t
 
 **Verification:** brace/paren, duplicate imports, XML (res and manifest), `check_imports.py` + `check_symbols.py` (109 files), property-after-`init` scan, resource-name validity, stale-reference grep, readiness gate (happy path and 3 deliberate failures). Still open from before: CI result for the last commit; alarm confirmation; Judaism (needs `storage.googleapis.com` allowed in the sandbox); Sikhism (needs translation permission).
 
+### 2026-10-21 — First release-workflow run failed: `versionCode is set to 0`
+
+**Symptom (CI, step "Build signed release bundle"):** `android.defaultConfig.versionCode is set to 0, but it should be a positive integer.`
+
+**Root cause:** the workflow was started with `version_code = 0`. My input check (`^[0-9]+$`) accepted 0, and the Gradle default only applies when the property is *missing*, so an explicit 0 went straight to the Android plugin, which rejects it with a long stack trace. The user input had no default, which made 0 an easy value to type. **My validation gap, not a setup problem.**
+
+**Fix:** (1) workflow check is now `^[1-9][0-9]*$` with an explicit "never 0" message; (2) `version_code` input defaults to `1`; (3) `app/build.gradle.kts` fails immediately with a plain message for any `appVersionCode` below 1 or non-numeric; (4) RELEASE.md says "never 0". Rules tested (0, 00, empty, negative, decimal, text rejected; 1, 2, 10 accepted).
+
+**What this run proved (steps before the failure all succeeded):** the readiness gate passed (placeholders were filled in), `testDebugUnitTest` passed with `targetSdk = 36` / `compileSdk = 34` (so the biggest assumption from the release round, that AGP 8.2.2 accepts that combination, held), and the keystore secret was restored. Still unproven: R8-minified release compile, signing, the merged-manifest guardrails, bundletool validation.
+
+**Process note:** the zip still contains the placeholders (`REPLACE_ME_*`). Do NOT mirror `docs/` or `app/src/` from the zip onto the user's repo any more: it would overwrite the name/email the user already filled in. From now on deliver targeted file lists.
+
 ---
 
 ## What's Next (as of this session)
