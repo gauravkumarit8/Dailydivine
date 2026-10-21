@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dailydivine.app.util.AppLinks
+import com.dailydivine.app.util.ContentCredits
 import com.dailydivine.app.util.Religions
 import com.dailydivine.app.wallpaper.WallpaperTarget
 
@@ -39,6 +41,7 @@ fun SettingsScreen(
     var showClearConfirm by remember { mutableStateOf(false) }
     var showReligionPicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showCredits by remember { mutableStateOf(false) }
     val prefs by viewModel.prefs.collectAsState()
     val context = LocalContext.current
     val systemNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
@@ -157,6 +160,34 @@ fun SettingsScreen(
             }
         }
 
+        Spacer(Modifier.height(24.dp))
+        Text("About", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        ListItem(
+            modifier = Modifier.clickable { openLink(context, AppLinks.PRIVACY_URL) },
+            headlineContent = { Text("Privacy policy") },
+            trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
+        )
+        ListItem(
+            modifier = Modifier.clickable { openLink(context, AppLinks.TERMS_URL) },
+            headlineContent = { Text("Terms of use") },
+            trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
+        )
+        ListItem(
+            modifier = Modifier.clickable { showCredits = true },
+            headlineContent = { Text("Content sources & credits") },
+            trailingContent = { Text("View", color = MaterialTheme.colorScheme.primary) }
+        )
+        ListItem(
+            modifier = Modifier.clickable { sendSupportEmail(context) },
+            headlineContent = { Text("Contact support") },
+            supportingContent = { Text(AppLinks.SUPPORT_EMAIL) }
+        )
+        ListItem(
+            headlineContent = { Text("Version") },
+            supportingContent = { Text(appVersionName(context)) }
+        )
+
         if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             // Debug builds only: preview all three notification types now.
             TextButton(onClick = {
@@ -216,6 +247,24 @@ fun SettingsScreen(
         )
     }
 
+    if (showCredits) {
+        AlertDialog(
+            onDismissRequest = { showCredits = false },
+            title = { Text("Content sources & credits") },
+            text = {
+                Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                    ContentCredits.SCRIPTURE.forEach { (tradition, source) ->
+                        Text(tradition, style = MaterialTheme.typography.titleMedium)
+                        Text(source, style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.height(12.dp))
+                    }
+                    Text(ContentCredits.OTHER, style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = { TextButton(onClick = { showCredits = false }) { Text("Close") } }
+        )
+    }
+
     if (showTimePicker) {
         TimePickerDialog(
             initialHour = prefs.dailyVerseHour,
@@ -242,3 +291,32 @@ fun SettingsScreen(
         )
     }
 }
+
+/** Opens a web page in the user's browser. The app itself makes no network requests. */
+private fun openLink(context: android.content.Context, url: String) {
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    } catch (e: android.content.ActivityNotFoundException) {
+        android.widget.Toast.makeText(context, "No web browser found on this phone", android.widget.Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun sendSupportEmail(context: android.content.Context) {
+    try {
+        context.startActivity(
+            Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:${AppLinks.SUPPORT_EMAIL}"))
+                .putExtra(Intent.EXTRA_SUBJECT, "DailyDivine support")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    } catch (e: android.content.ActivityNotFoundException) {
+        android.widget.Toast.makeText(context, "No email app found on this phone", android.widget.Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun appVersionName(context: android.content.Context): String =
+    try {
+        @Suppress("DEPRECATION")
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown"
+    } catch (e: Exception) {
+        "unknown"
+    }

@@ -3,10 +3,13 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-    // Uncomment once google-services.json is added:
-    // id("com.google.gms.google-services")
-    // id("com.google.firebase.crashlytics")
 }
+
+// Release versioning comes from the release workflow (-PappVersionCode / -PappVersionName).
+// Local and CI debug builds fall back to these defaults. Keep the default versionCode at or
+// above any build already installed on a test phone: Android refuses to install a LOWER one.
+val appVersionCode: Int = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 2
+val appVersionName: String = (findProperty("appVersionName") as String?) ?: "1.0.0"
 
 android {
     namespace = "com.dailydivine.app"
@@ -15,18 +18,51 @@ android {
     defaultConfig {
         applicationId = "com.dailydivine.app"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 2       // v1.1.0
-        versionName = "1.1.0"
+        // Google Play requires new apps and updates to target Android 16 (API 36) since
+        // 2026-08-31. targetSdk is deliberately NOT tied to compileSdk (the official Android
+        // build docs: "you can have a value of targetSdk that is higher, the same, or lower than
+        // compileSdk"). The Android 15/16 runtime behaviour changes are handled in code (edge-to-edge,
+        // predictive back); compileSdk stays on the tested toolchain until a planned AGP/Kotlin upgrade.
+        targetSdk = 36
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Release signing: only when the release workflow (or a developer) provides the keystore via
+    // environment variables. Without them `bundleRelease` produces an UNSIGNED bundle, so an
+    // unsigned or debug-signed build can never be uploaded to Play by accident. The keystore
+    // itself is never committed (see .gitignore and play-store/RELEASE.md).
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            if (!keystorePath.isNullOrBlank() && file(keystorePath).exists()) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 shrinking/obfuscation: smaller download and Play's recommended release setup.
+            // The keep rules in proguard-rules.pro are REQUIRED (Gson reads the verse files by reflection).
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            val releaseSigning = signingConfigs.getByName("release")
+            if (releaseSigning.storeFile != null) signingConfig = releaseSigning
         }
+    }
+
+    lint {
+        // Release builds run "lintVital". Keep the report (the release workflow uploads it) but do
+        // not let a finding block a store build on a toolchain we cannot test locally.
+        abortOnError = false
+        checkReleaseBuilds = true
     }
 
     compileOptions {
@@ -99,11 +135,13 @@ dependencies {
     // DataStore (Preferences)
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    // Media3 (Audio Playback)
-    implementation("androidx.media3:media3-exoplayer:1.2.1")
-    implementation("androidx.media3:media3-session:1.2.1")
-    implementation("androidx.media3:media3-ui:1.2.1")
-
+    // REMOVED for the first Play release (none of these were used by any code):
+    //  - Media3 (the alarm uses MediaPlayer), Coil, Lottie (confetti is drawn natively).
+    //  - Firebase Analytics: would add the advertising-ID permission and a data-collection
+    //    disclosure for no benefit. Re-add deliberately, together with the privacy policy + Data safety form.
+    //  - Play Billing 6.1: Google Play requires Billing Library 8.0.0+ for any app that includes it; add
+    //    the current version when Sprint 7 actually implements premium.
+    //
     // Google AdMob + UMP (v1.1 — SEC-11 consent gate)
     // DISABLED until Sprint 7 (Monetization) actually implements AdMob.
     // play-services-ads registers a ContentProvider (MobileAdsInitProvider)
@@ -121,24 +159,11 @@ dependencies {
     // implementation("com.google.android.gms:play-services-ads:22.6.0")
     // implementation("com.google.android.ump:user-messaging-platform:2.2.0")
 
-    // Google Play Billing
-    implementation("com.android.billingclient:billing-ktx:6.1.0")
-
-    // Firebase (add google-services.json before enabling the plugins above)
-    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-
     // WorkManager (Background tasks)
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // JSON Parsing
     implementation("com.google.code.gson:gson:2.10.1")
-
-    // Image loading (share cards)
-    implementation("io.coil-kt:coil-compose:2.5.0")
-
-    // Lottie Animations
-    implementation("com.airbnb.android:lottie-compose:6.3.0")
 
     // Glance (Home Screen Widgets) — DISABLED until Sprint 9 actually builds
     // DailyVerseWidget.kt. Simply unused right now, nothing more: it was

@@ -119,16 +119,13 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 ) {
                     Column(Modifier.padding(12.dp)) {
                         Text(
-                            "Battery optimization may stop your alarm from firing in the background. Exempt DailyDivine for reliable wake-ups.",
+                            "Battery optimization may stop your alarm from firing in the background. Find DailyDivine in the list and choose \"Don't optimize\" for reliable wake-ups.",
                             style = MaterialTheme.typography.bodySmall
                         )
                         TextButton(onClick = {
-                            context.startActivity(
-                                Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                                    data = Uri.parse("package:${context.packageName}")
-                                }
-                            )
-                        }) { Text("Disable battery optimization") }
+                            // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
+                            context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                        }) { Text("Open battery settings") }
                     }
                 }
             }

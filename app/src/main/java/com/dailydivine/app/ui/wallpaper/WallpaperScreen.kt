@@ -1,7 +1,6 @@
 package com.dailydivine.app.ui.wallpaper
 
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -195,17 +194,14 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Column(Modifier.padding(12.dp)) {
                     Text(
-                        "For on-time daily updates, let DailyDivine run without battery restrictions. " +
+                        "For on-time daily updates, find DailyDivine in the battery list and choose \"Don't optimize\". " +
                             "Some phones pause background apps overnight, so the wallpaper may only change when you open the app.",
                         style = MaterialTheme.typography.bodySmall
                     )
                     TextButton(onClick = {
-                        context.startActivity(
-                            Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                            }
-                        )
-                    }) { Text("Allow background activity") }
+                        // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
+                        context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                    }) { Text("Open battery settings") }
                 }
             }
         }

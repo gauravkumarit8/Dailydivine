@@ -8,7 +8,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -67,6 +70,13 @@ class AlarmRingActivity : ComponentActivity() {
     private var toneId: String = "temple_bell"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Edge-to-edge is enforced at targetSdk 35+. This screen is always a dark gradient, so ask for
+        // light system-bar icons in every theme (the default would follow the phone's light/dark mode
+        // and could draw dark icons on the dark gradient).
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
         applyLockScreenFlags()
 
@@ -168,6 +178,7 @@ private fun AlarmRingScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(gradient)
+            .systemBarsPadding() // keep the content clear of the status/navigation bars
             .padding(horizontal = 32.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

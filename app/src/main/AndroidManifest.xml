@@ -13,21 +13,17 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Daily wallpaper: a normal permission, granted at install (no runtime prompt). -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
-    <!-- F004-R24: lets the app ask the user to exempt it from battery
-         optimization, so AlarmReceiver's broadcast reliably reaches
-         AlarmService instead of the process being killed in the
-         background before it can start. Only used to launch the system
-         settings screen (ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS),
-         never silently self-granted. -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <!-- No INTERNET permission needed for core features (offline-first, NG3/NG7);
-         add it only when AdMob/Firebase are wired in for Sprint 7. -->
+    <!-- Deliberately NOT declared (Google Play policy / privacy promise):
+         - INTERNET: the app is fully offline and the privacy policy says so. The release workflow
+           fails if INTERNET ever appears in the merged manifest.
+         - REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: Play restricts it; the battery tips open the plain
+           system battery-optimization list instead (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS),
+           which needs no permission. -->
 
     <application
         android:name=".DailyDivineApp"
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
+        android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"

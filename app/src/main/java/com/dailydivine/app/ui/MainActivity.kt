@@ -1,6 +1,7 @@
 package com.dailydivine.app.ui
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,6 +18,10 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // targetSdk 35+ enforces edge-to-edge (content draws behind the system bars). Opting in
+        // explicitly keeps the status/navigation bar icons readable in light and dark themes;
+        // the Scaffold in NavGraph applies the bar insets to the screens.
+        enableEdgeToEdge()
         // Screen S01: keeps the branded splash (Theme.DailyDivine.Splash) up
         // until MainViewModel has resolved whether onboarding was already
         // completed -- this is what prevents a flash of the Welcome screen

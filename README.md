@@ -37,3 +37,9 @@ the project in Android Studio locally for UI testing/emulator work).
 
 - `DailyDivine_PRD_v1.1.md` / `.pdf` — full product requirements
 - `CHECKLIST.md` — live build progress
+
+## Releasing to Google Play
+Everything needed is in [`play-store/RELEASE.md`](play-store/RELEASE.md): details to fill in, the upload keystore and GitHub
+secrets, the **Release AAB (Google Play)** workflow, store listing copy, Data safety answers and permission declarations.
+The website (landing page, privacy policy, terms) lives in `docs/` and is published by the **Deploy website** workflow.
+Run `python tools/check_release_readiness.py` any time to see what still blocks a release.
