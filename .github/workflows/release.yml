@@ -105,13 +105,7 @@ jobs:
           MF=$(find app/build/intermediates -path "*merged_manifests/release*" -name AndroidManifest.xml | head -n1)
           [ -n "$MF" ] || { echo "::error::Merged release manifest not found"; exit 1; }
           cp "$MF" merged-manifest.xml
-          echo "--- permissions in the merged manifest:"; grep -o 'uses-permission[^>]*android:name="[^"]*"' merged-manifest.xml | sed 's/.*android:name=//' | sort
-          fail=0
-          for bad in android.permission.INTERNET com.google.android.gms.permission.AD_ID com.android.vending.BILLING android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS android.permission.ACCESS_NETWORK_STATE; do
-            if grep -q "android:name=\"$bad\"" merged-manifest.xml; then echo "::error::Forbidden permission present in the merged manifest: $bad (the privacy policy says the app has no internet access and no ads/billing)"; fail=1; fi
-          done
-          grep -q 'android:targetSdkVersion="36"' merged-manifest.xml || { echo "::error::targetSdkVersion is not 36 (Google Play requires 36)"; fail=1; }
-          exit $fail
+          python3 tools/check_merged_manifest.py merged-manifest.xml com.dailydivine.app
 
       - name: Validate the bundle with bundletool
         env:

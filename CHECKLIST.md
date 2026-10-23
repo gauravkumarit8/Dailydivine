@@ -831,6 +831,20 @@ Limit: live endpoints cannot be called from the sandbox, so uptime/rate limits/t
 
 **Process note:** the zip still contains the placeholders (`REPLACE_ME_*`). Do NOT mirror `docs/` or `app/src/` from the zip onto the user's repo any more: it would overwrite the name/email the user already filled in. From now on deliver targeted file lists.
 
+### 2026-10-22 — Second release-run failure: my merged-manifest guard forbade `ACCESS_NETWORK_STATE`
+
+**Symptom (CI, step "Verify the merged manifest"):** `Forbidden permission present in the merged manifest: android.permission.ACCESS_NETWORK_STATE`. The build, R8 minification and signing had all succeeded; the run stopped at my own guardrail.
+
+**Root cause:** `ACCESS_NETWORK_STATE` is added automatically by WorkManager (a library we use). It is a normal permission that only lets an app *see* whether the phone is online; it cannot send or receive data, so it does not contradict "no INTERNET permission / no data collected". My guard used a fixed forbidden list that wrongly included it. **My assumption was wrong; the app and the policy were not.** The failed run's merged-manifest permissions were: the 10 declared ones + `ACCESS_NETWORK_STATE` + `<package>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (AndroidX Core).
+
+**Fix.** `tools/check_merged_manifest.py` replaces the inline shell check: an **allow-list** (the app's own 10 + the two reviewed library permissions) plus an explicit forbidden list (INTERNET, AD_ID, BILLING, battery-optimization request) with reasons, plus targetSdk = 36. Anything unreviewed fails with "review it, then update the privacy policy, Data safety answers and this allow-list". Tested against the exact permission list from the failed run (passes) and 4 violations (INTERNET, AD_ID, an unreviewed CAMERA, wrong targetSdk: all blocked).
+
+**Transparency:** the privacy policy permissions table gets a "Network state (read-only)" row; `DATA_SAFETY_AND_DECLARATIONS.md` documents the two library permissions.
+
+**Hosting change found:** the user hosts the site on their own domain (https://grvthakur.bid/daily-divine/), not GitHub Pages. The live privacy page was fetched and verified (name/contact filled, accurate). **Bug:** `AppLinks.SITE_URL` still pointed at github.io, so Settings > Privacy/Terms would open a dead link; fixed (delivered as an in-place patch so the user's filled-in email is not overwritten). `pages.yml` is now manual-only (an automatic deploy would show a red X on every push); LISTING.md/RELEASE.md use the real URLs.
+
+**Verification:** manifest checker tests; YAML validity; the readiness gate still passes on a configured copy with the new URL patched; `check_imports`/`check_symbols` (109 files). Not yet proven: bundletool validation and the version check (they run after this step).
+
 ---
 
 ## What's Next (as of this session)

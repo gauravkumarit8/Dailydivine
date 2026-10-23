@@ -50,8 +50,10 @@ Repo **Settings > Secrets and variables > Actions > New repository secret**:
 | `PLAY_SERVICE_ACCOUNT_JSON` | *optional*, only for automatic upload (step 9) |
 
 ## 3. Publish the website (you)
-Repo **Settings > Pages > Build and deployment > Source: GitHub Actions**. Push to `main` (or run the "Deploy website" workflow).
-Then open https://gauravkumarit8.github.io/Dailydivine/privacy.html and check it loads. That URL goes into Play Console.
+The `docs/` folder is the website. It is hosted at https://grvthakur.bid/daily-divine/ (upload the contents of `docs/` there after
+running step 1, so the pages carry your name and email). Open https://grvthakur.bid/daily-divine/privacy.html and check it loads;
+that URL goes into Play Console. (The "Deploy website" workflow is for GitHub Pages and is manual-only; ignore it if you host elsewhere.)
+Whenever you change a page, upload it again, and keep the in-app link (`AppLinks.SITE_URL`) pointing at the same place.
 
 ## 4. Make sure CI is green
 Run **Actions > Android CI**. It must pass (unit tests and the debug APK) before you release.

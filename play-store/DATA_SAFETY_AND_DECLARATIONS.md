@@ -51,6 +51,12 @@ Play Console: Policy > App content > Foreground service permissions. Type: **Med
 | `WAKE_LOCK`, `VIBRATE` | wake the screen and vibrate when the alarm rings |
 | `SET_WALLPAPER` | only for the optional Daily Wallpaper feature the user turns on |
 
+Added automatically by libraries (reviewed, harmless, checked by `tools/check_merged_manifest.py`):
+| Permission | Source | Effect |
+|---|---|---|
+| `ACCESS_NETWORK_STATE` | WorkManager | lets the app *see* whether the phone is online; it cannot send or receive data, so "no data collected" stays true |
+| `<package>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | AndroidX Core | private signature permission that protects the app's own broadcast receivers |
+
 Deliberately not requested: INTERNET, location, camera, microphone, contacts, storage, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`
 (the battery tips open the system battery list, which needs no permission).
 

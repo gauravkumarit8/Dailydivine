@@ -3,12 +3,9 @@ name: Deploy website (GitHub Pages)
 # Publishes /docs (landing page, privacy policy, terms) to https://<user>.github.io/<repo>/.
 # One-time: repo Settings > Pages > Build and deployment > Source = "GitHub Actions".
 
+# NOTE: manual only. The live site is hosted on the developer's own domain (see play-store/LISTING.md),
+# so an automatic deploy on every push would fail with a red X unless GitHub Pages is enabled.
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:

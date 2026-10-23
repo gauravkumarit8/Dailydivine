@@ -7,7 +7,7 @@ package com.dailydivine.app.util
  * to build while a placeholder is still present.
  */
 object AppLinks {
-    const val SITE_URL = "https://gauravkumarit8.github.io/Dailydivine/"
+    const val SITE_URL = "https://grvthakur.bid/daily-divine/"
     const val PRIVACY_URL = SITE_URL + "privacy.html"
     const val TERMS_URL = SITE_URL + "terms.html"
     const val SUPPORT_EMAIL = "gaurav954624@gmail.com"

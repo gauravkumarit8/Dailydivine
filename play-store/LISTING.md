@@ -14,8 +14,8 @@ Everything here matches what the app really does. Do not add claims the app does
 | Category | Lifestyle (alternative: Books & Reference) |
 | Tags (pick from Play's list) | Religion & Spirituality, Alarm clock, Meditation |
 | Email | the address you set with `tools/configure_release.py` |
-| Website | https://gauravkumarit8.github.io/Dailydivine/ |
-| Privacy policy URL | https://gauravkumarit8.github.io/Dailydivine/privacy.html |
+| Website | https://grvthakur.bid/daily-divine/ |
+| Privacy policy URL | https://grvthakur.bid/daily-divine/privacy.html |
 
 ## Full description (max 4000)
 ```
