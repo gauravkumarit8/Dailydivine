@@ -6,6 +6,7 @@ import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.alarm.AlarmReadiness
+import com.dailydivine.app.alarm.AlarmVolumeCurve
 import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.entity.Alarm
@@ -67,10 +68,14 @@ class AlarmListViewModel @Inject constructor(
     private val _fullScreenIntentReady = MutableStateFlow(AlarmReadiness.fullScreenIntentReady(appContext))
     val fullScreenIntentReady: StateFlow<Boolean> = _fullScreenIntentReady.asStateFlow()
 
+    private val _alarmStreamAudible = MutableStateFlow(AlarmReadiness.alarmStreamAudible(appContext))
+    val alarmStreamAudible: StateFlow<Boolean> = _alarmStreamAudible.asStateFlow()
+
     fun refreshExactAlarmPermission() {
         _canScheduleExactAlarms.value = AlarmScheduler(appContext).canScheduleExactAlarms()
         _notificationsReady.value = AlarmReadiness.notificationsReady(appContext)
         _fullScreenIntentReady.value = AlarmReadiness.fullScreenIntentReady(appContext)
+        _alarmStreamAudible.value = AlarmReadiness.alarmStreamAudible(appContext)
         _isIgnoringBatteryOptimizations.value = checkIgnoringBatteryOptimizations()
     }
 
@@ -123,6 +128,31 @@ class AlarmListViewModel @Inject constructor(
     fun toggleTts(alarm: Alarm) {
         viewModelScope.launch {
             alarmRepository.updateAndReschedule(alarm.copy(isTTSEnabled = !alarm.isTTSEnabled))
+        }
+    }
+
+    // F004-R10..R13: per-alarm volume, gradual ramp, vibration and snooze length.
+    fun setVolume(alarm: Alarm, percent: Int) {
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(volume = AlarmVolumeCurve.clampPercent(percent)))
+        }
+    }
+
+    fun toggleGradual(alarm: Alarm) {
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(isGradualVolume = !alarm.isGradualVolume))
+        }
+    }
+
+    fun toggleVibration(alarm: Alarm) {
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(isVibrationEnabled = !alarm.isVibrationEnabled))
+        }
+    }
+
+    fun setSnoozeMinutes(alarm: Alarm, minutes: Int) {
+        viewModelScope.launch {
+            alarmRepository.updateAndReschedule(alarm.copy(snoozeDurationMinutes = minutes))
         }
     }
 

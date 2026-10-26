@@ -71,12 +71,13 @@ object AlarmNotifications {
         context: Context,
         alarmId: Int,
         toneId: String,
-        snoozeMinutes: Int,
+        settings: RingSettings,
         channelId: String = CHANNEL_RING
     ): Notification {
         val ringIntent = Intent(context, AlarmRingActivity::class.java).apply {
             putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
             putExtra(AlarmScheduler.EXTRA_ALARM_TONE, toneId)
+            settings.writeTo(this) // the ring screen shows "Snooze - X min"
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         val fullScreen = PendingIntent.getActivity(
@@ -85,12 +86,12 @@ object AlarmNotifications {
         )
         val snooze = PendingIntent.getService(
             context, SNOOZE_ACTION_OFFSET + alarmId,
-            actionIntent(context, AlarmService.ACTION_SNOOZE, alarmId, toneId, snoozeMinutes),
+            actionIntent(context, AlarmService.ACTION_SNOOZE, alarmId, toneId, settings),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val dismiss = PendingIntent.getService(
             context, DISMISS_ACTION_OFFSET + alarmId,
-            actionIntent(context, AlarmService.ACTION_DISMISS, alarmId, toneId, snoozeMinutes),
+            actionIntent(context, AlarmService.ACTION_DISMISS, alarmId, toneId, settings),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -103,7 +104,7 @@ object AlarmNotifications {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setFullScreenIntent(fullScreen, true)
             .setContentIntent(fullScreen)
-            .addAction(0, "Snooze $snoozeMinutes min", snooze)
+            .addAction(0, "Snooze ${settings.snoozeMinutes} min", snooze)
             .addAction(0, "Dismiss", dismiss)
             .setOngoing(true)
         if (channelId == CHANNEL_FALLBACK) builder.setTimeoutAfter(FALLBACK_TIMEOUT_MS)
@@ -112,13 +113,13 @@ object AlarmNotifications {
 
     /** Backup alert used when AlarmService could not be started from the background. */
     @SuppressLint("MissingPermission")
-    fun postFallback(context: Context, alarmId: Int, toneId: String, snoozeMinutes: Int) {
+    fun postFallback(context: Context, alarmId: Int, toneId: String, settings: RingSettings) {
         try {
             ensureChannels(context)
             if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return
             NotificationManagerCompat.from(context).notify(
                 NOTIFICATION_ID,
-                build(context, alarmId, toneId, snoozeMinutes, CHANNEL_FALLBACK)
+                build(context, alarmId, toneId, settings, CHANNEL_FALLBACK)
             )
         } catch (e: Exception) {
             Log.e(TAG, "Fallback alarm notification failed", e)
@@ -130,11 +131,11 @@ object AlarmNotifications {
     }
 
     private fun actionIntent(
-        context: Context, action: String, alarmId: Int, toneId: String, snoozeMinutes: Int
+        context: Context, action: String, alarmId: Int, toneId: String, settings: RingSettings
     ) = Intent(context, AlarmService::class.java).apply {
         this.action = action
         putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
         putExtra(AlarmScheduler.EXTRA_ALARM_TONE, toneId)
-        putExtra(AlarmScheduler.EXTRA_SNOOZE_MINUTES, snoozeMinutes)
+        settings.writeTo(this)
     }
 }

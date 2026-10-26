@@ -2,6 +2,7 @@ package com.dailydivine.app.alarm
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 
@@ -22,6 +23,12 @@ object AlarmReadiness {
             if (importance < NotificationManager.IMPORTANCE_HIGH) return false
         }
         return true
+    }
+
+    /** A phone whose alarm volume slider is at zero rings silently, whatever the app does. */
+    fun alarmStreamAudible(context: Context): Boolean {
+        val am = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return true
+        return am.getStreamVolume(AudioManager.STREAM_ALARM) > 0
     }
 
     /** Android 14+ lets the user revoke full-screen intents; earlier versions always allow. */

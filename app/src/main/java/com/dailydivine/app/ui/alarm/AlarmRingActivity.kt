@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.alarm.AlarmService
+import com.dailydivine.app.alarm.RingSettings
 import com.dailydivine.app.data.repository.AlarmRepository
 import com.dailydivine.app.ui.MainActivity
 import com.dailydivine.app.ui.theme.DailyDivineTheme
@@ -96,6 +97,7 @@ class AlarmRingActivity : ComponentActivity() {
                 AlarmRingScreen(
                     currentTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date()),
                     versePreview = versePreview,
+                    snoozeMinutes = RingSettings.fromIntent(intent).snoozeMinutes,
                     onSnooze = { snooze() },
                     onWakeUpAndRead = { wakeUpAndRead() }
                 )
@@ -162,6 +164,7 @@ class AlarmRingActivity : ComponentActivity() {
 private fun AlarmRingScreen(
     currentTime: String,
     versePreview: String?,
+    snoozeMinutes: Int,
     onSnooze: () -> Unit,
     onWakeUpAndRead: () -> Unit
 ) {
@@ -235,7 +238,7 @@ private fun AlarmRingScreen(
             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.7f)),
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
         ) {
-            Text("Snooze", style = MaterialTheme.typography.titleMedium)
+            Text("Snooze \u2013 $snoozeMinutes min", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

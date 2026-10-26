@@ -39,7 +39,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 context,
                 alarmId = intent.getIntExtra(AlarmScheduler.EXTRA_ALARM_ID, -1),
                 toneId = intent.getStringExtra(AlarmScheduler.EXTRA_ALARM_TONE) ?: "temple_bell",
-                snoozeMinutes = intent.getIntExtra(AlarmScheduler.EXTRA_SNOOZE_MINUTES, AlarmScheduler.DEFAULT_SNOOZE_MINUTES)
+                settings = RingSettings.fromIntent(intent)
             )
         }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.dailydivine.app.alarm.AlarmScheduler
+import com.dailydivine.app.alarm.RingSettings
 import com.dailydivine.app.alarm.AlarmTones
 import com.dailydivine.app.alarm.formatRingsIn
 import kotlinx.coroutines.delay
@@ -49,6 +50,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     val isIgnoringBatteryOptimizations by viewModel.isIgnoringBatteryOptimizations.collectAsState()
     val notificationsReady by viewModel.notificationsReady.collectAsState()
     val fullScreenIntentReady by viewModel.fullScreenIntentReady.collectAsState()
+    val alarmStreamAudible by viewModel.alarmStreamAudible.collectAsState()
     val religionId by viewModel.religionId.collectAsState()
     var editingAlarm by remember { mutableStateOf<Alarm?>(null) }
     var editingToneFor by remember { mutableStateOf<Alarm?>(null) }
@@ -164,6 +166,15 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 }
             }
 
+            if (!alarmStreamAudible) {
+                AlarmWarningCard(
+                    text = "Your phone's alarm volume is turned all the way down, so the alarm would ring silently. Raise the alarm volume in your sound settings.",
+                    buttonLabel = "Open sound settings"
+                ) {
+                    runCatching { context.startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) }
+                }
+            }
+
             if (alarms.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
@@ -186,6 +197,10 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                             onTimeClick = { editingAlarm = alarm },
                             onToneClick = { editingToneFor = alarm },
                             onTtsToggle = { viewModel.toggleTts(alarm) },
+                            onVolumeChange = { percent -> viewModel.setVolume(alarm, percent) },
+                            onGradualToggle = { viewModel.toggleGradual(alarm) },
+                            onVibrationToggle = { viewModel.toggleVibration(alarm) },
+                            onSnoozeSelect = { minutes -> viewModel.setSnoozeMinutes(alarm, minutes) },
                             onDelete = { viewModel.delete(alarm) }
                         )
                     }
@@ -225,6 +240,10 @@ private fun AlarmRow(
     onTimeClick: () -> Unit,
     onToneClick: () -> Unit,
     onTtsToggle: () -> Unit,
+    onVolumeChange: (Int) -> Unit,
+    onGradualToggle: () -> Unit,
+    onVibrationToggle: () -> Unit,
+    onSnoozeSelect: (Int) -> Unit,
     onDelete: () -> Unit
 ) {
     val repeatDays = AlarmScheduler.parseRepeatDays(alarm.repeatDays)
@@ -298,6 +317,10 @@ private fun AlarmRow(
                 Switch(checked = alarm.isTTSEnabled, onCheckedChange = null)
             }
 
+            Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+            Spacer(Modifier.height(8.dp))
+            AlarmSoundSettings(alarm, onVolumeChange, onGradualToggle, onVibrationToggle, onSnoozeSelect)
+
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 TextButton(onClick = onTimeClick) { Text("Change time") }
                 Spacer(Modifier.weight(1f))
@@ -346,5 +369,82 @@ private fun AlarmWarningCard(text: String, buttonLabel: String, onClick: () -> U
             Text(text, style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = onClick) { Text(buttonLabel) }
         }
+    }
+}
+
+/** F004-R10..R13: alarm volume, gradual ramp, vibration and snooze length for one alarm. */
+@Composable
+private fun AlarmSoundSettings(
+    alarm: Alarm,
+    onVolumeChange: (Int) -> Unit,
+    onGradualToggle: () -> Unit,
+    onVibrationToggle: () -> Unit,
+    onSnoozeSelect: (Int) -> Unit
+) {
+    // Local while dragging; saved (and the alarm re-armed) once, when the finger lifts.
+    var volume by remember(alarm.volume) { mutableFloatStateOf(alarm.volume.toFloat()) }
+
+    Column {
+        Text("Alarm volume: ${volume.toInt()}%", style = MaterialTheme.typography.bodyLarge)
+        Slider(
+            value = volume,
+            onValueChange = { volume = it },
+            onValueChangeFinished = { onVolumeChange(volume.toInt()) },
+            valueRange = 10f..100f,
+            modifier = Modifier.semantics { contentDescription = "Alarm volume" }
+        )
+        SettingToggleRow(
+            title = "Gradual volume",
+            subtitle = "Starts quietly and reaches your volume in 30 seconds",
+            checked = alarm.isGradualVolume,
+            onToggle = onGradualToggle
+        )
+        SettingToggleRow(
+            title = "Vibrate",
+            subtitle = "Vibrates while the alarm rings",
+            checked = alarm.isVibrationEnabled,
+            onToggle = onVibrationToggle
+        )
+        Spacer(Modifier.height(8.dp))
+        Text("Snooze length", style = MaterialTheme.typography.bodyLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            RingSettings.SNOOZE_CHOICES.forEach { minutes ->
+                val selected = alarm.snoozeDurationMinutes == minutes
+                if (selected) {
+                    Button(
+                        onClick = { onSnoozeSelect(minutes) },
+                        modifier = Modifier.semantics { contentDescription = "Snooze $minutes minutes, selected" }
+                    ) { Text("$minutes min") }
+                } else {
+                    OutlinedButton(
+                        onClick = { onSnoozeSelect(minutes) },
+                        modifier = Modifier.semantics { contentDescription = "Snooze $minutes minutes" }
+                    ) { Text("$minutes min") }
+                }
+            }
+        }
+        Spacer(Modifier.height(4.dp))
+    }
+}
+
+/** A labelled switch whose whole row is the touch target (TalkBack reads it as one control). */
+@Composable
+private fun SettingToggleRow(title: String, subtitle: String, checked: Boolean, onToggle: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = { onToggle() })
+            .padding(vertical = 6.dp)
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Switch(checked = checked, onCheckedChange = null)
     }
 }

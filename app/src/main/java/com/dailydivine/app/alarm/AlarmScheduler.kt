@@ -127,7 +127,7 @@ class AlarmScheduler(private val context: Context) {
             putExtra(EXTRA_TTS_ENABLED, alarm.isTTSEnabled)
             putExtra(EXTRA_IS_SNOOZE, isSnooze)
             putExtra(EXTRA_SNOOZE_CYCLES, cyclesUsed)
-            putExtra(EXTRA_SNOOZE_MINUTES, alarm.snoozeDurationMinutes)
+            RingSettings.fromAlarm(alarm).writeTo(this)
         }
         return PendingIntent.getBroadcast(
             context, requestCode, intent,
@@ -182,6 +182,9 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_IS_SNOOZE = "IS_SNOOZE"
         const val EXTRA_SNOOZE_CYCLES = "SNOOZE_CYCLES"
         const val EXTRA_SNOOZE_MINUTES = "SNOOZE_MINUTES"
+        const val EXTRA_VOLUME = "RING_VOLUME"
+        const val EXTRA_GRADUAL = "RING_GRADUAL"
+        const val EXTRA_VIBRATE = "RING_VIBRATE"
         const val DEFAULT_SNOOZE_MINUTES = 10
         const val SNOOZE_REQUEST_OFFSET = 100_000
         private const val SHOW_APP_REQUEST_CODE = 200_000

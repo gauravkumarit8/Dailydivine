@@ -875,6 +875,37 @@ Also: the snooze length now travels in the alarm Intent (`EXTRA_SNOOZE_MINUTES`)
 
 **Known gaps left on purpose:** the ring screen does not close itself when the alarm is dismissed from the notification (it stays visible but silent); `AlarmRingActivity` does not handle `onNewIntent` (singleInstance); notification permission is still requested only in onboarding, plus the banner. Round B covers vibration, volume, the 30-second ramp, and the up-to-4-hour ring window.
 
+### 2026-10-26 — Round B (alarm ringing behaviour: volume, ramp, vibration, snooze length)
+
+**Correction to my own audit:** finding #8 ("rings up to ~4 hours") is what PRD F004-R19 specifies (30-minute window, then 6 x 5-minute auto-snoozes), so the window, snooze gap and cycle count are UNCHANGED. What did conflict with the PRD was the volume: it crawled from 15 % to 100 % over 30 minutes, while R11 asks for a 30-second ramp.
+
+| PRD | Before | Now |
+|---|---|---|
+| R10 volume control | `alarm.volume` stored, never used | per-alarm slider 10-100 %, applied to the player (never silent; 10 % floor). Saved when the finger lifts |
+| R11 gradual option | 30-minute crawl, no toggle | toggle; ON = 15 % to chosen volume in 30 s, OFF = starts at chosen volume |
+| R19 escalation | same crawl | after the first 30 s, an ignored alarm keeps rising from the chosen volume to 100 % across the 30-minute window (`AlarmVolumeCurve`, pure + tested). **Interpretation, my reconciliation of R11 and R19** |
+| R12 snooze 5/10/15 | field only, no UI | 3 buttons per alarm; the ring screen says "Snooze - X min" (S08); notification action says the same |
+| R13 vibration | no vibration code at all | repeating waveform (700 ms on / 500 ms off, alarm usage) while ringing, if the alarm has it on; cancelled on stop |
+| (new) | snoozes lost the alarm's settings (service has no DB) | `RingSettings` travels in every Intent: alarm, snooze, auto-snooze, notification actions |
+| (new) | no audio focus | requests transient focus so music/podcasts pause; abandoned on stop (failure never blocks ringing) |
+| (new) | alarm stream at 0 rings silently | Alarm tab banner (with a button to sound settings) when the phone's alarm volume is 0 |
+
+**No schema change:** all alarm fields already existed (Room stays at v2, no migration, no DAO change, so no test fakes affected).
+
+**Tests added:** `AlarmVolumeCurveTest` (8). The curve maths was also checked numerically outside Kotlin; the expectations match.
+
+**Verification run:** balance/duplicate imports/XML, `check_imports` (116 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (needs CI + device):**
+1. CI compile (`VibratorManager`, `AudioFocusRequest`, `Slider`, `mutableFloatStateOf`).
+2. Ring a test alarm: it starts quiet and reaches your volume in about 30 s with Gradual on; at the chosen volume straight away with it off.
+3. Vibration starts and stops with the alarm (also after Snooze / Dismiss / Wake Up).
+4. Change snooze to 5 or 15 min: the ring-screen button label and the actual snooze delay follow it.
+5. Start music, then ring the alarm: music pauses.
+6. Turn the phone's alarm volume to 0: the banner appears on the Alarm tab.
+
+**Still open from the audit:** R20 swipe-to-dismiss; R06 Do Not Disturb (alarms use the alarm usage, which DND allows by default, not tested); the ring screen does not close itself when dismissed from the notification; `AlarmRingActivity.onNewIntent`; religion-specific tones. Round C (content, empty traditions, milestones, daily-verse index) is next.
+
 ---
 
 ## What's Next (as of this session)
