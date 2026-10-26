@@ -47,6 +47,8 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     val alarms by viewModel.alarms.collectAsState()
     val canScheduleExactAlarms by viewModel.canScheduleExactAlarms.collectAsState()
     val isIgnoringBatteryOptimizations by viewModel.isIgnoringBatteryOptimizations.collectAsState()
+    val notificationsReady by viewModel.notificationsReady.collectAsState()
+    val fullScreenIntentReady by viewModel.fullScreenIntentReady.collectAsState()
     val religionId by viewModel.religionId.collectAsState()
     var editingAlarm by remember { mutableStateOf<Alarm?>(null) }
     var editingToneFor by remember { mutableStateOf<Alarm?>(null) }
@@ -126,6 +128,38 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                             // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
                             context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                         }) { Text("Open battery settings") }
+                    }
+                }
+            }
+
+            if (!notificationsReady) {
+                AlarmWarningCard(
+                    text = "Notifications are turned off for DailyDivine, so the alarm screen may not open and you could not snooze or dismiss from the lock screen. Turn them on, and keep the \"Alarm (while ringing)\" channel on high importance.",
+                    buttonLabel = "Open notification settings"
+                ) {
+                    runCatching {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (!fullScreenIntentReady) {
+                AlarmWarningCard(
+                    text = "Full-screen alerts are turned off, so the alarm screen will not appear over your lock screen. You can still snooze or dismiss from the notification. Allow full-screen alerts for reliable wake-ups.",
+                    buttonLabel = "Allow full-screen alerts"
+                ) {
+                    runCatching {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            context.startActivity(
+                                Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -298,5 +332,19 @@ private fun DayToggle(letter: String, fullName: String, selected: Boolean, onCli
             style = MaterialTheme.typography.labelLarge,
             color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+/** A warning banner with one action button, used for the alarm-readiness checks above the list. */
+@Composable
+private fun AlarmWarningCard(text: String, buttonLabel: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Text(text, style = MaterialTheme.typography.bodySmall)
+            TextButton(onClick = onClick) { Text(buttonLabel) }
+        }
     }
 }

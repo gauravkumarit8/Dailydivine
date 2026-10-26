@@ -845,6 +845,36 @@ Limit: live endpoints cannot be called from the sandbox, so uptime/rate limits/t
 
 **Verification:** manifest checker tests; YAML validity; the readiness gate still passes on a configured copy with the new URL patched; `check_imports`/`check_symbols` (109 files). Not yet proven: bundletool validation and the version check (they run after this step).
 
+### 2026-10-26 — Round A (safety audit fixes): alarm engine, re-arming, Clear all data
+
+**Origin:** a full code audit of HEAD `fc0e1e0` (engine and logic layers read; Compose screen layouts only grepped). Findings were checked against the Android docs where possible. Round A fixes the crash and "alarm cannot be stopped / is not armed" class of bugs. Rounds B (ringing behaviour) and C (product/content) are still open.
+
+| # | Problem (cause) | Fix | Confidence |
+|---|---|---|---|
+| 1 | **Clear all data likely crashed**: `appDatabase.clearAllTables()` ran on the main thread (`viewModelScope`); Room allows it only on a worker thread | `withContext(Dispatchers.IO)` around the blocking work; dialog now lists what is really deleted | High (documented Room behaviour), not run on a device |
+| 2 | **Tapping the system next-alarm icon fired the alarm**: the `AlarmClockInfo` show-intent was the same broadcast PendingIntent that rings the alarm | show-intent is now an activity PendingIntent that opens the app | High |
+| 3 | **Ring screen can be unavailable** (notifications muted on Android 13+, full-screen intent revoked on Android 14+) and the notification had no actions, so the alarm could not be stopped | new `AlarmNotifications` (Snooze + Dismiss actions); Alarm tab banners via `AlarmReadiness` for both cases; ringing channel is now `alarm_ring` and SILENT (the old `alarm_channel` had the default sound on top of the tone; it is deleted) | Reasoning + docs, needs device test |
+| 5 | **Alarms not re-armed**: no re-arm on app start; no handling of time-zone change, clock change, or exact-alarm permission change | `RearmTriggers` + 3 new actions on `BootReceiver`; `MainViewModel` re-arms all enabled alarms at every start (idempotent) | High |
+| 6 | **Second ring leaked a looping MediaPlayer** (reference overwritten) | `stopTickerAndTone()` before starting a new ring | High |
+| 10 | **"Wake Up & Read" left a pending auto-snooze** (rang again 5 min later) | `AlarmScheduler.cancelSnooze()` called from `wakeUpAndRead()`; notification Dismiss does the same | High |
+| 14 | **`startForegroundService` unguarded** in `AlarmReceiver` (Android 12+ can refuse it from the background) | try/catch, then a loud backup notification (`alarm_fallback`, alarm-stream sound); re-arm of tomorrow still runs | Medium |
+
+Also: the snooze length now travels in the alarm Intent (`EXTRA_SNOOZE_MINUTES`) so the notification label and the auto-snooze placeholder use the alarm's real value.
+
+**Tests added:** `RearmTriggersTest` (4 tests). The Android-framework parts (notifications, receivers, banners) cannot be unit-tested without a device.
+
+**Verification run:** brace/paren balance (false alarm from my scanner on a `//` inside a URI string, re-checked and balanced), duplicate imports, XML + JSON parse, `check_imports` (113 files, 0 unresolved), `check_symbols` (0), `check_release_readiness` OK, no DAO change (no test fakes affected), no property declared below an `init` block. **None of this is a compile.**
+
+**NOT verified (needs CI + device):**
+1. CI compile (new classes, `Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT`, `canUseFullScreenIntent` at compileSdk 34).
+2. Settings > Clear all data no longer crashes and returns to onboarding.
+3. Alarm rings on time; Snooze and Dismiss in the notification work; no double sound at ring start.
+4. Change the phone's time zone: the alarm time on the Alarm tab updates and the next ring is right.
+5. Turn notifications off for the app: the banner shows. On Android 14+ turn "full-screen alerts" off: the second banner shows.
+6. Tapping the alarm icon in the status bar opens the app and does NOT ring.
+
+**Known gaps left on purpose:** the ring screen does not close itself when the alarm is dismissed from the notification (it stays visible but silent); `AlarmRingActivity` does not handle `onNewIntent` (singleInstance); notification permission is still requested only in onboarding, plus the banner. Round B covers vibration, volume, the 30-second ramp, and the up-to-4-hour ring window.
+
 ---
 
 ## What's Next (as of this session)

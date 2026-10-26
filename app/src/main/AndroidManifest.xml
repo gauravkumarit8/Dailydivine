@@ -55,13 +55,17 @@
             android:name=".alarm.AlarmReceiver"
             android:exported="false" />
 
-        <!-- F004-R22: reschedule all enabled alarms after reboot -->
+        <!-- F004-R22: reschedule all enabled alarms after reboot, update, time-zone/clock change
+             or a change of the exact-alarm permission -->
         <receiver
             android:name=".alarm.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 

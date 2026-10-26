@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.alarm.AlarmReadiness
 import com.dailydivine.app.alarm.AlarmScheduler
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.entity.Alarm
@@ -58,8 +59,18 @@ class AlarmListViewModel @Inject constructor(
     private val _isIgnoringBatteryOptimizations = MutableStateFlow(checkIgnoringBatteryOptimizations())
     val isIgnoringBatteryOptimizations: StateFlow<Boolean> = _isIgnoringBatteryOptimizations.asStateFlow()
 
+    // Without notifications (Android 13+) or full-screen intents (Android 14+) the ring screen
+    // cannot open, so the user would hear an alarm with nothing to tap. Surface both here.
+    private val _notificationsReady = MutableStateFlow(AlarmReadiness.notificationsReady(appContext))
+    val notificationsReady: StateFlow<Boolean> = _notificationsReady.asStateFlow()
+
+    private val _fullScreenIntentReady = MutableStateFlow(AlarmReadiness.fullScreenIntentReady(appContext))
+    val fullScreenIntentReady: StateFlow<Boolean> = _fullScreenIntentReady.asStateFlow()
+
     fun refreshExactAlarmPermission() {
         _canScheduleExactAlarms.value = AlarmScheduler(appContext).canScheduleExactAlarms()
+        _notificationsReady.value = AlarmReadiness.notificationsReady(appContext)
+        _fullScreenIntentReady.value = AlarmReadiness.fullScreenIntentReady(appContext)
         _isIgnoringBatteryOptimizations.value = checkIgnoringBatteryOptimizations()
     }
 

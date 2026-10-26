@@ -278,7 +278,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showClearConfirm = false },
             title = { Text("Clear all data?") },
-            text = { Text("This resets your religion, language, and onboarding progress. This can't be undone.") },
+            text = { Text("This permanently deletes your alarms, streak and badges, bookmarks, journal reflections and settings, and takes you back to the start. This can't be undone.") },
             confirmButton = {
                 TextButton(onClick = {
                     showClearConfirm = false

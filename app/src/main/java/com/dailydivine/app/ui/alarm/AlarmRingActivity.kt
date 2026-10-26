@@ -117,6 +117,11 @@ class AlarmRingActivity : ComponentActivity() {
         }
     }
 
+    /** Removes a snooze that is still pending (e.g. the screen sat unattended through an auto-snooze). */
+    private fun cancelPendingSnooze() {
+        if (alarmId >= 0) AlarmScheduler(this).cancelSnooze(alarmId)
+    }
+
     private fun stopAlarmService() {
         startService(Intent(this, AlarmService::class.java).apply { action = AlarmService.ACTION_STOP })
     }
@@ -136,6 +141,7 @@ class AlarmRingActivity : ComponentActivity() {
     /** F004-R17: dismisses the alarm and opens the daily verse (Home). */
     private fun wakeUpAndRead() {
         stopAlarmService() // silence first; the lookup below must never delay that
+        cancelPendingSnooze() // the user is awake: a leftover auto-snooze must not ring again
         lifecycleScope.launch {
             // F004-R18: if this alarm has TTS on, Home reads the verse aloud once.
             // A failed lookup just means no auto-read; it must never block waking up.

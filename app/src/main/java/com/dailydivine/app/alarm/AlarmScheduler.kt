@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.dailydivine.app.data.local.entity.Alarm
+import com.dailydivine.app.ui.MainActivity
 import java.util.Calendar
 
 /**
@@ -46,8 +47,11 @@ class AlarmScheduler(private val context: Context) {
         val triggerTime = calculateNextTriggerTime(alarm.hour, alarm.minute, alarm.repeatDays, minLead)
 
         if (canScheduleExactAlarms()) {
+            // The first argument's "show intent" is what the system launches when the user taps
+            // the next-alarm icon/clock. It MUST open the app: it used to be the broadcast that
+            // rings the alarm, so tapping the status-bar alarm icon made the alarm go off.
             alarmManager.setAlarmClock(
-                AlarmManager.AlarmClockInfo(triggerTime, pendingIntent),
+                AlarmManager.AlarmClockInfo(triggerTime, showAppIntent()),
                 pendingIntent
             )
         } else {
@@ -65,6 +69,23 @@ class AlarmScheduler(private val context: Context) {
             pi?.let { alarmManager.cancel(it); it.cancel() }
         }
     }
+
+    /** Cancels only the pending snooze for [alarmId], leaving tomorrow's daily alarm armed. */
+    fun cancelSnooze(alarmId: Int) {
+        val pi = PendingIntent.getBroadcast(
+            context, SNOOZE_REQUEST_OFFSET + alarmId, Intent(context, AlarmReceiver::class.java),
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        pi?.let { alarmManager.cancel(it); it.cancel() }
+    }
+
+    private fun showAppIntent(): PendingIntent = PendingIntent.getActivity(
+        context, SHOW_APP_REQUEST_CODE,
+        Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        },
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
     /**
      * Re-fire in [minutesFromNow] minutes (manual snooze and v1.1 auto-snooze).
@@ -106,6 +127,7 @@ class AlarmScheduler(private val context: Context) {
             putExtra(EXTRA_TTS_ENABLED, alarm.isTTSEnabled)
             putExtra(EXTRA_IS_SNOOZE, isSnooze)
             putExtra(EXTRA_SNOOZE_CYCLES, cyclesUsed)
+            putExtra(EXTRA_SNOOZE_MINUTES, alarm.snoozeDurationMinutes)
         }
         return PendingIntent.getBroadcast(
             context, requestCode, intent,
@@ -159,7 +181,10 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_TTS_ENABLED = "TTS_ENABLED"
         const val EXTRA_IS_SNOOZE = "IS_SNOOZE"
         const val EXTRA_SNOOZE_CYCLES = "SNOOZE_CYCLES"
+        const val EXTRA_SNOOZE_MINUTES = "SNOOZE_MINUTES"
+        const val DEFAULT_SNOOZE_MINUTES = 10
         const val SNOOZE_REQUEST_OFFSET = 100_000
+        private const val SHOW_APP_REQUEST_CODE = 200_000
         const val TEST_ALARM_ID = 9999
         private const val INEXACT_WINDOW_MS = 10 * 60 * 1000L
         private const val AFTER_FIRING_MIN_LEAD_MS = 2 * 60 * 1000L

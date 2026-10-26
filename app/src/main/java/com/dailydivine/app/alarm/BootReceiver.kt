@@ -29,10 +29,9 @@ class BootReceiver : BroadcastReceiver() {
     @Inject lateinit var userPreferences: UserPreferences
 
     override fun onReceive(context: Context, intent: Intent) {
-        // BOOT_COMPLETED: AlarmManager forgets every alarm on reboot.
-        // MY_PACKAGE_REPLACED: re-arm after an app update too, as a safety net (harmless if
-        // nothing was lost, since re-scheduling is idempotent).
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED && intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
+        // Reboot, app update, time-zone / clock change, exact-alarm permission change:
+        // see RearmTriggers. Re-scheduling is idempotent, so extra triggers are harmless.
+        if (!RearmTriggers.isRearmAction(intent.action)) return
 
         // goAsync() keeps the receiver (and its process) alive long enough
         // for the coroutine below to finish, since a plain onReceive()

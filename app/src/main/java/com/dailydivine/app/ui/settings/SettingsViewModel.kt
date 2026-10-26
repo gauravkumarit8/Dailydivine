@@ -11,11 +11,13 @@ import com.dailydivine.app.data.repository.AlarmRepository
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,10 +85,14 @@ class SettingsViewModel @Inject constructor(
      */
     fun clearAllData(onDone: () -> Unit) {
         viewModelScope.launch {
-            alarmRepository.getAllAlarms().first().forEach { alarmRepository.delete(it) }
-            appDatabase.clearAllTables()
-            userPreferences.clearAll()
-            wallpaperBackgroundStore.delete() // the user's own photo is personal data too
+            // Room's clearAllTables() throws on the main thread (it is a worker-thread-only
+            // call), and viewModelScope runs on Main: do the blocking work on IO.
+            withContext(Dispatchers.IO) {
+                alarmRepository.getAllAlarms().first().forEach { alarmRepository.delete(it) }
+                appDatabase.clearAllTables()
+                userPreferences.clearAll()
+                wallpaperBackgroundStore.delete() // the user's own photo is personal data too
+            }
             onDone()
         }
     }

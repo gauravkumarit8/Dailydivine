@@ -39,16 +39,50 @@ class AlarmService : Service() {
     private var toneId: String = "temple_bell"
     private var ringStartElapsedMs: Long = 0L
     private var cyclesUsed: Int = 0
+    private var snoozeMinutes: Int = AlarmScheduler.DEFAULT_SNOOZE_MINUTES
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_STOP) {
-            // Sent by AlarmRingActivity when the user taps Snooze or
-            // Wake Up & Read -- stop cleanly rather than escalating further.
-            stopTickerAndTone()
-            stopSelf()
-            return START_NOT_STICKY
+        when (intent?.action) {
+            ACTION_STOP -> {
+                // Sent by AlarmRingActivity when the user taps Snooze or
+                // Wake Up & Read -- stop cleanly rather than escalating further.
+                // (The Activity schedules or cancels the snooze itself.)
+                stopTickerAndTone()
+                AlarmNotifications.clear(applicationContext)
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_SNOOZE -> {
+                // Notification action: snooze without opening the ring screen.
+                val id = intent?.getIntExtra(AlarmScheduler.EXTRA_ALARM_ID, -1) ?: -1
+                val tone = intent?.getStringExtra(AlarmScheduler.EXTRA_ALARM_TONE) ?: "temple_bell"
+                val minutes = intent?.getIntExtra(AlarmScheduler.EXTRA_SNOOZE_MINUTES, AlarmScheduler.DEFAULT_SNOOZE_MINUTES)
+                    ?: AlarmScheduler.DEFAULT_SNOOZE_MINUTES
+                stopTickerAndTone()
+                if (id >= 0) {
+                    AlarmScheduler(applicationContext).scheduleSnooze(
+                        alarm = com.dailydivine.app.data.local.entity.Alarm(
+                            id = id, hour = 0, minute = 0, repeatDays = "[]",
+                            alarmToneId = tone, snoozeDurationMinutes = minutes, createdAt = 0L
+                        ),
+                        minutesFromNow = minutes
+                    )
+                }
+                AlarmNotifications.clear(applicationContext)
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_DISMISS -> {
+                // Notification action: stop for good, including any pending auto-snooze.
+                val id = intent?.getIntExtra(AlarmScheduler.EXTRA_ALARM_ID, -1) ?: -1
+                stopTickerAndTone()
+                if (id >= 0) AlarmScheduler(applicationContext).cancelSnooze(id)
+                AlarmNotifications.clear(applicationContext)
+                stopSelf()
+                return START_NOT_STICKY
+            }
         }
 
         alarmId = intent?.getIntExtra(AlarmScheduler.EXTRA_ALARM_ID, -1) ?: -1
@@ -57,8 +91,17 @@ class AlarmService : Service() {
         // instance is destroyed between cycles, so an in-memory counter would
         // restart at 0 every time and the 6-cycle cap could never trigger.
         cyclesUsed = intent?.getIntExtra(AlarmScheduler.EXTRA_SNOOZE_CYCLES, 0) ?: 0
+        snoozeMinutes = intent?.getIntExtra(AlarmScheduler.EXTRA_SNOOZE_MINUTES, AlarmScheduler.DEFAULT_SNOOZE_MINUTES)
+            ?: AlarmScheduler.DEFAULT_SNOOZE_MINUTES
 
-        startForeground(NOTIFICATION_ID, buildNotification())
+        startForeground(
+            AlarmNotifications.NOTIFICATION_ID,
+            AlarmNotifications.build(this, alarmId, toneId, snoozeMinutes)
+        )
+        // A second alarm (or a snooze) can start while another is still ringing. Release the
+        // earlier player and wake lock first: overwriting the reference orphaned a looping
+        // MediaPlayer that nothing could ever stop.
+        stopTickerAndTone()
         acquireWakeLock()
         startTone()
         // Each (re-)fire is a fresh ring cycle for escalation timing.
@@ -84,7 +127,7 @@ class AlarmService : Service() {
                             AlarmScheduler(applicationContext).scheduleSnooze(
                                 alarm = com.dailydivine.app.data.local.entity.Alarm(
                                     id = alarmId, hour = 0, minute = 0, repeatDays = "[]",
-                                    alarmToneId = toneId, createdAt = 0L
+                                    alarmToneId = toneId, snoozeDurationMinutes = snoozeMinutes, createdAt = 0L
                                 ),
                                 minutesFromNow = decision.minutes,
                                 cyclesUsed = decision.cyclesUsedAfterThis
@@ -179,41 +222,6 @@ class AlarmService : Service() {
         wakeLock?.let { if (it.isHeld) it.release() }
     }
 
-    private fun buildNotification(): Notification {
-        val channelId = "alarm_channel"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = getSystemService(NotificationManager::class.java)
-            nm.createNotificationChannel(
-                NotificationChannel(channelId, "Alarm", NotificationManager.IMPORTANCE_HIGH)
-            )
-        }
-
-        val ringActivityIntent = Intent(this, AlarmRingActivity::class.java).apply {
-            putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarmId)
-            putExtra(AlarmScheduler.EXTRA_ALARM_TONE, toneId)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        val fullScreenPendingIntent = PendingIntent.getActivity(
-            this, alarmId, ringActivityIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Good morning")
-            .setContentText("Time for your morning blessing")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            // The officially recommended way to show a full-screen UI for an
-            // alarm/call-style interruption: the system shows this as a
-            // heads-up notification if the device is in use, or launches
-            // AlarmRingActivity directly over the lock screen if idle/locked.
-            .setFullScreenIntent(fullScreenPendingIntent, true)
-            .setContentIntent(fullScreenPendingIntent)
-            .setOngoing(true)
-            .build()
-    }
-
     override fun onDestroy() {
         stopTickerAndTone()
         serviceScope.cancel()
@@ -221,8 +229,9 @@ class AlarmService : Service() {
     }
 
     companion object {
-        private const val NOTIFICATION_ID = 4004
         private const val TAG = "AlarmService"
         const val ACTION_STOP = "com.dailydivine.app.alarm.ACTION_STOP"
+        const val ACTION_SNOOZE = "com.dailydivine.app.alarm.ACTION_SNOOZE"
+        const val ACTION_DISMISS = "com.dailydivine.app.alarm.ACTION_DISMISS"
     }
 }

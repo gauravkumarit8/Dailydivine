@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.content.ContentMigrationManager
 import com.dailydivine.app.data.local.datastore.UserPreferences
+import com.dailydivine.app.data.repository.AlarmRepository
 import com.dailydivine.app.jobs.DailyAlarmScheduler
 import com.dailydivine.app.jobs.plansFor
 import com.dailydivine.app.notifications.NotificationScheduler
@@ -14,6 +15,7 @@ import com.dailydivine.app.util.Religions
 import com.dailydivine.app.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val contentMigrationManager: ContentMigrationManager,
+    private val alarmRepository: AlarmRepository,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -58,6 +61,13 @@ class MainViewModel @Inject constructor(
     )
 
     init {
+        // A PendingIntent that still exists is not proof the alarm is armed (it survives after
+        // firing), and alarms armed through the inexact fallback stay inexact after the user
+        // grants exact alarms. Re-arming every enabled alarm on each app start is idempotent
+        // and closes both gaps. Failures must never block startup.
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching { alarmRepository.rescheduleAllEnabled() }
+        }
         // F009: keep scheduled notification work in sync with the settings.
         // First emission (app launch) uses KEEP so opening the app never
         // pushes a pending run back; later emissions are real setting
