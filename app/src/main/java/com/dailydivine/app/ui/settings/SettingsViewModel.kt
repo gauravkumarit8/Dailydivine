@@ -63,6 +63,7 @@ class SettingsViewModel @Inject constructor(
      * Streaks, bookmarks and alarms are untouched (never deleted).
      */
     fun changeReligion(religionId: Int) {
+        if (Religions.byId(religionId)?.hasContent != true) return // never switch to an empty tradition
         viewModelScope.launch {
             Religions.byId(religionId)?.contentAssetEn?.let { asset ->
                 runCatching { contentMigrationManager.migrateIfNeeded(religionId, asset, "en") }

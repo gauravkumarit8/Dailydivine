@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dailydivine.app.ui.theme.lightSchemePrimary
@@ -51,7 +53,8 @@ fun ReligionSelectScreen(
                     ReligionCard(
                         religion = religion,
                         selected = religion.id == selectedReligionId,
-                        onClick = { onSelect(religion.id) },
+                        available = religion.hasContent,
+                        onClick = { if (religion.hasContent) onSelect(religion.id) },
                         modifier = Modifier.weight(1f).fillMaxHeight()
                     )
                 }
@@ -59,15 +62,32 @@ fun ReligionSelectScreen(
             }
             Spacer(Modifier.height(12.dp))
         }
+        val soon = Religions.ALL.filter { !it.hasContent }.map { it.name }
+        if (soon.isNotEmpty()) {
+            Text(
+                "Coming soon: ${soon.joinToString(", ")}. Pick another path to begin; " +
+                    "you can switch any time in Settings.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
 @Composable
-private fun ReligionCard(religion: ReligionMeta, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
+private fun ReligionCard(
+    religion: ReligionMeta,
+    selected: Boolean,
+    available: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
     // Each card shows its own religion's colour (dark enough for the white letter/check).
-    val avatar = lightSchemePrimary(paletteForReligionId(religion.id))
+    val avatar = if (available) lightSchemePrimary(paletteForReligionId(religion.id)) else Color(0xFF757575)
     Card(
-        modifier = modifier.selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
+        modifier = modifier
+            .semantics { if (!available) stateDescription = "Coming soon" }
+            .selectable(selected = selected, enabled = available, role = Role.RadioButton, onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surfaceVariant
@@ -97,6 +117,15 @@ private fun ReligionCard(religion: ReligionMeta, selected: Boolean, onClick: () 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
+            if (!available) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Coming soon",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

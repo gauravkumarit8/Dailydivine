@@ -18,7 +18,10 @@ data class ReligionMeta(
      *  PRD Section 11.3 needs 11 files total. */
     val contentAssetEn: String?,
     val languages: List<Pair<String, String>> // (display name, code)
-)
+) {
+    /** False for traditions whose verses are not shipped yet (shown as "Coming soon"). */
+    val hasContent: Boolean get() = contentAssetEn != null
+}
 
 object Religions {
     val ALL = listOf(

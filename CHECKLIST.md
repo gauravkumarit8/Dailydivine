@@ -906,6 +906,39 @@ Also: the snooze length now travels in the alarm Intent (`EXTRA_SNOOZE_MINUTES`)
 
 **Still open from the audit:** R20 swipe-to-dismiss; R06 Do Not Disturb (alarms use the alarm usage, which DND allows by default, not tested); the ring screen does not close itself when dismissed from the notification; `AlarmRingActivity.onNewIntent`; religion-specific tones. Round C (content, empty traditions, milestones, daily-verse index) is next.
 
+### 2026-10-28 — Round C (product logic: empty traditions, milestones, daily-verse index) + UI audit
+
+**Round C fixes**
+
+| # | Problem | Fix | Confidence |
+|---|---|---|---|
+| 4 | Sikhism, Judaism and Spiritual were selectable but have no verses: an install that picked them got an empty app (no verse, no streak, no notification) | `ReligionMeta.hasContent`; onboarding cards for them are disabled with a "Coming soon" label and a note; `selectReligion` and Settings `changeReligion` ignore them; Settings rows disabled; Home empty state is now a card with a "Choose another tradition" button (opens Settings) | Certain (logic), UI untested |
+| 11 | After a broken streak, 7/14/30-day milestones were never celebrated again until the old record was beaten (`lastMilestoneDays` never reset) | `MilestoneRules.decide` (pure): a streak shorter than the stored value resets it | Certain, unit-tested (6) |
+| 12a | Daily-verse index used `%`, which goes negative if the clock is before the install date, giving dayNumber <= 0 and an empty Home | `DailyVerseSelector.dayNumber` with `floorMod` | Certain, unit-tested (4) |
+
+`ReligionsContentTest` (4 tests) checks ids are unique, every declared content file exists, and at least
+one tradition has content.
+
+**Not done on purpose (item 12b):** the verse sequence still depends on the verse count, so adding verses
+in an update reshuffles the sequence. Fixing it properly needs a design choice (pin per-day verses in the
+journal, or an anchor per religion). **No new content was added**: Judaism needs `storage.googleapis.com`
+on the sandbox allow-list, Sikhism needs a licensing decision, and passage selections need review by
+members of each tradition (see section 10B of the handoff).
+
+**Verification run:** balance/duplicate imports/XML, `check_imports` (121 files, 0), `check_symbols` (0),
+`check_release_readiness` OK. **None of this is a compile.** (A scripted step hung once on a stray
+`cat >` with no input; state was re-verified marker by marker before re-running.)
+
+**NOT verified (device + CI):** CI compile; onboarding shows the three cards disabled and Continue stays
+disabled until a tradition with verses is chosen; Settings picker rows are disabled; for a legacy install
+already on an empty tradition, Home shows the new card and its button opens Settings.
+
+**UI audit:** see `UI_AUDIT_AND_REVAMP_PLAN.md` (static review, no device). Headlines: the ring screen does
+not scroll (can clip on small phones, large fonts, landscape); dark mode flashes white at launch (white
+splash, no `values-night`); there is no adaptive layout for tablets/foldables/landscape; no string
+resources (about 99 literals); no `@Preview`s or screenshot tests; the Alarm rows became very tall after
+Round B; the time picker dialog is not scroll-safe and ignores the 24-hour setting.
+
 ---
 
 ## What's Next (as of this session)

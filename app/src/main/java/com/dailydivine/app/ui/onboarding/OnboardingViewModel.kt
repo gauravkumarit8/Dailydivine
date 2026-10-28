@@ -52,6 +52,8 @@ class OnboardingViewModel @Inject constructor(
 
     fun selectReligion(religionId: Int) {
         val religion = Religions.byId(religionId)
+        // A tradition without shipped verses must not be chosen: the app would open empty.
+        if (religion?.hasContent != true) return
         _uiState.value = _uiState.value.copy(
             selectedReligionId = religionId,
             // Default to the religion's first supported language rather than

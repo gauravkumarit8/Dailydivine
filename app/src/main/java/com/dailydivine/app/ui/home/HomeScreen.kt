@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     onOpenBadges: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
     /** F004-R18: true when the app was opened via the alarm's "Wake Up & Read" with TTS on. */
     autoRead: Boolean = false,
     viewModel: HomeViewModel = hiltViewModel()
@@ -150,9 +151,9 @@ fun HomeScreen(
                     onReflectionChange = viewModel::onReflectionChanged,
                     onMoodSelect = viewModel::onMoodSelected
                 )
-            } ?: Text(
-                "Verses for ${state.religion?.name ?: "this path"} are coming soon. " +
-                    "You can switch path in Settings."
+            } ?: EmptyTraditionCard(
+                name = state.religion?.name ?: "this path",
+                onChooseAnother = onOpenSettings
             )
 
             Spacer(Modifier.height(16.dp))
@@ -313,4 +314,34 @@ private fun greetingForNow(): String = when (Calendar.getInstance().get(Calendar
     in 12..16 -> "Good Afternoon"
     in 17..20 -> "Good Evening"
     else -> "Peaceful Night"
+}
+
+/** Shown only when the chosen tradition has no verses yet (e.g. an install from an older build). */
+@Composable
+private fun EmptyTraditionCard(name: String, onChooseAnother: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Verses for $name are coming soon",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Until then, choose another tradition to begin your daily practice. You can switch back any time.",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = onChooseAnother, modifier = Modifier.heightIn(min = 48.dp)) {
+                Text("Choose another tradition")
+            }
+        }
+    }
 }

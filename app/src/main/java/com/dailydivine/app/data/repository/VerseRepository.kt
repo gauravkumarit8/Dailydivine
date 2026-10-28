@@ -5,6 +5,7 @@ import com.dailydivine.app.data.local.dao.VerseDao
 import com.dailydivine.app.data.local.entity.Verse
 import com.dailydivine.app.domain.model.DailyVerse
 import kotlinx.coroutines.flow.first
+import com.dailydivine.app.domain.DailyVerseSelector
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -18,7 +19,7 @@ class VerseRepository @Inject constructor(
     suspend fun getDailyVerse(religionId: Int, installDate: LocalDate, today: LocalDate): DailyVerse? {
         val totalVerses = verseDao.getVerseCount(religionId).takeIf { it > 0 } ?: return null
         val daysSinceInstall = ChronoUnit.DAYS.between(installDate, today)
-        val dayNumber = (daysSinceInstall % totalVerses).toInt() + 1
+        val dayNumber = DailyVerseSelector.dayNumber(daysSinceInstall, totalVerses)
         val verse = verseDao.getDailyVerse(religionId, dayNumber) ?: return null
         val isBookmarked = bookmarkDao.isBookmarked(verse.id).first()
         return DailyVerse(verse = verse, dayNumber = dayNumber, isBookmarked = isBookmarked, hasJournalEntry = false)

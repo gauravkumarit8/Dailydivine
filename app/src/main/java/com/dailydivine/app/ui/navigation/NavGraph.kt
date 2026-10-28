@@ -130,6 +130,9 @@ fun DailyDivineNavGraph(
             composable(Screen.Home.route) {
                 HomeScreen(
                     onOpenBadges = { navController.navigate(Screen.Badges.route) },
+                    onOpenSettings = {
+                        navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                    },
                     autoRead = autoReadOnStart
                 )
             }

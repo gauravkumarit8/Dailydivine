@@ -224,7 +224,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 48.dp)
-                                .clickable {
+                                .clickable(enabled = r.hasContent) {
                                     showReligionPicker = false
                                     viewModel.changeReligion(r.id)
                                 }

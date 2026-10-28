@@ -12,6 +12,7 @@ import com.dailydivine.app.data.repository.JournalRepository
 import com.dailydivine.app.data.repository.StreakRepository
 import com.dailydivine.app.data.repository.VerseRepository
 import com.dailydivine.app.domain.model.DailyVerse
+import com.dailydivine.app.domain.MilestoneRules
 import com.dailydivine.app.domain.model.MilestoneBadge
 import com.dailydivine.app.notifications.NotificationHelper
 import com.dailydivine.app.wallpaper.WallpaperUpdater
@@ -134,11 +135,19 @@ class HomeViewModel @Inject constructor(
         // persists the highest one already celebrated, so reloading Home (or
         // reopening the app the same day) never repeats it.
         val prefs = userPreferences.state.first()
-        val reached = streak.currentMilestone
-            ?.takeIf { it.days == streak.currentStreak && it.days > prefs.lastMilestoneDays }
-        if (reached != null) {
-            userPreferences.setLastMilestoneDays(reached.days)
-            if (prefs.milestonesEnabled) NotificationHelper.postMilestone(appContext, reached.days, reached.name)
+        // MilestoneRules also forgets old milestones when a streak was broken and restarted
+        // (before, 7/14/30 were never celebrated again until the old record was beaten).
+        val decision = MilestoneRules.decide(
+            currentStreak = streak.currentStreak,
+            milestoneDaysToday = streak.currentMilestone?.days,
+            lastCelebrated = prefs.lastMilestoneDays
+        )
+        val reached = streak.currentMilestone?.takeIf { it.days == decision.celebrateDays }
+        if (decision.newLastCelebrated != prefs.lastMilestoneDays) {
+            userPreferences.setLastMilestoneDays(decision.newLastCelebrated)
+        }
+        if (reached != null && prefs.milestonesEnabled) {
+            NotificationHelper.postMilestone(appContext, reached.days, reached.name)
         }
 
         _uiState.value = _uiState.value.copy(
