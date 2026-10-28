@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.runtime.saveable.rememberSaveable
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -246,6 +248,8 @@ private fun AlarmRow(
     onSnoozeSelect: (Int) -> Unit,
     onDelete: () -> Unit
 ) {
+    // Sound settings are collapsed by default so a list of alarms stays short and scannable.
+    var soundOpen by rememberSaveable(alarm.id) { mutableStateOf(false) }
     val repeatDays = AlarmScheduler.parseRepeatDays(alarm.repeatDays)
     val subtitle = if (alarm.isEnabled) {
         val next = AlarmScheduler.computeNextTriggerTime(alarm.hour, alarm.minute, alarm.repeatDays, 0L, nowMs)
@@ -282,7 +286,9 @@ private fun AlarmRow(
             }
 
             Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            // Seven equal-width cells (not seven fixed 40 dp circles, which overflowed 320 dp-wide
+            // phones); each cell is at least 48 dp tall so it is an easy tap target.
+            Row(modifier = Modifier.fillMaxWidth()) {
                 DAY_LABELS.forEachIndexed { index, (letter, fullName) ->
                     val isoDay = index + 1
                     DayToggle(letter, fullName, selected = isoDay in repeatDays) { onDayToggle(isoDay) }
@@ -318,8 +324,15 @@ private fun AlarmRow(
             }
 
             Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-            Spacer(Modifier.height(8.dp))
-            AlarmSoundSettings(alarm, onVolumeChange, onGradualToggle, onVibrationToggle, onSnoozeSelect)
+            TextButton(
+                onClick = { soundOpen = !soundOpen },
+                modifier = Modifier.semantics { stateDescription = if (soundOpen) "Expanded" else "Collapsed" }
+            ) {
+                Text(if (soundOpen) "Hide sound & feel" else "Sound & feel: volume, vibration, snooze")
+            }
+            if (soundOpen) {
+                AlarmSoundSettings(alarm, onVolumeChange, onGradualToggle, onVibrationToggle, onSnoozeSelect)
+            }
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 TextButton(onClick = onTimeClick) { Text("Change time") }
@@ -339,22 +352,29 @@ private val DAY_LABELS = listOf(
 
 /** One weekday circle (F004-R08). 40 dp: seven fit across a phone-width card. */
 @Composable
-private fun DayToggle(letter: String, fullName: String, selected: Boolean, onClick: () -> Unit) {
+private fun RowScope.DayToggle(letter: String, fullName: String, selected: Boolean, onClick: () -> Unit) {
     val primary = MaterialTheme.colorScheme.primary
     Box(
         modifier = Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(if (selected) primary else primary.copy(alpha = 0.08f))
-            .clickable(onClick = onClick)
+            .weight(1f)
+            .heightIn(min = 48.dp)
+            .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onClick() })
             .semantics { contentDescription = if (selected) "$fullName, repeats" else "$fullName, off" },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            letter,
-            style = MaterialTheme.typography.labelLarge,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-        )
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(if (selected) primary else primary.copy(alpha = 0.08f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                letter,
+                style = MaterialTheme.typography.labelLarge,
+                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 

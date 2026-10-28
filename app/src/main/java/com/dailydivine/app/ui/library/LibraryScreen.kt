@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.library
 
+import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -130,7 +131,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
             onDismissRequest = viewModel::closeHistoryDetail,
             title = { Text(formatHistoryDate(item.entry.date), style = MaterialTheme.typography.titleMedium) },
             text = {
-                Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     item.verse?.let { v ->
                         Text("\u201C${v.translatedText}\u201D", style = VerseTextStyle)
                         Spacer(Modifier.height(8.dp))
@@ -162,7 +163,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
             text = {
                 Column(
                     Modifier
-                        .heightIn(max = 400.dp)
+                        .heightIn(max = dialogMaxHeight())
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text("\u201C${verse.translatedText}\u201D", style = VerseTextStyle)

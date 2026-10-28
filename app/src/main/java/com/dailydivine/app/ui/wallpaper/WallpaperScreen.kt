@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.wallpaper
 
+import com.dailydivine.app.ui.components.previewMaxHeight
 import android.content.Intent
 import android.provider.Settings
 import android.widget.Toast
@@ -78,10 +79,10 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 Image(
                     bitmap = preview.asImageBitmap(),
                     contentDescription = "Preview of today's wallpaper with the daily verse",
-                    modifier = Modifier.height(380.dp).aspectRatio(preview.width.toFloat() / preview.height).clip(RoundedCornerShape(20.dp))
+                    modifier = Modifier.heightIn(max = previewMaxHeight()).aspectRatio(preview.width.toFloat() / preview.height).clip(RoundedCornerShape(20.dp))
                 )
             } else {
-                Box(Modifier.height(380.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.height(previewMaxHeight()), contentAlignment = Alignment.Center) {
                     Text(
                         "A preview will appear once a verse is available for your path.",
                         style = MaterialTheme.typography.bodySmall,

@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.ui.components.dialogMaxHeight
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.foundation.clickable
@@ -62,7 +63,7 @@ fun TonePickerDialog(
         onDismissRequest = onDismiss,
         title = { Text("Alarm tone") },
         text = {
-            LazyColumn(modifier = Modifier.heightIn(max = 380.dp)) {
+            LazyColumn(modifier = Modifier.heightIn(max = dialogMaxHeight())) {
                 items(AlarmTones.orderedFor(religionId), key = { it.id }) { tone ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

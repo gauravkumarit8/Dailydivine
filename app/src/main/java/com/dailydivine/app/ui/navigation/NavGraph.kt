@@ -1,5 +1,14 @@
 package com.dailydivine.app.ui.navigation
 
+import com.dailydivine.app.ui.components.WIDE_LAYOUT_MIN_DP
+import com.dailydivine.app.ui.components.MAX_CONTENT_WIDTH
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -48,17 +57,25 @@ fun DailyDivineNavGraph(
 
     // Bottom nav only appears for the four "returning user / main app"
     // destinations (PRD Section 8) -- onboarding stays full-screen.
+    // Responsive frame: below 600 dp wide a bottom bar; from 600 dp (tablets, foldables, phones in
+    // landscape) a side rail, and the screens are capped at MAX_CONTENT_WIDTH and centred so cards
+    // and verse text never stretch across a large window.
+    val isWide = LocalConfiguration.current.screenWidthDp >= WIDE_LAYOUT_MIN_DP
+    val showRail = isWide && isBottomNavRoute(currentRoute)
     Scaffold(
         bottomBar = {
-            if (isBottomNavRoute(currentRoute)) {
+            if (!isWide && isBottomNavRoute(currentRoute)) {
                 DailyDivineBottomNavBar(navController, currentRoute)
             }
         }
     ) { innerPadding ->
+        Row(Modifier.fillMaxSize().padding(innerPadding)) {
+        if (showRail) DailyDivineNavigationRail(navController, currentRoute)
+        Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.widthIn(max = MAX_CONTENT_WIDTH).fillMaxSize()
         ) {
 
             // Onboarding flow (Section 9, S02-S06), nested so all five screens
@@ -154,6 +171,8 @@ fun DailyDivineNavGraph(
                     }
                 )
             }
+        }
+        }
         }
 
         // F009-R12: milestone notification tapped -> land on the badges screen

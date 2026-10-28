@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.settings
 
+import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
@@ -252,7 +253,7 @@ fun SettingsScreen(
             onDismissRequest = { showCredits = false },
             title = { Text("Content sources & credits") },
             text = {
-                Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     ContentCredits.SCRIPTURE.forEach { (tradition, source) ->
                         Text(tradition, style = MaterialTheme.typography.titleMedium)
                         Text(source, style = MaterialTheme.typography.bodySmall)

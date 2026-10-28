@@ -11,6 +11,13 @@ code, needs a device to confirm), **Check** (a question to settle on a device).
 Strong claims of the form "production grade" cannot be made from code alone; section 6 defines the
 evidence needed.
 
+## Status (updated 2026-10-28, Round D)
+
+Done in code, not yet seen on a device: P0 items 1 to 4 (ring screen, dark window, adaptive frame with width cap
+and navigation rail, time picker), item 7 (Alarm rows collapsed), item 8 (day circles and tap targets), fixed
+dialog and wallpaper-preview heights. Still open: Phase 0 tooling (previews, screenshot tests, string
+extraction, design tokens), Phase 2 screen redesigns, items 9 to 17.
+
 ## 1. Scorecard (code-level, per screen)
 
 | Screen | Small phone / large font | Tablet / landscape | Dark mode | A11y basics | Verdict |

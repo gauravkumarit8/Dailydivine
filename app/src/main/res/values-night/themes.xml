@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark variants of the window themes. Without these the window behind the app (and the
+         splash screen) stayed white in dark mode, which flashed at launch and on rotation. -->
+    <style name="Theme.DailyDivine" parent="android:Theme.Material.NoActionBar" />
+
+    <style name="Theme.DailyDivine.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1C1B1F</item>
+        <item name="postSplashScreenTheme">@style/Theme.DailyDivine</item>
+    </style>
+</resources>

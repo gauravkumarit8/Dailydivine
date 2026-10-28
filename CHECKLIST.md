@@ -939,6 +939,28 @@ splash, no `values-night`); there is no adaptive layout for tablets/foldables/la
 resources (about 99 literals); no `@Preview`s or screenshot tests; the Alarm rows became very tall after
 Round B; the time picker dialog is not scroll-safe and ignores the 24-hour setting.
 
+### 2026-10-28 — Round D (responsive UI, Phase 1 of the revamp plan)
+
+**Origin:** the user reported the screens are "not properly responsive". This round fixes the layout problems found by the static audit (`UI_AUDIT_AND_REVAMP_PLAN.md`). **No device or screenshot was available, so none of it has been seen rendering.**
+
+| Area | Problem | Fix |
+|---|---|---|
+| App frame (every screen) | Content stretched edge to edge on wide windows; a full-width bottom bar on tablets/landscape | `NavGraph`: from 600 dp window width a `NavigationRail` replaces the bottom bar (more height in landscape); screens capped at 640 dp and centred (`MAX_CONTENT_WIDTH`). Phones under 600 dp are unchanged |
+| Ring screen | One centred, non-scrolling column: buttons could fall off-screen on small phones, large fonts, landscape | `BoxWithConstraints` layout: clock + verse scroll, the two buttons are pinned; landscape puts the buttons beside the text; clock font scaling capped at 1.3x for the clock only, 52 sp on windows under 360 dp wide |
+| Dark mode | White splash and white window behind the app (no `values-night`) | `values-night/themes.xml`: dark window theme and dark splash background |
+| Time picker | Dial (about 256 dp) does not fit short windows; always 12-hour | switches to keyboard entry (`TimeInput`) under 480 dp window height; body scrolls; follows the phone's 12/24-hour setting |
+| Alarm day circles | seven fixed 40 dp circles in one row overflowed 320 dp-wide phones; 40 dp tap targets | seven equal-width cells, each at least 48 dp tall, `Checkbox` semantics |
+| Alarm rows | very tall since Round B | sound settings (volume, gradual, vibrate, snooze) collapsed behind a "Sound & feel" button, state kept across rotation |
+| Dialog bodies, wallpaper preview | fixed 380-420 dp heights | heights are a share of the window (`dialogMaxHeight`, `previewMaxHeight`) |
+
+New shared helper file `ui/components/AdaptiveLayout.kt`.
+
+**Verification run:** balance/duplicate imports/XML, `check_imports` (122 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (needs CI + device):** CI compile (`BoxWithConstraints`, `TimeInput`, `NavigationRail`, `Density(...)`); then on devices: (1) ring screen at font scale 2.0, on a small phone, and in landscape: both buttons reachable; (2) rotate a phone to landscape: rail appears, bottom bar disappears, nothing clipped; (3) a tablet/foldable: content centred, not stretched; (4) dark mode cold start: no white flash; (5) a 320 dp-wide phone (or display size "largest"): day circles fit; (6) time picker in landscape.
+
+**Still open (Phase 0 and 2 of the plan):** no `@Preview`s or screenshot tests yet (needs new Gradle dependencies, so it is its own CI round); strings are still hard-coded; Home/Library/Settings/Wallpaper/Badges have only the width cap, not redesigned layouts; error states; delete-undo; RTL review.
+
 ---
 
 ## What's Next (as of this session)
