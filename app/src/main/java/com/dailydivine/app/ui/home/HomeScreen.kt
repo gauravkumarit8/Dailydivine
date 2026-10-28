@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.util.VerseDisplayRules
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -242,7 +243,11 @@ private fun DailyVerseCard(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(Modifier.height(16.dp))
-            Text("\u201C$verseText\u201D", style = VerseTextStyle)
+            val verseSize = VerseDisplayRules.fontSizeSp(verseText.length)
+            Text(
+                "\u201C${VerseDisplayRules.normalize(verseText)}\u201D",
+                style = VerseTextStyle.copy(fontSize = verseSize.sp, lineHeight = (verseSize * 1.6f).sp)
+            )
             Spacer(Modifier.height(12.dp))
             Text(
                 "\u2014 $source",

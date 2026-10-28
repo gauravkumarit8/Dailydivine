@@ -18,16 +18,18 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // ORDER MATTERS. installSplashScreen() must run first: it switches the window from the splash
+        // theme to the real theme. enableEdgeToEdge() builds the window decor, and when it ran first the
+        // decor was built under the splash theme, which put an ActionBar (a grey "DailyDivine" title
+        // bar) on every screen. WindowSetupTest guards this order.
+        // Screen S01: keeps the branded splash up until MainViewModel has resolved whether onboarding
+        // was already completed -- this prevents a flash of the Welcome screen for returning users.
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { mainViewModel.startDestination.value == null }
         // targetSdk 35+ enforces edge-to-edge (content draws behind the system bars). Opting in
         // explicitly keeps the status/navigation bar icons readable in light and dark themes;
         // the Scaffold in NavGraph applies the bar insets to the screens.
         enableEdgeToEdge()
-        // Screen S01: keeps the branded splash (Theme.DailyDivine.Splash) up
-        // until MainViewModel has resolved whether onboarding was already
-        // completed -- this is what prevents a flash of the Welcome screen
-        // before jumping straight to Home for a returning user.
-        val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition { mainViewModel.startDestination.value == null }
 
         super.onCreate(savedInstanceState)
         // F009-R12. savedInstanceState == null: only on a genuine launch from the

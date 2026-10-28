@@ -5,6 +5,8 @@
     <!-- Screen S01: branded splash theme consumed by installSplashScreen() -->
     <style name="Theme.DailyDivine.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <item name="postSplashScreenTheme">@style/Theme.DailyDivine</item>
     </style>
 

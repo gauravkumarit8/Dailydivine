@@ -975,6 +975,26 @@ New shared helper file `ui/components/AdaptiveLayout.kt`.
 
 **Verification run:** balance/duplicate imports, `check_imports`, `check_symbols`, `check_release_readiness`, YAML of `build.yml`. **None of this is a compile.**
 
+### 2026-10-28 — Round F (fixes from the user's phone screenshots: Redmi Note 15 SE)
+
+**Evidence:** 3 screenshots (Home, Alarm, Settings). The user said the UI revamp "didn't happen properly"; correct: Round D was responsive plumbing only, and Phase 2 (screen redesigns) had not started. The screenshots also showed a real bug.
+
+| # | Finding on the device | Cause | Fix |
+|---|---|---|---|
+| 1 | **A grey "DailyDivine" ActionBar on every screen** (pushed all content down, clashed with the theme colours) | `MainActivity.onCreate` called `enableEdgeToEdge()` BEFORE `installSplashScreen()`. `enableEdgeToEdge()` builds the window decor, so it was built under the splash theme and an ActionBar was baked in; the later switch to the real theme could not remove it. Present since the release-pipeline commit (`ab256c1`), not from Rounds A to E | `installSplashScreen()` is now the first call; the splash themes (light and night) also set `windowActionBar=false` and `windowNoTitle=true` as a second guard. `WindowSetupTest` fails if the order or the theme flags regress |
+| 2 | Navigation pill was Material lavender on a peach page | `secondaryContainer` was never set | set from the religion palette (light and dark) |
+| 3 | Alarm tab: a stack of 2 to 5 banners ate half the screen; buttons misaligned; empty message left-aligned in large type | separate cards, default 12 dp button padding | one "reliability" panel (1 problem = full card; several = a summary with Fix/Hide); aligned buttons; centred empty state with icon |
+| 4 | Home verse: 10-line poem wrapped at 20 sp, card filled the screen; "memory--all betrayed--" shown with raw double hyphens | one fixed size; Gutenberg dashes | `VerseDisplayRules`: 24/21/18 sp by length; "--" shown as an em dash (display only, data untouched) |
+| 5 | Settings: Language showed "en"; notification card button misaligned | raw code; default padding | "English"; aligned |
+
+Tests added: `WindowSetupTest` (3), `VerseDisplayRulesTest` (4). The new guard logic was also run in Python against the real files (order and theme flags pass).
+
+**Verification run:** balance/duplicate imports/XML, `check_imports` (127 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** the ActionBar is gone on Redmi/HyperOS (the strongest cause I could find, but I cannot see the device); status bar icons readable; content starts below the status bar (Scaffold insets) with no overlap; nav pill colour; Alarm panel collapse; verse sizes.
+
+**Still open:** Phase 2 redesigns (Home hierarchy, Library, Settings grouping, onboarding), string extraction, pixel screenshot tests.
+
 ---
 
 ## What's Next (as of this session)

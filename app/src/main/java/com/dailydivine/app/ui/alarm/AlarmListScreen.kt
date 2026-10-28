@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.runtime.saveable.rememberSaveable
 import android.content.Context
@@ -95,94 +97,102 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) { Text("Debug: ring a test alarm in 10 seconds") }
             }
-            if (!canScheduleExactAlarms) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-                ) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(
-                            "Exact alarms are turned off for DailyDivine, so alarms may fire up to 10 minutes late. Enable them for reliable wake-up times.",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        TextButton(onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // All reliability problems in ONE panel (a stack of five banners pushed the alarms off screen).
+            val warnings = buildList {
+                if (!canScheduleExactAlarms) add(
+                    AlarmWarning(
+                        "Exact alarms are turned off, so alarms may fire up to 10 minutes late.",
+                        "Enable exact alarms"
+                    ) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            runCatching {
                                 context.startActivity(
                                     Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                                         data = Uri.parse("package:${context.packageName}")
                                     }
                                 )
                             }
-                        }) { Text("Enable exact alarms") }
+                        }
                     }
-                }
-            }
-
-            if (!isIgnoringBatteryOptimizations) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-                ) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(
-                            "Battery optimization may stop your alarm from firing in the background. Find DailyDivine in the list and choose \"Don't optimize\" for reliable wake-ups.",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        TextButton(onClick = {
-                            // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
-                            context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                        }) { Text("Open battery settings") }
+                )
+                if (!isIgnoringBatteryOptimizations) add(
+                    AlarmWarning(
+                        "Battery optimization may stop your alarm from firing in the background. " +
+                            "Find DailyDivine in the list and choose \"Don't optimize\".",
+                        "Open battery settings"
+                    ) {
+                        runCatching { context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
                     }
-                }
-            }
-
-            if (!notificationsReady) {
-                AlarmWarningCard(
-                    text = "Notifications are turned off for DailyDivine, so the alarm screen may not open and you could not snooze or dismiss from the lock screen. Turn them on, and keep the \"Alarm (while ringing)\" channel on high importance.",
-                    buttonLabel = "Open notification settings"
-                ) {
-                    runCatching {
-                        context.startActivity(
-                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                        )
-                    }
-                }
-            }
-
-            if (!fullScreenIntentReady) {
-                AlarmWarningCard(
-                    text = "Full-screen alerts are turned off, so the alarm screen will not appear over your lock screen. You can still snooze or dismiss from the notification. Allow full-screen alerts for reliable wake-ups.",
-                    buttonLabel = "Allow full-screen alerts"
-                ) {
-                    runCatching {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                )
+                if (!notificationsReady) add(
+                    AlarmWarning(
+                        "Notifications are turned off, so the alarm screen may not open and you could " +
+                            "not snooze or dismiss from the lock screen.",
+                        "Open notification settings"
+                    ) {
+                        runCatching {
                             context.startActivity(
-                                Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
-                                    data = Uri.parse("package:${context.packageName}")
+                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                                 }
                             )
                         }
                     }
-                }
+                )
+                if (!fullScreenIntentReady) add(
+                    AlarmWarning(
+                        "Full-screen alerts are turned off, so the alarm screen will not appear over your " +
+                            "lock screen. You can still snooze or dismiss from the notification.",
+                        "Allow full-screen alerts"
+                    ) {
+                        runCatching {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                        data = Uri.parse("package:${context.packageName}")
+                                    }
+                                )
+                            }
+                        }
+                    }
+                )
+                if (!alarmStreamAudible) add(
+                    AlarmWarning(
+                        "Your phone's alarm volume is turned all the way down, so the alarm would ring silently.",
+                        "Open sound settings"
+                    ) {
+                        runCatching { context.startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) }
+                    }
+                )
             }
-
-            if (!alarmStreamAudible) {
-                AlarmWarningCard(
-                    text = "Your phone's alarm volume is turned all the way down, so the alarm would ring silently. Raise the alarm volume in your sound settings.",
-                    buttonLabel = "Open sound settings"
-                ) {
-                    runCatching { context.startActivity(Intent(Settings.ACTION_SOUND_SETTINGS)) }
-                }
-            }
+            AlarmWarningsPanel(warnings)
 
             if (alarms.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        "No alarms yet — tap + to add your first morning blessing.",
-                        modifier = Modifier.padding(32.dp)
-                    )
+                    Column(
+                        modifier = Modifier.padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Filled.Alarm,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            "No alarms yet",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Tap + to add your first morning blessing.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
@@ -378,16 +388,50 @@ private fun RowScope.DayToggle(letter: String, fullName: String, selected: Boole
     }
 }
 
-/** A warning banner with one action button, used for the alarm-readiness checks above the list. */
+/** One reliability problem: what is wrong and the single action that fixes it. */
+private class AlarmWarning(val text: String, val buttonLabel: String, val onClick: () -> Unit)
+
+/**
+ * All alarm-reliability problems in one card. A single problem is shown in full; several are
+ * collapsed behind one summary line ("3 things may stop your alarm") with a Fix/Hide button, so
+ * the alarms themselves stay on screen.
+ */
 @Composable
-private fun AlarmWarningCard(text: String, buttonLabel: String, onClick: () -> Unit) {
+private fun AlarmWarningsPanel(warnings: List<AlarmWarning>) {
+    if (warnings.isEmpty()) return
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val many = warnings.size > 1
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
-        Column(Modifier.padding(12.dp)) {
-            Text(text, style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = onClick) { Text(buttonLabel) }
+        Column(Modifier.padding(16.dp)) {
+            if (many) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "${warnings.size} things may stop your alarm from ringing",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TextButton(
+                        onClick = { expanded = !expanded },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onErrorContainer)
+                    ) { Text(if (expanded) "Hide" else "Fix") }
+                }
+            }
+            if (!many || expanded) {
+                warnings.forEachIndexed { index, w ->
+                    if (many) Spacer(Modifier.height(if (index == 0) 4.dp else 12.dp))
+                    Text(w.text, style = MaterialTheme.typography.bodyMedium)
+                    TextButton(
+                        onClick = w.onClick,
+                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onErrorContainer)
+                    ) {
+                        Text(w.buttonLabel, style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
         }
     }
 }

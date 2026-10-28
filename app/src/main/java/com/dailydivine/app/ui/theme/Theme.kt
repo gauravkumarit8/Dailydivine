@@ -38,6 +38,9 @@ fun DailyDivineTheme(
             // not Material's default lavender. Near-black/white text keeps >= 4.5:1.
             primaryContainer = lerp(Color(0xFF1C1B1F), darkPrimary, 0.30f),
             onPrimaryContainer = Color.White,
+            // Nav-bar selection pill, chips: the religion's own tint, not Material's default lavender.
+            secondaryContainer = lerp(Color(0xFF1C1B1F), darkPrimary, 0.30f),
+            onSecondaryContainer = Color.White,
             onSecondary = Color.White
         )
     } else {
@@ -50,6 +53,8 @@ fun DailyDivineTheme(
             surfaceContainerHighest = Color.White,
             primaryContainer = lerp(palette.surface, lightPrimary, 0.18f),
             onPrimaryContainer = Color(0xFF1C1B1F),
+            secondaryContainer = lerp(palette.surface, lightPrimary, 0.18f),
+            onSecondaryContainer = Color(0xFF1C1B1F),
             onPrimary = Color.White,
             onSecondary = Color.White
         )

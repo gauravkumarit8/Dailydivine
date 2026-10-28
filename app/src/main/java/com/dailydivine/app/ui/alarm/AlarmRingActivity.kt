@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.util.VerseDisplayRules
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.platform.LocalDensity
@@ -213,7 +214,7 @@ internal fun AlarmRingScreen(
             versePreview?.let {
                 Spacer(Modifier.height(24.dp))
                 Text(
-                    "\u201C$it\u201D",
+                    "\u201C${VerseDisplayRules.normalize(it)}\u201D",
                     style = VerseTextStyle.copy(fontSize = 18.sp, lineHeight = 28.sp),
                     color = Color.White,
                     textAlign = TextAlign.Center

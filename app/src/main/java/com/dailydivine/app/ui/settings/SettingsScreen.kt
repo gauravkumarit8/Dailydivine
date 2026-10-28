@@ -59,7 +59,7 @@ fun SettingsScreen(
         )
         ListItem(
             headlineContent = { Text("Language") },
-            supportingContent = { Text(languageCode) }
+            supportingContent = { Text(languageDisplayName(languageCode)) }
         )
         // Religion is editable (F001-R04). Language stays read-only until
         // more than English content/UI strings exist.
@@ -96,7 +96,7 @@ fun SettingsScreen(
                                 .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
-                    }) { Text("Open system settings") }
+                    }, contentPadding = PaddingValues(0.dp)) { Text("Open system settings") }
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -321,3 +321,9 @@ private fun appVersionName(context: android.content.Context): String =
     } catch (e: Exception) {
         "unknown"
     }
+
+/** "en" -> "English" (the raw language code was shown before). */
+private fun languageDisplayName(code: String): String =
+    java.util.Locale.forLanguageTag(code).getDisplayLanguage(java.util.Locale.ENGLISH)
+        .replaceFirstChar { it.uppercase() }
+        .ifBlank { code }
