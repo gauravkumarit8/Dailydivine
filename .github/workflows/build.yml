@@ -52,6 +52,13 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
+      # Renders the key screens at small-phone / large-font / landscape / tablet sizes on the JVM and
+      # asserts the main controls are visible. Non-blocking while the setup is new: read the result
+      # (and the unit-test-results artifact), and drop continue-on-error once it is stable.
+      - name: UI layout tests (small phone, large font, landscape, tablet)
+        continue-on-error: true
+        run: ./gradlew testDebugUnitTest -PuiTests --tests "com.dailydivine.app.ui.ResponsiveLayoutTest" --stacktrace
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 

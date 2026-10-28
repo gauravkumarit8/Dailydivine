@@ -83,8 +83,22 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
+    testOptions {
+        unitTests {
+            // Robolectric (JVM UI layout tests) needs the merged Android resources and manifest.
+            isIncludeAndroidResources = true
+        }
+    }
     packaging {
         resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+    }
+}
+
+// The slower UI layout tests (ResponsiveLayoutTest, category UiLayoutTests) run only when asked for
+// with -PuiTests, in their own CI step, so they can never block the normal test run or the release gate.
+tasks.withType<Test>().configureEach {
+    if (!project.hasProperty("uiTests")) {
+        useJUnit { excludeCategories("com.dailydivine.app.UiLayoutTests") }
     }
 }
 
@@ -188,6 +202,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("io.mockk:mockk:1.13.9")
+    // JVM UI layout tests (ResponsiveLayoutTest): Compose UI test + Robolectric, no emulator needed.
+    testImplementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

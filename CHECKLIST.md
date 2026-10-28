@@ -961,6 +961,20 @@ New shared helper file `ui/components/AdaptiveLayout.kt`.
 
 **Still open (Phase 0 and 2 of the plan):** no `@Preview`s or screenshot tests yet (needs new Gradle dependencies, so it is its own CI round); strings are still hard-coded; Home/Library/Settings/Wallpaper/Badges have only the width cap, not redesigned layouts; error states; delete-undo; RTL review.
 
+### 2026-10-28 — Round E (automated responsive-layout tests)
+
+**Why:** Round D fixed layouts that nobody (neither the assistant nor CI) could see. This round adds a way to check them automatically, on the JVM, without an emulator or Android Studio.
+
+**What:** `ResponsiveLayoutTest` (9 tests, Compose UI test + Robolectric 4.11.1). It renders the alarm ring screen (320x568 at font 1.0 and 2.0, 360x640 at 1.3, landscape 800x360 at 1.0 and 2.0, tablet), the Welcome screen and the religion picker (320x568 at font 2.0, landscape) and asserts the primary controls (clock, Wake Up & Read, Snooze, Begin, Continue) are displayed, i.e. inside the window and not clipped.
+
+**Safety design:** the tests carry the JUnit category `UiLayoutTests`; `tasks.withType<Test>` in `app/build.gradle.kts` excludes that category unless `-PuiTests` is passed. So the existing `Run unit tests` step and the release gate are unchanged. A new CI step "UI layout tests" in `build.yml` runs them with `continue-on-error: true` (non-blocking while the setup is new). `AlarmRingScreen` became `internal` for this. New Gradle pieces: `testOptions.unitTests.isIncludeAndroidResources`, `testImplementation` ui-test-junit4 + Robolectric 4.11.1 + BOM platform, `debugImplementation` ui-test-manifest (debug only, not in the release manifest).
+
+**How to read the result:** Actions > Android CI > step "UI layout tests". A red step with green job = at least one test failed (a failed assertion is a real layout finding, e.g. a button clipped at that size; the unit-test-results artifact names the test). A failure before any test runs (resolution/compile) is a setup problem, not a layout problem. Once stable, remove `continue-on-error`.
+
+**NOT verified:** everything: dependency resolution, Robolectric on targetSdk 36 (tests pin `@Config(sdk = [34])`), the test clock handling of the infinite pulse animation (`mainClock.autoAdvance = false`), and `assertIsDisplayed` semantics for scrolled content. The first CI run may need a fix round.
+
+**Verification run:** balance/duplicate imports, `check_imports`, `check_symbols`, `check_release_readiness`, YAML of `build.yml`. **None of this is a compile.**
+
 ---
 
 ## What's Next (as of this session)

@@ -166,8 +166,9 @@ class AlarmRingActivity : ComponentActivity() {
     }
 }
 
+/** Internal (not private) so ResponsiveLayoutTest can render it at different window sizes. */
 @Composable
-private fun AlarmRingScreen(
+internal fun AlarmRingScreen(
     currentTime: String,
     versePreview: String?,
     snoozeMinutes: Int,
