@@ -1035,6 +1035,33 @@ New: `util/StreakCopy.kt` (+ `StreakCopyTest`, 3 tests) for the singular/plural 
 
 **Next in Phase 2:** Library (category cards), Settings grouping, onboarding polish.
 
+### 2026-10-31 — Round I (Library and Settings, Phase 2 steps 2 and 3)
+
+**Library** (from the phone screenshot: four plain rows, no counts, last card looked cut off)
+
+| Change | Why |
+|---|---|
+| Category cards: round badge with the category's initial, the name, "N verses", chevron | plain text rows told you nothing about what was inside |
+| `contentPadding(bottom = 16.dp)` on all three lists | the list's bounds ended exactly at the last card, clipping its shadow and corners (the "cut off" look) |
+| Search: leading search icon, rounded field, a Close icon button instead of a text "Clear" | clearer, a proper touch target |
+| Empty states (no matches, no saved verses, empty history) now have an icon and softer text | were a bare line of text |
+| Verse text in lists and dialogs passes through `VerseDisplayRules.normalize` (real dashes, curly quotes) | same typography as Home |
+
+**Settings** (long flat list of rows on the page background)
+
+| Change | Why |
+|---|---|
+| Each section (Religion/Language, Personalise, Notifications, Voice, About) is one rounded card with thin dividers, headings above | scannable groups instead of one long list |
+| `SettingsRow` wrapper (a `ListItem` with a transparent container) and `SettingsGroup`/`GroupDivider` | rows must not paint the page colour inside a white card |
+
+New: `util/LibraryCopy.kt` (verse-count wording, category initial) + `LibraryCopyTest` (3 tests).
+
+**Verification run:** balance/duplicate imports; the initial() logic mirrored in Python against the tests; `check_imports` (132 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** cards and groups render as intended in light and dark mode; the Library last card is no longer clipped; Settings rows keep their click/toggle behaviour inside the cards; nothing clips at large font.
+
+**Remaining Phase 2:** onboarding polish; History tab calendar strip (optional); string extraction; screenshot tests; Wallpaper and Badges screens use the old card style.
+
 ---
 
 ## What's Next (as of this session)

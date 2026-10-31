@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.settings
 
+import androidx.compose.ui.graphics.Color
 import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
@@ -53,23 +54,27 @@ fun SettingsScreen(
         Text("Settings", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(24.dp))
 
-        ListItem(
+        SettingsGroup {
+        SettingsRow(
             modifier = Modifier.clickable { showReligionPicker = true },
             headlineContent = { Text("Religion") },
             supportingContent = { Text(religion?.name ?: "Not set") },
             trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             headlineContent = { Text("Language") },
             supportingContent = { Text(languageDisplayName(languageCode)) }
         )
+        }
         // Religion is editable (F001-R04). Language stays read-only until
         // more than English content/UI strings exist.
 
         Spacer(Modifier.height(24.dp))
         Text("Personalise", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
-        ListItem(
+        SettingsGroup {
+        SettingsRow(
             modifier = Modifier.clickable(onClick = onOpenWallpaper),
             headlineContent = { Text("Daily wallpaper") },
             supportingContent = {
@@ -78,6 +83,7 @@ fun SettingsScreen(
             },
             trailingContent = { Text("Set up", color = MaterialTheme.colorScheme.primary) }
         )
+        }
 
         Spacer(Modifier.height(24.dp))
         Text("Notifications", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
@@ -104,7 +110,8 @@ fun SettingsScreen(
             Spacer(Modifier.height(8.dp))
         }
 
-        ListItem(
+        SettingsGroup {
+        SettingsRow(
             modifier = Modifier.toggleable(
                 value = prefs.dailyVerseEnabled, role = Role.Switch, onValueChange = viewModel::setDailyVerseEnabled
             ),
@@ -115,14 +122,16 @@ fun SettingsScreen(
             }
         )
         if (prefs.dailyVerseEnabled) {
-            ListItem(
+            GroupDivider()
+            SettingsRow(
                 modifier = Modifier.clickable { showTimePicker = true },
                 headlineContent = { Text("Delivery time") },
                 supportingContent = { Text(formatTime12h(prefs.dailyVerseHour, prefs.dailyVerseMinute)) },
                 trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
             )
         }
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             modifier = Modifier.toggleable(
                 value = prefs.streakReminderEnabled, role = Role.Switch, onValueChange = viewModel::setStreakReminderEnabled
             ),
@@ -132,7 +141,8 @@ fun SettingsScreen(
                 Switch(checked = prefs.streakReminderEnabled, onCheckedChange = null)
             }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             modifier = Modifier.toggleable(
                 value = prefs.milestonesEnabled, role = Role.Switch, onValueChange = viewModel::setMilestonesEnabled
             ),
@@ -142,11 +152,13 @@ fun SettingsScreen(
                 Switch(checked = prefs.milestonesEnabled, onCheckedChange = null)
             }
         )
+        }
 
         Spacer(Modifier.height(24.dp))
         Text("Voice", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
-        ListItem(
+        SettingsGroup {
+        SettingsRow(
             headlineContent = { Text("Reading speed") },
             supportingContent = { Text("How fast verses are read aloud") }
         )
@@ -162,34 +174,42 @@ fun SettingsScreen(
                 )
             }
         }
+        Spacer(Modifier.height(12.dp))
+        }
 
         Spacer(Modifier.height(24.dp))
         Text("About", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
-        ListItem(
+        SettingsGroup {
+        SettingsRow(
             modifier = Modifier.clickable { openLink(context, AppLinks.PRIVACY_URL) },
             headlineContent = { Text("Privacy policy") },
             trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             modifier = Modifier.clickable { openLink(context, AppLinks.TERMS_URL) },
             headlineContent = { Text("Terms of use") },
             trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             modifier = Modifier.clickable { showCredits = true },
             headlineContent = { Text("Content sources & credits") },
             trailingContent = { Text("View", color = MaterialTheme.colorScheme.primary) }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             modifier = Modifier.clickable { sendSupportEmail(context) },
             headlineContent = { Text("Contact support") },
             supportingContent = { Text(AppLinks.SUPPORT_EMAIL) }
         )
-        ListItem(
+        GroupDivider()
+        SettingsRow(
             headlineContent = { Text("Version") },
             supportingContent = { Text(appVersionName(context)) }
         )
+        }
 
         if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             // Debug builds only: preview all three notification types now.
@@ -329,3 +349,39 @@ private fun languageDisplayName(code: String): String =
     java.util.Locale.forLanguageTag(code).getDisplayLanguage(java.util.Locale.ENGLISH)
         .replaceFirstChar { it.uppercase() }
         .ifBlank { code }
+
+/** One section's rows in a single rounded card, with the section heading above it. */
+@Composable
+private fun SettingsGroup(content: @Composable ColumnScope.() -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(Modifier.padding(vertical = 4.dp), content = content)
+    }
+}
+
+/** A ListItem that sits on the group card instead of painting its own page-coloured background. */
+@Composable
+private fun SettingsRow(
+    headlineContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    supportingContent: (@Composable () -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = headlineContent,
+        modifier = modifier,
+        supportingContent = supportingContent,
+        trailingContent = trailingContent,
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
+}
+
+@Composable
+private fun GroupDivider() {
+    Divider(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    )
+}

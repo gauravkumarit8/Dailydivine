@@ -1,5 +1,16 @@
 package com.dailydivine.app.ui.library
 
+import com.dailydivine.app.util.VerseDisplayRules
+import com.dailydivine.app.util.LibraryCopy
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -65,22 +76,28 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                 onValueChange = viewModel::setQuery,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                shape = RoundedCornerShape(16.dp),
                 label = { Text("Search verses") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
-                    if (query.isNotEmpty()) TextButton(onClick = { viewModel.setQuery("") }) { Text("Clear") }
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = { viewModel.setQuery("") }) {
+                            Icon(Icons.Filled.Close, contentDescription = "Clear search")
+                        }
+                    }
                 }
             )
             Spacer(Modifier.height(12.dp))
 
             when {
                 query.isNotBlank() -> {
-                    if (verses.isEmpty()) EmptyNote("No verses match \"${query.trim()}\".")
+                    if (verses.isEmpty()) EmptyNote("No verses match \"${query.trim()}\".", Icons.Filled.Search)
                     else VerseList(verses, onClick = viewModel::showDetail)
                 }
                 selectedCategory != null -> {
                     TextButton(onClick = viewModel::closeCategory) { Text("\u2190 All categories") }
                     Text(
-                        "${selectedCategory!!.name} \u00B7 ${verses.size} verses",
+                        "${selectedCategory!!.name} \u00B7 ${LibraryCopy.verseCount(verses.size)}",
                         style = MaterialTheme.typography.titleMedium
                     )
                     Spacer(Modifier.height(8.dp))
@@ -90,34 +107,31 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     "Verses for ${religion?.name ?: "this path"} are coming soon. " +
                         "You can switch path in Settings."
                 )
-                else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                else -> LazyColumn(
+                    // Bottom padding: without it the list's bounds ended exactly at the last card, which
+                    // clipped its shadow and rounded corners (it looked cut off).
+                    contentPadding = PaddingValues(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(categories, key = { it.id }) { cat ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth().clickable { viewModel.openCategory(cat) },
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(20.dp).fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(cat.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                                Icon(Icons.Filled.ChevronRight, contentDescription = null)
-                            }
-                        }
+                        CategoryCard(name = cat.name, count = cat.verseCount, onClick = { viewModel.openCategory(cat) })
                     }
                 }
             }
         } else if (tab == 1) {
             if (bookmarked.isEmpty()) {
-                EmptyNote("No bookmarked verses yet \u2014 tap the bookmark icon on a verse to save it here.")
+                EmptyNote("No saved verses yet. Tap Save on a verse to keep it here.", Icons.Filled.BookmarkBorder)
             } else {
                 VerseList(bookmarked, onClick = viewModel::showDetail)
             }
         } else {
             if (history.isEmpty()) {
-                EmptyNote("Your journey will appear here, one day at a time.")
+                EmptyNote("Your journey will appear here, one day at a time.", Icons.Filled.MenuBook)
             } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyColumn(
+                    contentPadding = PaddingValues(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(history, key = { it.entry.id }) { item ->
                         HistoryRow(item, onClick = { viewModel.showHistoryDetail(item) })
                     }
@@ -133,7 +147,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
             text = {
                 Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     item.verse?.let { v ->
-                        Text("\u201C${v.translatedText}\u201D", style = VerseTextStyle)
+                        Text("\u201C${VerseDisplayRules.normalize(v.translatedText)}\u201D", style = VerseTextStyle)
                         Spacer(Modifier.height(8.dp))
                         Text(
                             "\u2014 ${v.sourceReference}",
@@ -166,7 +180,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                         .heightIn(max = dialogMaxHeight())
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text("\u201C${verse.translatedText}\u201D", style = VerseTextStyle)
+                    Text("\u201C${VerseDisplayRules.normalize(verse.translatedText)}\u201D", style = VerseTextStyle)
                 }
             },
             confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text("Close") } },
@@ -186,7 +200,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
 
 @Composable
 private fun VerseList(verses: List<Verse>, onClick: (Verse) -> Unit) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(contentPadding = PaddingValues(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items(verses, key = { it.id }) { verse ->
             Card(
                 modifier = Modifier.fillMaxWidth().clickable { onClick(verse) },
@@ -194,7 +208,7 @@ private fun VerseList(verses: List<Verse>, onClick: (Verse) -> Unit) {
             ) {
                 Column(Modifier.padding(20.dp)) {
                     Text(
-                        verse.translatedText,
+                        VerseDisplayRules.normalize(verse.translatedText),
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
@@ -212,9 +226,43 @@ private fun VerseList(verses: List<Verse>, onClick: (Verse) -> Unit) {
 }
 
 @Composable
-private fun EmptyNote(text: String) {
-    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp), contentAlignment = Alignment.Center) {
-        Text(text, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
+private fun EmptyNote(text: String, icon: ImageVector? = null) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 40.dp, horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+            Spacer(Modifier.height(12.dp))
+        }
+        Text(text, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** A category: a round badge with its initial, the name, how many verses it holds, and a chevron. */
+@Composable
+private fun CategoryCard(name: String, count: Int, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(LibraryCopy.initial(name), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text(name, style = MaterialTheme.typography.titleMedium)
+                Text(LibraryCopy.verseCount(count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Icon(Icons.Filled.ChevronRight, contentDescription = null)
+        }
     }
 }
 
