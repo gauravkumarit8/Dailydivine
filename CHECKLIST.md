@@ -1015,6 +1015,26 @@ Tests added: `WindowSetupTest` (3), `VerseDisplayRulesTest` (4). The new guard l
 
 **Observed but NOT changed (need a decision):** Library category cards are plain rows (no counts or icons), and the last card looked clipped at its bottom edge in the screenshot; Home is one long scroll of three equal white cards; the emoji mood row has no visible labels; Settings is a long flat list. These belong to the Phase 2 redesign.
 
+### 2026-10-31 — Round H (Home redesign, Phase 2 step 1: refine, not replace)
+
+**Direction assumed (the user did not choose):** keep the warm card look, improve hierarchy. Home was one long scroll of three equal white cards with icon-only actions.
+
+| Change | Why |
+|---|---|
+| Header: one quiet line "Hinduism · Day 4 of your journey" (was two stacked lines) | less vertical space, clearer |
+| Streak is now a compact tappable chip under the greeting ("3-day streak / Next: Week Warrior in 4 days"), the bottom streak card is removed | the card sat below the fold; the chip still opens Streak & Badges |
+| Verse card: faint tint of the tradition colour, so today's verse leads | all three cards looked equal |
+| Verse actions: Listen / Copy / Save / Share with visible labels, spread evenly, 56 dp tall (Stop / Saved when active) | icon-only buttons bunched on the left; TalkBack had only icons |
+| Reflection: mood row spread across the card, the chosen mood named in words ("Feeling Grateful") | selection was only a tint behind an emoji |
+
+New: `util/StreakCopy.kt` (+ `StreakCopyTest`, 3 tests) for the singular/plural wording.
+
+**Verification run:** balance/duplicate imports; `check_imports`, `check_symbols`, `check_release_readiness`. **None of this is a compile.**
+
+**NOT verified (device):** the chip, tinted card and labelled actions render as intended; nothing clips at large font (the ResponsiveLayoutTest does not cover Home yet); dark mode contrast of the tinted card.
+
+**Next in Phase 2:** Library (category cards), Settings grouping, onboarding polish.
+
 ---
 
 ## What's Next (as of this session)
