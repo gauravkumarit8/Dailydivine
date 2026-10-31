@@ -53,9 +53,9 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
         Spacer(Modifier.height(16.dp))
 
         TabRow(selectedTabIndex = tab) {
-            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Browse") })
-            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Favorites") })
-            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("History") })
+            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Browse") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Favorites") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("History") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(16.dp))
 

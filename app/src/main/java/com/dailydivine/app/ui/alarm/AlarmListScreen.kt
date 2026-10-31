@@ -1,5 +1,9 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.ui.components.ScreenHorizontalPadding
+import com.dailydivine.app.ui.components.ScreenHeader
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.ui.semantics.stateDescription
@@ -84,6 +88,9 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
     }
 
     Scaffold(
+        // The app-level Scaffold already applied the status/navigation bar insets; applying them
+        // again here made a large empty gap above the content and above the + button.
+        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         floatingActionButton = {
             FloatingActionButton(onClick = { viewModel.addAlarm() }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add alarm")
@@ -91,6 +98,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
         }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            ScreenHeader(title = "Alarms", subtitle = "Wake up to a blessing")
             if (viewModel.isDebuggable) {
                 TextButton(
                     onClick = { viewModel.fireTestAlarm(10) },
@@ -197,7 +205,8 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
+                    // 96 dp at the bottom keeps the last alarm clear of the + button.
+                    contentPadding = PaddingValues(start = ScreenHorizontalPadding, top = 12.dp, end = ScreenHorizontalPadding, bottom = 96.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(alarms, key = { it.id }) { alarm ->
@@ -306,7 +315,7 @@ private fun AlarmRow(
             }
 
             Spacer(Modifier.height(8.dp))
-            TextButton(onClick = onToneClick) {
+            TextButton(onClick = onToneClick, contentPadding = PaddingValues(horizontal = 0.dp, vertical = 12.dp)) {
                 Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Tone: ${AlarmTones.byId(alarm.alarmToneId).name}")
@@ -321,6 +330,7 @@ private fun AlarmRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .toggleable(value = alarm.isTTSEnabled, role = Role.Switch, onValueChange = { onTtsToggle() })
+                    .padding(vertical = 8.dp)
             ) {
                 Column(Modifier.weight(1f)) {
                     Text("Read verse aloud", style = MaterialTheme.typography.bodyLarge)
@@ -336,16 +346,21 @@ private fun AlarmRow(
             Divider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
             TextButton(
                 onClick = { soundOpen = !soundOpen },
-                modifier = Modifier.semantics { stateDescription = if (soundOpen) "Expanded" else "Collapsed" }
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
+                modifier = Modifier.fillMaxWidth().semantics { stateDescription = if (soundOpen) "Expanded" else "Collapsed" }
             ) {
-                Text(if (soundOpen) "Hide sound & feel" else "Sound & feel: volume, vibration, snooze")
+                Text(if (soundOpen) "Hide sound & feel" else "Sound & feel", modifier = Modifier.weight(1f))
+                Icon(
+                    if (soundOpen) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null
+                )
             }
             if (soundOpen) {
                 AlarmSoundSettings(alarm, onVolumeChange, onGradualToggle, onVibrationToggle, onSnoozeSelect)
             }
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                TextButton(onClick = onTimeClick) { Text("Change time") }
+                TextButton(onClick = onTimeClick, contentPadding = PaddingValues(horizontal = 0.dp, vertical = 12.dp)) { Text("Change time") }
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete alarm")
@@ -402,7 +417,7 @@ private fun AlarmWarningsPanel(warnings: List<AlarmWarning>) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val many = warnings.size > 1
     Card(
-        modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+        modifier = Modifier.fillMaxWidth().padding(ScreenHorizontalPadding, 8.dp, ScreenHorizontalPadding, 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         Column(Modifier.padding(16.dp)) {
@@ -413,10 +428,9 @@ private fun AlarmWarningsPanel(warnings: List<AlarmWarning>) {
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.weight(1f)
                     )
-                    TextButton(
-                        onClick = { expanded = !expanded },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onErrorContainer)
-                    ) { Text(if (expanded) "Hide" else "Fix") }
+                    FilledTonalButton(onClick = { expanded = !expanded }) {
+                        Text(if (expanded) "Hide" else "Review")
+                    }
                 }
             }
             if (!many || expanded) {

@@ -47,8 +47,10 @@ fun SettingsScreen(
     val context = LocalContext.current
     val systemNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) {
-        Text("Settings", style = MaterialTheme.typography.headlineMedium)
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 4.dp, vertical = 24.dp)) {
+        // ListItem rows indent their text by 16 dp, so the root margin is 4 dp and the headings and
+        // cards add 16 dp: everything lines up at 20 dp, the same margin as the other tabs.
+        Text("Settings", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(24.dp))
 
         ListItem(
@@ -65,7 +67,7 @@ fun SettingsScreen(
         // more than English content/UI strings exist.
 
         Spacer(Modifier.height(24.dp))
-        Text("Personalise", style = MaterialTheme.typography.titleLarge)
+        Text("Personalise", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         ListItem(
             modifier = Modifier.clickable(onClick = onOpenWallpaper),
@@ -78,13 +80,13 @@ fun SettingsScreen(
         )
 
         Spacer(Modifier.height(24.dp))
-        Text("Notifications", style = MaterialTheme.typography.titleLarge)
+        Text("Notifications", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
 
         if (!systemNotificationsOn) {
             // F009: the toggles below only take effect if the system allows
             // notifications for the app (Android 13+ asks at onboarding).
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(Modifier.padding(16.dp)) {
                     Text(
                         "Notifications are turned off for DailyDivine in system settings, so none of these will appear.",
@@ -142,7 +144,7 @@ fun SettingsScreen(
         )
 
         Spacer(Modifier.height(24.dp))
-        Text("Voice", style = MaterialTheme.typography.titleLarge)
+        Text("Voice", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         ListItem(
             headlineContent = { Text("Reading speed") },
@@ -162,7 +164,7 @@ fun SettingsScreen(
         }
 
         Spacer(Modifier.height(24.dp))
-        Text("About", style = MaterialTheme.typography.titleLarge)
+        Text("About", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         ListItem(
             modifier = Modifier.clickable { openLink(context, AppLinks.PRIVACY_URL) },
@@ -206,7 +208,7 @@ fun SettingsScreen(
 
         OutlinedButton(
             onClick = { showClearConfirm = true },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
         ) {
             Text("Clear all data")

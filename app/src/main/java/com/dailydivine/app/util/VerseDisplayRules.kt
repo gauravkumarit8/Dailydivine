@@ -8,8 +8,32 @@ package com.dailydivine.app.util
  */
 object VerseDisplayRules {
 
-    /** Project Gutenberg texts use "--" for an em dash; show a real dash. */
-    fun normalize(text: String): String = text.replace("--", "\u2014")
+    private const val EM_DASH = '\u2014'
+    private const val OPEN_SINGLE = '\u2018'
+    private const val CLOSE_SINGLE = '\u2019'
+
+    /**
+     * Typography for display only (stored text is untouched):
+     *  - Project Gutenberg's "--" becomes a real em dash;
+     *  - straight quotes become curly. The screen already wraps the whole verse in curly DOUBLE
+     *    quotes, so quotes inside it are shown as curly SINGLE quotes (a straight " inside curly
+     *    quotes looked wrong on the phone). An apostrophe or closing quote is the right-hand mark.
+     */
+    fun normalize(text: String): String {
+        val dashed = text.replace("--", EM_DASH.toString())
+        val out = StringBuilder(dashed.length)
+        for (i in dashed.indices) {
+            val c = dashed[i]
+            if (c == '"' || c == '\'') {
+                val prev = if (i == 0) ' ' else dashed[i - 1]
+                val opening = prev.isWhitespace() || prev == '(' || prev == '[' || prev == EM_DASH
+                out.append(if (opening) OPEN_SINGLE else CLOSE_SINGLE)
+            } else {
+                out.append(c)
+            }
+        }
+        return out.toString()
+    }
 
     /** Font size in sp for the hero verse: shorter verses are larger, long ones shrink to stay readable. */
     fun fontSizeSp(length: Int): Int = when {

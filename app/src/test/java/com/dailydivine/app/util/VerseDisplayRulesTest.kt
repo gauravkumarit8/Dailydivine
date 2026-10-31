@@ -15,6 +15,23 @@ class VerseDisplayRulesTest {
         assertEquals("", VerseDisplayRules.normalize(""))
     }
 
+    @Test fun straightQuotesInsideAVerseBecomeCurlySingleQuotes() {
+        // The Home screen wraps the verse in curly double quotes, so inner quotes are single.
+        assertEquals(
+            "And taking new ones, sayeth,\n\u2018These will I wear to-day!\u2019",
+            VerseDisplayRules.normalize("And taking new ones, sayeth,\n\"These will I wear to-day!\"")
+        )
+    }
+
+    @Test fun apostrophesBecomeTheRightSingleQuote() {
+        assertEquals("O\u2019er the hills, the soul\u2019s", VerseDisplayRules.normalize("O'er the hills, the soul's"))
+    }
+
+    @Test fun quoteAfterADashOrBracketOpens() {
+        assertEquals("(\u2018Hail\u2019)", VerseDisplayRules.normalize("(\"Hail\")"))
+        assertEquals("said\u2014\u2018go\u2019", VerseDisplayRules.normalize("said--\"go\""))
+    }
+
     @Test fun longerVersesGetSmallerType() {
         assertEquals(24, VerseDisplayRules.fontSizeSp(60))
         assertEquals(24, VerseDisplayRules.fontSizeSp(140))

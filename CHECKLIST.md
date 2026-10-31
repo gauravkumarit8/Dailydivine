@@ -995,6 +995,26 @@ Tests added: `WindowSetupTest` (3), `VerseDisplayRulesTest` (4). The new guard l
 
 **Still open:** Phase 2 redesigns (Home hierarchy, Library, Settings grouping, onboarding), string extraction, pixel screenshot tests.
 
+### 2026-10-29 — Round G (visual consistency pass from the second set of phone screenshots)
+
+**Evidence:** 7 screenshots from a Redmi Note 15 SE after Round F (CI build green). Round F worked: the ActionBar is gone, status bar sits on the page colour, nav pill is themed, Alarm warnings are one panel, Language reads "English". What the screenshots still showed:
+
+| # | Seen on the phone | Cause | Fix |
+|---|---|---|---|
+| 1 | Alarm tab: large empty gap above the panel and above the + button | nested `Scaffold` applied the system-bar insets a second time | inner Scaffold uses `WindowInsets(0)` |
+| 2 | Alarm tab had no title; every other tab did | none was added | `ScreenHeader("Alarms", ...)`, new shared component `ui/components/ScreenHeader.kt` with `ScreenHorizontalPadding = 20 dp` |
+| 3 | Alarm card: Tone / Sound & feel / Change time indented from the "7:00 AM" text; "Read verse aloud" subtitle touching the divider | default 12 dp TextButton padding | button padding aligned to 0, row padding added, chevron on "Sound & feel" |
+| 4 | Margins differed per tab (16, 20, 24 dp); Settings headings sat 16 dp left of the rows' text | per-screen paddings, `ListItem` internal 16 dp | one 20 dp margin: Alarm list and panel, Settings root 4 dp + 16 dp on headings/cards/Clear button, Settings title now the same headline style as Library |
+| 5 | Library tabs: selected and unselected the same colour | default colours | unselected tabs use `onSurfaceVariant` |
+| 6 | Home verse: straight `"` inside the curly outer quotes | display used raw quotes | `VerseDisplayRules.normalize`: inner quotes become curly single quotes, apostrophes curly (display only); 3 new unit tests (7 total in that file) |
+| 7 | Alarm warning panel "Fix" looked like plain text; last alarm could sit under the + button | text button; 16 dp list padding | tonal "Review" button; 96 dp bottom list padding |
+
+**Verification run:** quote logic mirrored in Python against the test expectations; balance/duplicate imports/XML; `check_imports` (128 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** the Alarm tab gap is gone and the + button sits normally; Settings text and headings line up; tab colours; verse quotes; alarm card spacing.
+
+**Observed but NOT changed (need a decision):** Library category cards are plain rows (no counts or icons), and the last card looked clipped at its bottom edge in the screenshot; Home is one long scroll of three equal white cards; the emoji mood row has no visible labels; Settings is a long flat list. These belong to the Phase 2 redesign.
+
 ---
 
 ## What's Next (as of this session)
