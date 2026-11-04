@@ -1101,6 +1101,25 @@ Read both screens (not yet seen on a device). Real problems found:
 
 **Remaining:** History tab polish; string extraction (about 99 literals, blocks translations); pixel screenshot tests; Hilt-enabled layout tests for the screens that use a ViewModel.
 
+### 2026-11-04 — Round L (UI text moved to strings.xml, step 1 of localisation)
+
+**What:** a script (`/tmp/extract_strings.py` during the session; the logic is in this entry) converted every plain `Text("literal")` call under `ui/` to `Text(stringResource(R.string.key))` and wrote the strings to `res/values/strings.xml`: **102 call sites, 89 distinct strings, 15 files**. Keys are slugs of the text (`begin_your_journey`), identical texts share one key, literals are decoded from Kotlin escapes (`\u2014` becomes the real character) and XML-escaped (apostrophes, quotes, `&`, `<`).
+
+**Deliberately NOT converted (still hard-coded):**
+- 17 strings with interpolation (`"Tone: ${...}"`, `"$minutes min"`, verse quotes, `"Last check: $line"`): they need parameterised resources (`%1$s`, plurals) and a human decision on wording;
+- `contentDescription` strings, strings passed as plain arguments (`ScreenHeader("Alarms", ...)`, `AlarmWarning(...)`, `EmptyNote(...)`, dialog button labels passed outside `Text(`), notification texts, Toasts, and everything outside `ui/`.
+So the app is NOT yet translatable end to end; this is the first step.
+
+**Guard:** `StringResourcesTest` (4 tests): no duplicate keys; every `R.string.x` used in code exists; no unescaped apostrophe or quote; no bare `%`. The same checks were run in Python against the real files (90 keys, 89 used, 0 missing, 0 unused, 0 escape problems).
+
+**Verification run:** balance/duplicate imports, `check_imports` (135 files; note: it cannot see the generated `R` class, which comes from namespace `com.dailydivine.app`), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.** A missing `R` import or a non-composable context would show as a CI compile error.
+
+**NOT verified:** CI compile; that screens look identical (the text is unchanged, so they should); the Round E layout tests still match text such as "Wake Up & Read" because the resource values are the same strings.
+
+**Known wart:** key names come from the English text, so if the copy changes the key is stale (harmless; rename keys when a translator needs stable names).
+
+**Next for localisation:** parameterised strings and plurals; contentDescriptions; notification texts; then a first `values-hi/strings.xml` once Hindi content exists.
+
 ---
 
 ## What's Next (as of this session)

@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.components
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -50,7 +52,7 @@ fun MilestoneCelebration(
                         modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }
                     )
                     Spacer(Modifier.height(20.dp))
-                    Text("Congratulations!", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.congratulations), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(4.dp))
                     Text(
                         if (badge.days == 1) "You've reached 1 day" else "You've reached ${badge.days} days",
@@ -66,8 +68,8 @@ fun MilestoneCelebration(
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.height(24.dp))
-                    Button(onClick = onViewBadges, modifier = Modifier.fillMaxWidth()) { Text("View my badges") }
-                    TextButton(onClick = onDismiss) { Text("Thank you") }
+                    Button(onClick = onViewBadges, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.view_my_badges)) }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.thank_you)) }
                 }
             }
         }

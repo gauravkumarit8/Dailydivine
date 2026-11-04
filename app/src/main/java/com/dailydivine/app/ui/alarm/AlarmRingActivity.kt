@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.VerseDisplayRules
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.Density
@@ -204,8 +206,7 @@ internal fun AlarmRingScreen(
         val details: @Composable ColumnScope.() -> Unit = {
             RingClock(currentTime, clockSize)
             Spacer(Modifier.height(12.dp))
-            Text(
-                "Time for your morning blessing",
+            Text(stringResource(R.string.time_for_your_morning_blessing),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -231,7 +232,7 @@ internal fun AlarmRingScreen(
                     .heightIn(min = 56.dp)
                     .graphicsLayer { scaleX = pulse; scaleY = pulse }
             ) {
-                Text("Wake Up & Read", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.wake_up_read), style = MaterialTheme.typography.titleMedium)
             }
             Spacer(Modifier.height(16.dp))
             OutlinedButton(

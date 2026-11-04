@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.LanguageSupport
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -26,7 +28,7 @@ fun LanguageSelectScreen(
         subtitle = religion?.let { "For ${it.name}" },
         actions = {
             Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
-                Text("Continue \u2192")
+                Text(stringResource(R.string.continue))
             }
         }
     ) {
@@ -36,7 +38,7 @@ fun LanguageSelectScreen(
             val available = LanguageSupport.isAvailable(code)
             ListItem(
                 headlineContent = { Text(displayName) },
-                supportingContent = if (!available) { { Text("Coming soon") } } else null,
+                supportingContent = if (!available) { { Text(stringResource(R.string.coming_soon)) } } else null,
                 trailingContent = {
                     RadioButton(selected = selectedLanguageCode == code, onClick = null, enabled = available)
                 },
@@ -50,8 +52,7 @@ fun LanguageSelectScreen(
         }
         if (languages.size > 1) {
             Spacer(Modifier.height(12.dp))
-            Text(
-                "Verses are currently available in English only. The other languages are on the way.",
+            Text(stringResource(R.string.verses_are_currently_available_in),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

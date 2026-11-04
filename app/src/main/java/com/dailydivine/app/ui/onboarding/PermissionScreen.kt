@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material.icons.filled.Alarm
 import android.Manifest
 import android.os.Build
@@ -48,8 +50,8 @@ fun PermissionScreen(isCompleting: Boolean, onDone: (notificationsGranted: Boole
                 Button(
                     onClick = { requestNotifications() },
                     modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
-                ) { Text("Allow Notifications") }
-                TextButton(onClick = { onDone(false) }, modifier = Modifier.fillMaxWidth()) { Text("Maybe Later") }
+                ) { Text(stringResource(R.string.allow_notifications)) }
+                TextButton(onClick = { onDone(false) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.maybe_later)) }
             }
         }
     ) {

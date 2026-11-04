@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.ui.components.dialogMaxHeight
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -61,7 +63,7 @@ fun TonePickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Alarm tone") },
+        title = { Text(stringResource(R.string.alarm_tone)) },
         text = {
             LazyColumn(modifier = Modifier.heightIn(max = dialogMaxHeight())) {
                 items(AlarmTones.orderedFor(religionId), key = { it.id }) { tone ->
@@ -78,7 +80,7 @@ fun TonePickerDialog(
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { stopPreview(); onConfirm(selected) }) { Text("Select") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+        confirmButton = { TextButton(onClick = { stopPreview(); onConfirm(selected) }) { Text(stringResource(R.string.select)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }

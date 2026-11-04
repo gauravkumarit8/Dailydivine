@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -73,8 +75,8 @@ fun AlarmSetupScreen(
         title = "Set Your Morning Blessing",
         subtitle = "Wake up to divine wisdom every day",
         actions = {
-            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) { Text("Set Alarm \u2192") }
-            TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) { Text("Skip, I'll set up later") }
+            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) { Text(stringResource(R.string.set_alarm)) }
+            TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.skip_i_ll_set_up)) }
         }
     ) {
         // The whole card is the control: a big, easy target instead of a small "Change" link.
@@ -91,7 +93,7 @@ fun AlarmSetupScreen(
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 48.sp, lineHeight = 56.sp),
                     color = MaterialTheme.colorScheme.primary
                 )
-                Text("Tap to change", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.tap_to_change), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         Spacer(Modifier.height(16.dp))
@@ -104,9 +106,8 @@ fun AlarmSetupScreen(
                 .toggleable(value = ttsEnabled, role = Role.Switch, onValueChange = onTtsToggle)
         ) {
             Column(Modifier.weight(1f)) {
-                Text("Read the verse aloud after I wake up", style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    "Plays after you tap Wake Up & Read",
+                Text(stringResource(R.string.read_the_verse_aloud_after), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.plays_after_you_tap_wake),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -120,8 +121,7 @@ fun AlarmSetupScreen(
             Spacer(Modifier.height(16.dp))
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Column(Modifier.padding(16.dp)) {
-                    Text(
-                        "For the most reliable wake-up time, allow DailyDivine to schedule exact alarms.",
+                    Text(stringResource(R.string.for_the_most_reliable_wake),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp), onClick = {
@@ -132,7 +132,7 @@ fun AlarmSetupScreen(
                                 }
                             )
                         }
-                    }) { Text("Enable exact alarms") }
+                    }) { Text(stringResource(R.string.enable_exact_alarms)) }
                 }
             }
         }

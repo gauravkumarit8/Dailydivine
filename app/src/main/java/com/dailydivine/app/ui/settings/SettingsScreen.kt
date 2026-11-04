@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.settings
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
@@ -52,19 +54,19 @@ fun SettingsScreen(
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 4.dp, vertical = 24.dp)) {
         // ListItem rows indent their text by 16 dp, so the root margin is 4 dp and the headings and
         // cards add 16 dp: everything lines up at 20 dp, the same margin as the other tabs.
-        Text("Settings", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(24.dp))
 
         SettingsGroup {
         SettingsRow(
             modifier = Modifier.clickable { showReligionPicker = true },
-            headlineContent = { Text("Religion") },
+            headlineContent = { Text(stringResource(R.string.religion)) },
             supportingContent = { Text(religion?.name ?: "Not set") },
-            trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
+            trailingContent = { Text(stringResource(R.string.change), color = MaterialTheme.colorScheme.primary) }
         )
         GroupDivider()
         SettingsRow(
-            headlineContent = { Text("Language") },
+            headlineContent = { Text(stringResource(R.string.language)) },
             supportingContent = { Text(languageDisplayName(languageCode)) }
         )
         }
@@ -72,22 +74,22 @@ fun SettingsScreen(
         // more than English content/UI strings exist.
 
         Spacer(Modifier.height(24.dp))
-        Text("Personalise", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(stringResource(R.string.personalise), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         SettingsGroup {
         SettingsRow(
             modifier = Modifier.clickable(onClick = onOpenWallpaper),
-            headlineContent = { Text("Daily wallpaper") },
+            headlineContent = { Text(stringResource(R.string.daily_wallpaper)) },
             supportingContent = {
                 val target = WallpaperTarget.fromName(prefs.wallpaperTarget)
                 Text(if (target == WallpaperTarget.OFF) "Off" else "On: ${target.label}")
             },
-            trailingContent = { Text("Set up", color = MaterialTheme.colorScheme.primary) }
+            trailingContent = { Text(stringResource(R.string.set_up), color = MaterialTheme.colorScheme.primary) }
         )
         }
 
         Spacer(Modifier.height(24.dp))
-        Text("Notifications", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(stringResource(R.string.notifications), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
 
         if (!systemNotificationsOn) {
@@ -95,8 +97,7 @@ fun SettingsScreen(
             // notifications for the app (Android 13+ asks at onboarding).
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(Modifier.padding(16.dp)) {
-                    Text(
-                        "Notifications are turned off for DailyDivine in system settings, so none of these will appear.",
+                    Text(stringResource(R.string.notifications_are_turned_off_for),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(onClick = {
@@ -105,7 +106,7 @@ fun SettingsScreen(
                                 .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
-                    }, contentPadding = PaddingValues(0.dp)) { Text("Open system settings") }
+                    }, contentPadding = PaddingValues(0.dp)) { Text(stringResource(R.string.open_system_settings)) }
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -116,8 +117,8 @@ fun SettingsScreen(
             modifier = Modifier.toggleable(
                 value = prefs.dailyVerseEnabled, role = Role.Switch, onValueChange = viewModel::setDailyVerseEnabled
             ),
-            headlineContent = { Text("Daily verse") },
-            supportingContent = { Text("A morning notification with your verse") },
+            headlineContent = { Text(stringResource(R.string.daily_verse)) },
+            supportingContent = { Text(stringResource(R.string.a_morning_notification_with_your)) },
             trailingContent = {
                 Switch(checked = prefs.dailyVerseEnabled, onCheckedChange = null)
             }
@@ -126,9 +127,9 @@ fun SettingsScreen(
             GroupDivider()
             SettingsRow(
                 modifier = Modifier.clickable { showTimePicker = true },
-                headlineContent = { Text("Delivery time") },
+                headlineContent = { Text(stringResource(R.string.delivery_time)) },
                 supportingContent = { Text(formatTime12h(prefs.dailyVerseHour, prefs.dailyVerseMinute)) },
-                trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
+                trailingContent = { Text(stringResource(R.string.change), color = MaterialTheme.colorScheme.primary) }
             )
         }
         GroupDivider()
@@ -136,8 +137,8 @@ fun SettingsScreen(
             modifier = Modifier.toggleable(
                 value = prefs.streakReminderEnabled, role = Role.Switch, onValueChange = viewModel::setStreakReminderEnabled
             ),
-            headlineContent = { Text("Streak reminder") },
-            supportingContent = { Text("8 PM nudge if you haven't opened the app and your streak is over 3 days") },
+            headlineContent = { Text(stringResource(R.string.streak_reminder)) },
+            supportingContent = { Text(stringResource(R.string.s_8_pm_nudge_if_you)) },
             trailingContent = {
                 Switch(checked = prefs.streakReminderEnabled, onCheckedChange = null)
             }
@@ -147,8 +148,8 @@ fun SettingsScreen(
             modifier = Modifier.toggleable(
                 value = prefs.milestonesEnabled, role = Role.Switch, onValueChange = viewModel::setMilestonesEnabled
             ),
-            headlineContent = { Text("Milestones") },
-            supportingContent = { Text("Celebrate when you reach a streak milestone") },
+            headlineContent = { Text(stringResource(R.string.milestones)) },
+            supportingContent = { Text(stringResource(R.string.celebrate_when_you_reach_a)) },
             trailingContent = {
                 Switch(checked = prefs.milestonesEnabled, onCheckedChange = null)
             }
@@ -156,12 +157,12 @@ fun SettingsScreen(
         }
 
         Spacer(Modifier.height(24.dp))
-        Text("Voice", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(stringResource(R.string.voice), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         SettingsGroup {
         SettingsRow(
-            headlineContent = { Text("Reading speed") },
-            supportingContent = { Text("How fast verses are read aloud") }
+            headlineContent = { Text(stringResource(R.string.reading_speed)) },
+            supportingContent = { Text(stringResource(R.string.how_fast_verses_are_read)) }
         )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -180,35 +181,35 @@ fun SettingsScreen(
         }
 
         Spacer(Modifier.height(24.dp))
-        Text("About", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(stringResource(R.string.about), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
         SettingsGroup {
         SettingsRow(
             modifier = Modifier.clickable { openLink(context, AppLinks.PRIVACY_URL) },
-            headlineContent = { Text("Privacy policy") },
-            trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
+            headlineContent = { Text(stringResource(R.string.privacy_policy)) },
+            trailingContent = { Text(stringResource(R.string.open), color = MaterialTheme.colorScheme.primary) }
         )
         GroupDivider()
         SettingsRow(
             modifier = Modifier.clickable { openLink(context, AppLinks.TERMS_URL) },
-            headlineContent = { Text("Terms of use") },
-            trailingContent = { Text("Open", color = MaterialTheme.colorScheme.primary) }
+            headlineContent = { Text(stringResource(R.string.terms_of_use)) },
+            trailingContent = { Text(stringResource(R.string.open), color = MaterialTheme.colorScheme.primary) }
         )
         GroupDivider()
         SettingsRow(
             modifier = Modifier.clickable { showCredits = true },
-            headlineContent = { Text("Content sources & credits") },
-            trailingContent = { Text("View", color = MaterialTheme.colorScheme.primary) }
+            headlineContent = { Text(stringResource(R.string.content_sources_credits)) },
+            trailingContent = { Text(stringResource(R.string.view), color = MaterialTheme.colorScheme.primary) }
         )
         GroupDivider()
         SettingsRow(
             modifier = Modifier.clickable { sendSupportEmail(context) },
-            headlineContent = { Text("Contact support") },
+            headlineContent = { Text(stringResource(R.string.contact_support)) },
             supportingContent = { Text(AppLinks.SUPPORT_EMAIL) }
         )
         GroupDivider()
         SettingsRow(
-            headlineContent = { Text("Version") },
+            headlineContent = { Text(stringResource(R.string.version)) },
             supportingContent = { Text(appVersionName(context)) }
         )
         }
@@ -223,7 +224,7 @@ fun SettingsScreen(
                 )
                 NotificationHelper.postStreakReminder(context, 5)
                 NotificationHelper.postMilestone(context, 7, "Week Warrior")
-            }) { Text("Debug: send test notifications now") }
+            }) { Text(stringResource(R.string.debug_send_test_notifications_now)) }
         }
 
         Spacer(Modifier.height(32.dp))
@@ -233,14 +234,14 @@ fun SettingsScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
         ) {
-            Text("Clear all data")
+            Text(stringResource(R.string.clear_all_data))
         }
     }
 
     if (showReligionPicker) {
         AlertDialog(
             onDismissRequest = { showReligionPicker = false },
-            title = { Text("Choose your path") },
+            title = { Text(stringResource(R.string.choose_your_path)) },
             text = {
                 Column {
                     Religions.ALL.forEach { r ->
@@ -259,7 +260,7 @@ fun SettingsScreen(
                             Column {
                                 Text(r.name, style = MaterialTheme.typography.bodyLarge)
                                 if (r.contentAssetEn == null) {
-                                    Text("Verses coming soon", style = MaterialTheme.typography.bodySmall,
+                                    Text(stringResource(R.string.verses_coming_soon), style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
@@ -268,14 +269,14 @@ fun SettingsScreen(
                 }
             },
             confirmButton = {},
-            dismissButton = { TextButton(onClick = { showReligionPicker = false }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = { showReligionPicker = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 
     if (showCredits) {
         AlertDialog(
             onDismissRequest = { showCredits = false },
-            title = { Text("Content sources & credits") },
+            title = { Text(stringResource(R.string.content_sources_credits)) },
             text = {
                 Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     ContentCredits.SCRIPTURE.forEach { (tradition, source) ->
@@ -286,7 +287,7 @@ fun SettingsScreen(
                     Text(ContentCredits.OTHER, style = MaterialTheme.typography.bodySmall)
                 }
             },
-            confirmButton = { TextButton(onClick = { showCredits = false }) { Text("Close") } }
+            confirmButton = { TextButton(onClick = { showCredits = false }) { Text(stringResource(R.string.close)) } }
         )
     }
 
@@ -302,16 +303,16 @@ fun SettingsScreen(
     if (showClearConfirm) {
         AlertDialog(
             onDismissRequest = { showClearConfirm = false },
-            title = { Text("Clear all data?") },
-            text = { Text("This permanently deletes your alarms, streak and badges, bookmarks, journal reflections and settings, and takes you back to the start. This can't be undone.") },
+            title = { Text(stringResource(R.string.clear_all_data_2)) },
+            text = { Text(stringResource(R.string.this_permanently_deletes_your_alarms)) },
             confirmButton = {
                 TextButton(onClick = {
                     showClearConfirm = false
                     viewModel.clearAllData(onDataCleared)
-                }) { Text("Clear") }
+                }) { Text(stringResource(R.string.clear)) }
             },
             dismissButton = {
-                TextButton(onClick = { showClearConfirm = false }) { Text("Cancel") }
+                TextButton(onClick = { showClearConfirm = false }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }

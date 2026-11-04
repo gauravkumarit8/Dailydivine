@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.wallpaper
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import com.dailydivine.app.ui.components.previewMaxHeight
 import android.content.Intent
@@ -64,11 +66,10 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Back") }
-            Text("Daily Wallpaper", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
+            Text(stringResource(R.string.daily_wallpaper_2), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
         }
         Spacer(Modifier.height(8.dp))
-        Text(
-            "Wake up to today's verse on your screen. DailyDivine refreshes it once a day.",
+        Text(stringResource(R.string.wake_up_to_today_s),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -85,8 +86,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 )
             } else {
                 Box(Modifier.height(previewMaxHeight()), contentAlignment = Alignment.Center) {
-                    Text(
-                        "A preview will appear once a verse is available for your path.",
+                    Text(stringResource(R.string.a_preview_will_appear_once),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -115,10 +115,10 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
             FilterChip(
                 selected = !state.useCustom,
                 onClick = viewModel::useThemeBackground,
-                label = { Text("Theme colours") }
+                label = { Text(stringResource(R.string.theme_colours)) }
             )
             if (state.hasCustomImage) {
-                FilterChip(selected = state.useCustom, onClick = viewModel::usePhotoBackground, label = { Text("My photo") })
+                FilterChip(selected = state.useCustom, onClick = viewModel::usePhotoBackground, label = { Text(stringResource(R.string.my_photo)) })
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -127,7 +127,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 enabled = !state.busy
             ) { Text(if (state.hasCustomImage) "Choose another photo" else "Choose a photo") }
-            if (state.hasCustomImage) TextButton(onClick = viewModel::removePhoto) { Text("Remove photo") }
+            if (state.hasCustomImage) TextButton(onClick = viewModel::removePhoto) { Text(stringResource(R.string.remove_photo)) }
         }
 
         SectionTitle("Verse position")
@@ -140,8 +140,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 )
             }
         }
-        Text(
-            "Home screens are busy with icons and lock screens show a clock near the top. Move the verse where it reads best.",
+        Text(stringResource(R.string.home_screens_are_busy_with),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp)
@@ -152,9 +151,9 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
             Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)) {
             ListItem(
                 modifier = Modifier.clickable { showTimePicker = true },
-                headlineContent = { Text("Update time") },
+                headlineContent = { Text(stringResource(R.string.update_time)) },
                 supportingContent = { Text(formatTime12h(state.hour, state.minute)) },
-                trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) },
+                trailingContent = { Text(stringResource(R.string.change), color = MaterialTheme.colorScheme.primary) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
             )
             }
@@ -207,7 +206,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                     TextButton(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp), onClick = {
                         // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
                         context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                    }) { Text("Open battery settings") }
+                    }) { Text(stringResource(R.string.open_battery_settings)) }
                 }
             }
         }
@@ -225,7 +224,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
     confirmTarget?.let { target ->
         AlertDialog(
             onDismissRequest = { confirmTarget = null },
-            title = { Text("Replace your wallpaper?") },
+            title = { Text(stringResource(R.string.replace_your_wallpaper)) },
             text = {
                 Text(
                     "DailyDivine will set today's verse as your ${target.label.lowercase()} wallpaper and refresh it every day. " +
@@ -233,9 +232,9 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 )
             },
             confirmButton = {
-                TextButton(onClick = { viewModel.setTarget(target); confirmTarget = null }) { Text("Replace") }
+                TextButton(onClick = { viewModel.setTarget(target); confirmTarget = null }) { Text(stringResource(R.string.replace)) }
             },
-            dismissButton = { TextButton(onClick = { confirmTarget = null }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = { confirmTarget = null }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 

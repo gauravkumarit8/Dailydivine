@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.components
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -45,10 +47,10 @@ fun TimePickerDialog(
             TextButton(onClick = {
                 onConfirm(timePickerState.hour, timePickerState.minute)
                 onDismiss()
-            }) { Text("OK") }
+            }) { Text(stringResource(R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {

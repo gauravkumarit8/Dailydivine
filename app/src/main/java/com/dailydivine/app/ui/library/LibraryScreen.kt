@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.library
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.VerseDisplayRules
 import com.dailydivine.app.util.LibraryCopy
 import androidx.compose.ui.semantics.Role
@@ -57,16 +59,16 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
     val bookmarkedIds = remember(bookmarked) { bookmarked.map { it.id }.toSet() }
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 24.dp)) {
-        Text("Library", style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(R.string.library), style = MaterialTheme.typography.headlineLarge)
         religion?.let {
             Text(it.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
         }
         Spacer(Modifier.height(16.dp))
 
         TabRow(selectedTabIndex = tab) {
-            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Browse") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Favorites") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("History") }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+            Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.browse)) }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+            Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.favorites)) }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+            Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text(stringResource(R.string.history)) }, unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(16.dp))
 
@@ -77,7 +79,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
-                label = { Text("Search verses") },
+                label = { Text(stringResource(R.string.search_verses)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
@@ -95,7 +97,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     else VerseList(verses, onClick = viewModel::showDetail)
                 }
                 selectedCategory != null -> {
-                    TextButton(onClick = viewModel::closeCategory) { Text("\u2190 All categories") }
+                    TextButton(onClick = viewModel::closeCategory) { Text(stringResource(R.string.all_categories)) }
                     Text(
                         "${selectedCategory!!.name} \u00B7 ${LibraryCopy.verseCount(verses.size)}",
                         style = MaterialTheme.typography.titleMedium
@@ -156,7 +158,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                         )
                     }
                     Spacer(Modifier.height(20.dp))
-                    Text("YOUR REFLECTION", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.your_reflection), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.height(8.dp))
                     Text(
                         (item.entry.moodEmoji?.let { "$it  " } ?: "") +
@@ -165,7 +167,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     )
                 }
             },
-            confirmButton = { TextButton(onClick = viewModel::closeHistoryDetail) { Text("Close") } }
+            confirmButton = { TextButton(onClick = viewModel::closeHistoryDetail) { Text(stringResource(R.string.close)) } }
         )
     }
 
@@ -183,7 +185,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     Text("\u201C${VerseDisplayRules.normalize(verse.translatedText)}\u201D", style = VerseTextStyle)
                 }
             },
-            confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text("Close") } },
+            confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text(stringResource(R.string.close)) } },
             dismissButton = {
                 TextButton(onClick = { viewModel.toggleBookmark(verse, isBookmarked) }) {
                     Icon(

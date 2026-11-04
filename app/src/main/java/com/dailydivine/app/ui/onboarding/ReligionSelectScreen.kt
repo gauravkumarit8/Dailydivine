@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -39,7 +41,7 @@ fun ReligionSelectScreen(
                 onClick = onContinue,
                 enabled = selectedReligionId != null,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
-            ) { Text("Continue \u2192") }
+            ) { Text(stringResource(R.string.continue)) }
         }
     ) {
         // Rows of two (not LazyVerticalGrid): this content already scrolls, and a
@@ -119,8 +121,7 @@ private fun ReligionCard(
             )
             if (!available) {
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    "Coming soon",
+                Text(stringResource(R.string.coming_soon),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center

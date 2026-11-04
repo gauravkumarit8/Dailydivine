@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.StreakCopy
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.SpanStyle
@@ -194,8 +196,7 @@ private fun ReflectionCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(Modifier.padding(20.dp)) {
-            Text(
-                "YOUR REFLECTION",
+            Text(stringResource(R.string.your_reflection),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -205,7 +206,7 @@ private fun ReflectionCard(
                 onValueChange = onReflectionChange,
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                placeholder = { Text("What does this verse mean to you today?") } // F011-R02
+                placeholder = { Text(stringResource(R.string.what_does_this_verse_mean)) } // F011-R02
             )
             Spacer(Modifier.height(16.dp))
             Text(
@@ -261,8 +262,7 @@ private fun DailyVerseCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(Modifier.padding(24.dp)) {
-            Text(
-                "TODAY'S VERSE",
+            Text(stringResource(R.string.today_s_verse),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -380,14 +380,13 @@ private fun EmptyTraditionCard(name: String, onChooseAnother: () -> Unit) {
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
-            Text(
-                "Until then, choose another tradition to begin your daily practice. You can switch back any time.",
+            Text(stringResource(R.string.until_then_choose_another_tradition),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
             Button(onClick = onChooseAnother, modifier = Modifier.heightIn(min = 48.dp)) {
-                Text("Choose another tradition")
+                Text(stringResource(R.string.choose_another_tradition))
             }
         }
     }

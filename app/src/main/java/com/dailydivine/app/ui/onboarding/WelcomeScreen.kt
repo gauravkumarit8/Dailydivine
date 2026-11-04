@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -23,7 +25,7 @@ fun WelcomeScreen(onBegin: () -> Unit) {
         subtitle = "A gentle daily companion for your faith",
         actions = {
             Button(onClick = onBegin, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
-                Text("Begin Your Journey")
+                Text(stringResource(R.string.begin_your_journey))
             }
         }
     ) {

@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.ui.components.ScreenHorizontalPadding
 import com.dailydivine.app.ui.components.ScreenHeader
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -103,7 +105,7 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 TextButton(
                     onClick = { viewModel.fireTestAlarm(10) },
                     modifier = Modifier.padding(horizontal = 8.dp)
-                ) { Text("Debug: ring a test alarm in 10 seconds") }
+                ) { Text(stringResource(R.string.debug_ring_a_test_alarm)) }
             }
             // All reliability problems in ONE panel (a stack of five banners pushed the alarms off screen).
             val warnings = buildList {
@@ -188,14 +190,12 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.height(16.dp))
-                        Text(
-                            "No alarms yet",
+                        Text(stringResource(R.string.no_alarms_yet),
                             style = MaterialTheme.typography.titleLarge,
                             textAlign = TextAlign.Center
                         )
                         Spacer(Modifier.height(8.dp))
-                        Text(
-                            "Tap + to add your first morning blessing.",
+                        Text(stringResource(R.string.tap_to_add_your_first),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -333,9 +333,8 @@ private fun AlarmRow(
                     .padding(vertical = 8.dp)
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Read verse aloud", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Speaks today's verse after you tap Wake Up & Read",
+                    Text(stringResource(R.string.read_verse_aloud), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.speaks_today_s_verse_after),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -360,7 +359,7 @@ private fun AlarmRow(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                TextButton(onClick = onTimeClick, contentPadding = PaddingValues(horizontal = 0.dp, vertical = 12.dp)) { Text("Change time") }
+                TextButton(onClick = onTimeClick, contentPadding = PaddingValues(horizontal = 0.dp, vertical = 12.dp)) { Text(stringResource(R.string.change_time)) }
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete alarm")
@@ -484,7 +483,7 @@ private fun AlarmSoundSettings(
             onToggle = onVibrationToggle
         )
         Spacer(Modifier.height(8.dp))
-        Text("Snooze length", style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.snooze_length), style = MaterialTheme.typography.bodyLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RingSettings.SNOOZE_CHOICES.forEach { minutes ->
                 val selected = alarm.snoozeDurationMinutes == minutes

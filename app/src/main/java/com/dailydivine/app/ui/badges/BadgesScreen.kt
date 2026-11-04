@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui.badges
 
+import com.dailydivine.app.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
@@ -38,7 +40,7 @@ fun BadgesScreen(onBack: () -> Unit, viewModel: BadgesViewModel = hiltViewModel(
             IconButton(onClick = onBack) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
             }
-            Text("Streak & Badges", style = MaterialTheme.typography.headlineMedium)
+            Text(stringResource(R.string.streak_badges), style = MaterialTheme.typography.headlineMedium)
         }
         Spacer(Modifier.height(16.dp))
 
@@ -52,7 +54,7 @@ fun BadgesScreen(onBack: () -> Unit, viewModel: BadgesViewModel = hiltViewModel(
             Spacer(Modifier.height(16.dp))
             ProgressCard(streak)
             Spacer(Modifier.height(24.dp))
-            Text("Badges", style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.badges), style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(12.dp))
             // A badge is earned if the LONGEST streak ever reached it: breaking
             // a streak must not take back a badge already won.
