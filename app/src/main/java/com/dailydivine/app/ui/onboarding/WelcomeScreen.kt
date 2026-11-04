@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.onboarding
 
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
@@ -34,5 +35,6 @@ fun WelcomeScreen(onBegin: () -> Unit) {
         FeatureRow(Icons.Filled.WbSunny, "A verse every day", "Wisdom from your own tradition, fresh each morning")
         FeatureRow(Icons.Filled.Alarm, "A peaceful alarm", "Wake to a temple bell, or a verse read aloud")
         FeatureRow(Icons.Filled.LocalFireDepartment, "Build your streak", "Small daily moments that add up")
+        FeatureRow(Icons.Filled.Lock, "Private by design", "No account, no ads, and your journal never leaves your phone")
     }
 }

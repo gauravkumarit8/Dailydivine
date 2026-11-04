@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.onboarding
 
+import androidx.compose.material.icons.filled.Alarm
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -60,5 +61,6 @@ fun PermissionScreen(isCompleting: Boolean, onDone: (notificationsGranted: Boole
         FeatureRow(Icons.Filled.WbSunny, "Your verse each morning", "A quiet notification at a time you choose")
         FeatureRow(Icons.Filled.LocalFireDepartment, "A gentle evening nudge", "Only if your streak is at risk, never spammy")
         FeatureRow(Icons.Filled.EmojiEvents, "Milestone celebrations", "Cheer when you reach a streak badge")
+        FeatureRow(Icons.Filled.Alarm, "Your alarm screen", "Needed so the alarm can open and be snoozed or dismissed when you wake")
     }
 }

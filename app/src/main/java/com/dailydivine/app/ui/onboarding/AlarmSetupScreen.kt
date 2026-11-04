@@ -119,12 +119,12 @@ fun AlarmSetupScreen(
         if (!canScheduleExactAlarms) {
             Spacer(Modifier.height(16.dp))
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
-                Column(Modifier.padding(12.dp)) {
+                Column(Modifier.padding(16.dp)) {
                     Text(
                         "For the most reliable wake-up time, allow DailyDivine to schedule exact alarms.",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    TextButton(onClick = {
+                    TextButton(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp), onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             context.startActivity(
                                 Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {

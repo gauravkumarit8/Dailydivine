@@ -1062,6 +1062,26 @@ New: `util/LibraryCopy.kt` (verse-count wording, category initial) + `LibraryCop
 
 **Remaining Phase 2:** onboarding polish; History tab calendar strip (optional); string extraction; screenshot tests; Wallpaper and Badges screens use the old card style.
 
+### 2026-10-31 — Round J (onboarding polish)
+
+Read all five onboarding screens (not yet seen on a device). The structure was already good (step indicator, hero medal, feature rows, scrolling content with pinned buttons). Real problems found:
+
+| # | Problem | Fix |
+|---|---|---|
+| 1 | **Language step let people pick Hindi, Tamil, Arabic, etc., then silently showed English** (only English content exists) | `LanguageSupport` (pure, tested): only available languages are selectable; the others are disabled and labelled "Coming soon"; `selectLanguage` ignores them. Note on the screen reworded |
+| 2 | Notification permission step did not say it also affects the alarm (denying it can stop the alarm screen from opening, found in Round A) | 4th feature row: "Your alarm screen: needed so the alarm can open and be snoozed or dismissed when you wake" |
+| 3 | Welcome screen did not state the privacy promise | 4th row: "Private by design: no account, no ads, and your journal never leaves your phone" (true: no INTERNET permission, no analytics, no ads, backups off; keep it true, see handoff section 9) |
+| 4 | Alarm step's exact-alarm banner: 12 sp text, misaligned button | 14 sp text, aligned button, 16 dp padding |
+| 5 | Onboarding margin 24 dp vs 20 dp on the tabs | `ScreenHorizontalPadding` (20 dp) |
+
+Tests added: `LanguageSupportTest` (3). `ResponsiveLayoutTest` (non-blocking CI step) now also covers the Language, Alarm setup and Notification steps at 320x568 and font 2.0 (12 tests in total).
+
+**Verification run:** balance/duplicate imports; every tradition lists English (so the Language step can always be finished); `check_imports` (134 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** the disabled language rows look right and Continue works with English; the extra feature rows do not push the pinned buttons off screen (they scroll); the permission step still requests the notification permission.
+
+**Remaining Phase 2:** Wallpaper and Badges screens (old card style); History tab polish; string extraction; pixel screenshot tests.
+
 ---
 
 ## What's Next (as of this session)

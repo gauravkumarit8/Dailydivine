@@ -9,7 +9,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.Density
 import com.dailydivine.app.UiLayoutTests
 import com.dailydivine.app.ui.alarm.AlarmRingScreen
+import com.dailydivine.app.ui.onboarding.AlarmSetupScreen
+import com.dailydivine.app.ui.onboarding.LanguageSelectScreen
+import com.dailydivine.app.ui.onboarding.PermissionScreen
 import com.dailydivine.app.ui.onboarding.ReligionSelectScreen
+import com.dailydivine.app.util.Religions
 import com.dailydivine.app.ui.onboarding.WelcomeScreen
 import com.dailydivine.app.ui.theme.DailyDivineTheme
 import org.junit.Rule
@@ -106,5 +110,32 @@ class ResponsiveLayoutTest {
     fun religionSelect_phoneLandscape() {
         show(1.0f) { ReligionSelectScreen(selectedReligionId = null, onSelect = {}, onContinue = {}) }
         rule.onNodeWithText("Continue", substring = true).assertIsDisplayed()
+    }
+
+    @Test @Config(qualifiers = "w320dp-h568dp-xhdpi")
+    fun languageSelect_smallPhone_largestFont() {
+        show(2.0f) {
+            LanguageSelectScreen(
+                religion = Religions.ALL.first(), selectedLanguageCode = "en", onSelect = {}, onContinue = {}
+            )
+        }
+        rule.onNodeWithText("Continue", substring = true).assertIsDisplayed()
+    }
+
+    @Test @Config(qualifiers = "w320dp-h568dp-xhdpi")
+    fun alarmSetup_smallPhone_largestFont() {
+        show(2.0f) {
+            AlarmSetupScreen(
+                alarmHour = 5, alarmMinute = 30, onTimeChange = { _, _ -> }, ttsEnabled = false, onTtsToggle = {},
+                canScheduleExactAlarms = false, onRequestExactAlarmPermission = {}, onContinue = {}, onSkip = {}
+            )
+        }
+        rule.onNodeWithText("Set Alarm", substring = true).assertIsDisplayed()
+    }
+
+    @Test @Config(qualifiers = "w320dp-h568dp-xhdpi")
+    fun permission_smallPhone_largestFont() {
+        show(2.0f) { PermissionScreen(isCompleting = false, onDone = {}) }
+        rule.onNodeWithText("Allow Notifications").assertIsDisplayed()
     }
 }

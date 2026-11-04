@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.util.LanguageSupport
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
@@ -32,18 +33,25 @@ fun LanguageSelectScreen(
         languages.forEach { (displayName, code) ->
             // One selectable row (radio is decorative inside it), so TalkBack reads
             // "English, selected, radio button" once instead of two controls.
+            val available = LanguageSupport.isAvailable(code)
             ListItem(
                 headlineContent = { Text(displayName) },
-                trailingContent = { RadioButton(selected = selectedLanguageCode == code, onClick = null) },
+                supportingContent = if (!available) { { Text("Coming soon") } } else null,
+                trailingContent = {
+                    RadioButton(selected = selectedLanguageCode == code, onClick = null, enabled = available)
+                },
                 modifier = Modifier.selectable(
-                    selected = selectedLanguageCode == code, role = Role.RadioButton, onClick = { onSelect(code) }
+                    selected = selectedLanguageCode == code,
+                    enabled = available,
+                    role = Role.RadioButton,
+                    onClick = { onSelect(code) }
                 )
             )
         }
         if (languages.size > 1) {
             Spacer(Modifier.height(12.dp))
             Text(
-                "Heads up: verses are currently available in English only. More languages are on the way.",
+                "Verses are currently available in English only. The other languages are on the way.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

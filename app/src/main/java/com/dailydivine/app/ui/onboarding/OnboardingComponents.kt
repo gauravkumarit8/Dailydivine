@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.ui.components.ScreenHorizontalPadding
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -40,7 +41,7 @@ fun OnboardingScaffold(
     actions: @Composable ColumnScope.() -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 20.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = ScreenHorizontalPadding, vertical = 20.dp)) {
         StepIndicator(step = step, total = ONBOARDING_STEPS)
         Spacer(Modifier.height(24.dp))
         Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })

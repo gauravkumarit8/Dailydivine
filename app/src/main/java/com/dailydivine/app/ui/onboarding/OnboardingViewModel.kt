@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.onboarding
 
+import com.dailydivine.app.util.LanguageSupport
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.alarm.AlarmScheduler
@@ -63,6 +64,7 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun selectLanguage(languageCode: String) {
+        if (!LanguageSupport.isAvailable(languageCode)) return // no verses in it yet
         _uiState.value = _uiState.value.copy(selectedLanguageCode = languageCode)
     }
 
