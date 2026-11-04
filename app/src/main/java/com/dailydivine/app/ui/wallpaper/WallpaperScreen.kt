@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.wallpaper
 
+import androidx.compose.ui.graphics.Color
 import com.dailydivine.app.ui.components.previewMaxHeight
 import android.content.Intent
 import android.provider.Settings
@@ -38,6 +39,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /** Daily wallpaper: today's verse on your home and/or lock screen, on a theme gradient or your own photo. */
+@OptIn(ExperimentalLayoutApi::class) // FlowRow wraps the chips instead of overflowing at large fonts
 @Composable
 fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
@@ -93,7 +95,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
         }
 
         SectionTitle("Apply to")
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             WallpaperTarget.values().forEach { target ->
                 FilterChip(
                     selected = state.target == target,
@@ -109,7 +111,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
         }
 
         SectionTitle("Background")
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = !state.useCustom,
                 onClick = viewModel::useThemeBackground,
@@ -120,7 +122,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
             }
         }
         Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
                 onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 enabled = !state.busy
@@ -129,7 +131,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
         }
 
         SectionTitle("Verse position")
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             TextPosition.values().forEach { position ->
                 FilterChip(
                     selected = state.position == position,
@@ -147,12 +149,15 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
 
         if (state.target != WallpaperTarget.OFF) {
             SectionTitle("Daily update")
+            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)) {
             ListItem(
                 modifier = Modifier.clickable { showTimePicker = true },
                 headlineContent = { Text("Update time") },
                 supportingContent = { Text(formatTime12h(state.hour, state.minute)) },
-                trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) }
+                trailingContent = { Text("Change", color = MaterialTheme.colorScheme.primary) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
             )
+            }
             // Diagnostics: shows whether the background job really ran (and who triggered it).
             describeLastCheck(state.lastAttemptMillis, state.lastAttemptSource, state.lastAttemptResult, System.currentTimeMillis())
                 ?.let { line ->
@@ -160,7 +165,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                         "Last check: $line",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
             if (state.lastUpdatedEpochDay >= 0) {
@@ -168,7 +173,7 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                     "Last updated ${LocalDate.ofEpochDay(state.lastUpdatedEpochDay).format(DateTimeFormatter.ofPattern("d MMM yyyy"))}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -193,13 +198,13 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
         if (state.target != WallpaperTarget.OFF && !ignoringBattery) {
             Spacer(Modifier.height(16.dp))
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
-                Column(Modifier.padding(12.dp)) {
+                Column(Modifier.padding(16.dp)) {
                     Text(
                         "For on-time daily updates, find DailyDivine in the battery list and choose \"Don't optimize\". " +
                             "Some phones pause background apps overnight, so the wallpaper may only change when you open the app.",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    TextButton(onClick = {
+                    TextButton(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp), onClick = {
                         // The system list needs no permission (ACTION_REQUEST_IGNORE_... does, and Play restricts it).
                         context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                     }) { Text("Open battery settings") }

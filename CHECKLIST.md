@@ -1082,6 +1082,25 @@ Tests added: `LanguageSupportTest` (3). `ResponsiveLayoutTest` (non-blocking CI 
 
 **Remaining Phase 2:** Wallpaper and Badges screens (old card style); History tab polish; string extraction; pixel screenshot tests.
 
+### 2026-11-04 — Round K (Wallpaper, Badges and chip rows)
+
+Read both screens (not yet seen on a device). Real problems found:
+
+| # | Problem | Fix |
+|---|---|---|
+| 1 | Wallpaper: the four "Apply to" chips, the "Background" chips, the photo buttons and the three "Verse position" chips each sat in a plain `Row`, which does not wrap: at a large system font or a 320 dp-wide phone they overflow off the screen edge | `FlowRow` (wraps to a second line) for all four rows, plus the Reading speed chips in Settings |
+| 2 | Wallpaper: "Update time" row text sat at 36 dp while everything else is at 20 dp; "Last check / Last updated" lines had a stray 16 dp indent | the row is now in a card (like the Settings groups); the lines align with the rest |
+| 3 | Wallpaper: battery banner had 12 sp text and a misaligned button (same issue fixed on the Alarm tab in Round F) | readable text, aligned button |
+| 4 | Badges: stat tiles and badge tiles had different heights when a label wrapped (large fonts, "Total days") | `IntrinsicSize.Max` rows with `fillMaxHeight` tiles: equal heights |
+
+`@OptIn(ExperimentalLayoutApi::class)` added on `WallpaperScreen` and `SettingsScreen` (FlowRow is experimental in this BOM). No unit tests: UI-only; these two screens use `hiltViewModel()`, so the JVM layout tests cannot render them without Hilt test setup (not built).
+
+**Verification run:** balance/duplicate imports, `check_imports` (134 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** chips wrap at the largest font; the Update time card and last-check lines look aligned; badge tiles are equal height; wallpaper still applies as before.
+
+**Remaining:** History tab polish; string extraction (about 99 literals, blocks translations); pixel screenshot tests; Hilt-enabled layout tests for the screens that use a ViewModel.
+
 ---
 
 ## What's Next (as of this session)

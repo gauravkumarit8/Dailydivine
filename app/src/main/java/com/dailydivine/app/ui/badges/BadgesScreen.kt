@@ -57,7 +57,7 @@ fun BadgesScreen(onBack: () -> Unit, viewModel: BadgesViewModel = hiltViewModel(
             // A badge is earned if the LONGEST streak ever reached it: breaking
             // a streak must not take back a badge already won.
             StreakInfo.MILESTONES.chunked(2).forEach { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
                     pair.forEach { badge ->
                         BadgeTile(badge, earned = streak.longestStreak >= badge.days, modifier = Modifier.weight(1f))
                     }
@@ -71,7 +71,7 @@ fun BadgesScreen(onBack: () -> Unit, viewModel: BadgesViewModel = hiltViewModel(
 
 @Composable
 private fun StatsRow(streak: StreakInfo) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
         StatTile("Current", streak.currentStreak, Modifier.weight(1f))
         StatTile("Longest", streak.longestStreak, Modifier.weight(1f))
         StatTile("Total days", streak.totalDaysActive, Modifier.weight(1f))
@@ -87,7 +87,7 @@ private fun StatTile(label: String, value: Int, modifier: Modifier) {
     val animated by animateIntAsState(if (started) value else 0, tween(800), label = "count")
     val shown = if (reduceMotion) value else animated // A11Y-09: no count-up
 
-    Card(modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+    Card(modifier = modifier.fillMaxHeight(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column(Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(shown.toString(), style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
             Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -122,7 +122,7 @@ private fun BadgeTile(badge: MilestoneBadge, earned: Boolean, modifier: Modifier
     LaunchedEffect(earned) {
         if (earned && !reduceMotion) scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
     }
-    Card(modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = if (earned) 2.dp else 0.dp)) {
+    Card(modifier = modifier.fillMaxHeight(), elevation = CardDefaults.cardElevation(defaultElevation = if (earned) 2.dp else 0.dp)) {
         Column(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -32,6 +32,7 @@ import com.dailydivine.app.wallpaper.WallpaperTarget
  * Sprint 7+ scope -- this covers Profile (read-only for now) and Data
  * (F012-R16 clear-all) since those are already fully backed by real data.
  */
+@OptIn(ExperimentalLayoutApi::class) // FlowRow wraps the speed chips at large fonts
 @Composable
 fun SettingsScreen(
     onDataCleared: () -> Unit,
@@ -162,8 +163,9 @@ fun SettingsScreen(
             headlineContent = { Text("Reading speed") },
             supportingContent = { Text("How fast verses are read aloud") }
         )
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             listOf("Slow" to 0.75f, "Normal" to 1.0f, "Fast" to 1.25f).forEach { (label, rate) ->
