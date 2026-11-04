@@ -219,6 +219,13 @@ class HomeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(milestoneReached = null)
     }
 
+    /** Called when the app is no longer visible: speech must not keep playing from the background. */
+    fun stopSpeaking() {
+        if (!_uiState.value.isSpeaking) return
+        ttsManager.stop()
+        _uiState.value = _uiState.value.copy(isSpeaking = false)
+    }
+
     /** F005-R07: play/stop the daily verse via on-device TTS. */
     fun togglePlayVerse() {
         val verse = _uiState.value.dailyVerse?.verse ?: return

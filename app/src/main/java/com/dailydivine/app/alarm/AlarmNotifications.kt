@@ -1,5 +1,6 @@
 package com.dailydivine.app.alarm
 
+import com.dailydivine.app.R
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -98,7 +99,7 @@ object AlarmNotifications {
         val builder = NotificationCompat.Builder(context, channelId)
             .setContentTitle("Good morning")
             .setContentText("Time for your morning blessing")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(R.drawable.ic_stat_dailydivine)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

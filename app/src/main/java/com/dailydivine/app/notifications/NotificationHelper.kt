@@ -1,5 +1,6 @@
 package com.dailydivine.app.notifications
 
+import com.dailydivine.app.R
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -43,7 +44,7 @@ object NotificationHelper {
         post(
             context, ID_DAILY_VERSE,
             NotificationCompat.Builder(context, NotificationChannels.DAILY_VERSE)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setSmallIcon(R.drawable.ic_stat_dailydivine)
                 .setContentTitle("Today's verse")
                 .setContentText(preview(verseText))
                 .setStyle(NotificationCompat.BigTextStyle().bigText(preview(verseText) + "\n\u2014 " + reference))
@@ -58,7 +59,7 @@ object NotificationHelper {
         post(
             context, ID_STREAK_REMINDER,
             NotificationCompat.Builder(context, NotificationChannels.STREAK_REMINDER)
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setSmallIcon(R.drawable.ic_stat_dailydivine)
                 .setContentTitle("Don't break your $streakDays-day streak!") // F009-R07
                 .setContentText("Open DailyDivine to read today's verse.")
                 .setContentIntent(openAppIntent(context, 1))
@@ -72,7 +73,7 @@ object NotificationHelper {
         post(
             context, ID_MILESTONE,
             NotificationCompat.Builder(context, NotificationChannels.MILESTONES)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setSmallIcon(R.drawable.ic_stat_dailydivine)
                 .setContentTitle("Congratulations!") // F009-R11
                 .setContentText("You've reached $dayWord! \u2014 $badgeName")
                 .setContentIntent(openAppIntent(context, 2, openBadges = true)) // F009-R12

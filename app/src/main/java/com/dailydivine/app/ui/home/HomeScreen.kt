@@ -80,7 +80,10 @@ fun HomeScreen(
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> viewModel.refresh()
-                Lifecycle.Event.ON_STOP -> viewModel.flushReflection()
+                Lifecycle.Event.ON_STOP -> {
+                    viewModel.flushReflection()
+                    viewModel.stopSpeaking()
+                }
                 else -> Unit
             }
         }

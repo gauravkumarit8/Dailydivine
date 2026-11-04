@@ -1,5 +1,6 @@
 package com.dailydivine.app.util
 
+import com.dailydivine.app.ui.theme.darkenUntilContrast
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -36,10 +37,15 @@ class ShareImageGenerator(private val context: Context) {
         val canvas = Canvas(bitmap)
 
         val palette = paletteForReligionId(religionId)
+        // All text on the image is white, so both gradient colours are darkened until white text has at
+        // least 4.5:1 contrast (some tradition colours were too light for that).
+        val white = listOf(androidx.compose.ui.graphics.Color.White)
+        val topColor = darkenUntilContrast(palette.primary, white)
+        val bottomColor = darkenUntilContrast(palette.secondary, white)
         val backgroundPaint = Paint().apply {
             shader = LinearGradient(
                 0f, 0f, 0f, size.toFloat(),
-                palette.primary.toArgb(), palette.secondary.toArgb(),
+                topColor.toArgb(), bottomColor.toArgb(),
                 Shader.TileMode.CLAMP
             )
         }
@@ -96,11 +102,20 @@ class ShareImageGenerator(private val context: Context) {
         canvas.drawText("DailyDivine", size / 2f, size - 64f, watermarkPaint)
 
         val cacheDir = File(context.cacheDir, "images").apply { mkdirs() }
-        val file = File(cacheDir, "verse_share_${System.currentTimeMillis()}.png")
+        deleteStaleShares(cacheDir)
+        val file = File(cacheDir, "${ShareCachePolicy.FILE_PREFIX}${System.currentTimeMillis()}.png")
         FileOutputStream(file).use { out -> bitmap.compress(Bitmap.CompressFormat.PNG, 100, out) }
         bitmap.recycle()
 
         return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    }
+
+    /** Removes our own old share images (see ShareCachePolicy); they used to pile up forever. */
+    private fun deleteStaleShares(dir: File) {
+        val now = System.currentTimeMillis()
+        dir.listFiles()?.forEach { f ->
+            if (ShareCachePolicy.isStale(f.name, now - f.lastModified())) f.delete()
+        }
     }
 
     private fun buildStaticLayout(text: String, paint: TextPaint, width: Int): StaticLayout =

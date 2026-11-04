@@ -1120,6 +1120,23 @@ So the app is NOT yet translatable end to end; this is the first step.
 
 **Next for localisation:** parameterised strings and plurals; contentDescriptions; notification texts; then a first `values-hi/strings.xml` once Hindi content exists.
 
+### 2026-11-04 — Round M (medium items left from the original audit)
+
+| # | Problem (audit) | Fix |
+|---|---|---|
+| 1 | **Speech kept playing after leaving the app** (TTS was never stopped on ON_STOP) | `HomeViewModel.stopSpeaking()` called from the lifecycle observer on `ON_STOP` |
+| 2 | **Share image text could be unreadable**: white text on the raw tradition gradient, no contrast check (the wallpaper and ring screen already had one) | both gradient colours go through `darkenUntilContrast(..., white)` (4.5:1) |
+| 3 | **Share images piled up in the cache forever** (a new 1080x1080 PNG per share, never deleted) | `ShareCachePolicy` (pure, tested): our own `verse_share_*` files older than 1 hour are deleted before a new one is written; the last hour is kept because the receiving app may still be reading it |
+| 4 | **Generic system icons on every notification** (`ic_dialog_info`, `ic_popup_reminder`, `ic_lock_idle_alarm`) | one custom monochrome vector `ic_stat_dailydivine` (a sunrise: half sun, horizon, three rays) for the alarm, daily verse, streak reminder and milestone notifications |
+
+Tests added: `ShareCachePolicyTest` (3).
+
+**Verification run:** balance/duplicate imports/XML (the new vector parses), `check_imports` (137 files, 0), `check_symbols` (0), `check_release_readiness` OK. **None of this is a compile.**
+
+**NOT verified (device):** the sunrise icon looks right in the status bar and shade at small size (I drew it by hand from path data and could not render it; if it looks off, send a screenshot); speech stops when you press Home during playback; a shared image is readable for every tradition's colours; old share images disappear from the cache.
+
+**Assessed and deliberately NOT done:** the daily-verse sequence still shifts once when the verse count grows after the first cycle. With a single fixed install date the index is `day mod total`, so after a content update an existing user can see one repeated or skipped verse. Severity is low before launch; the proper fix (anchor per religion, or pin each day's verse) changes behaviour and needs a decision. **Still open:** story share format (1080x1920), History tab, parameterised strings, screenshot tests.
+
 ---
 
 ## What's Next (as of this session)

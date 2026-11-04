@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Small status-bar icon for every DailyDivine notification: a sunrise (morning blessing).
+     Notification icons are drawn from the alpha channel only, so it is a single white shape. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- the sun -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7,16 A5,5 0 0 1 17,16 Z" />
+    <!-- the horizon -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,18 L21,18 L21,20 L3,20 Z" />
+    <!-- three rays -->
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M12,4 L12,7 M5.2,8.2 L7.2,10.2 M18.8,8.2 L16.8,10.2" />
+</vector>
