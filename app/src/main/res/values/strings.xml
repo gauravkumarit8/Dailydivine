@@ -98,4 +98,7 @@
     <string name="share_square_hint">Best for chats and feeds</string>
     <string name="share_story">Story</string>
     <string name="share_story_hint">Tall, for Stories and status</string>
+    <string name="edit_entry">Edit</string>
+    <string name="save_entry">Save</string>
+    <string name="history_reflection_hint">What did this verse mean to you?</string>
 </resources>

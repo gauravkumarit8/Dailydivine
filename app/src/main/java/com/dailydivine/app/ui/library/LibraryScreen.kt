@@ -1,5 +1,11 @@
 package com.dailydivine.app.ui.library
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.selection.selectable
+import com.dailydivine.app.domain.model.MOOD_LABELS
+import com.dailydivine.app.domain.model.MOOD_EMOJIS
 import com.dailydivine.app.R
 import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.VerseDisplayRules
@@ -143,6 +149,10 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
     }
 
     historyDetail?.let { item ->
+        // Editing a past day's reflection (roadmap: edit past journal entries).
+        var editing by remember(item.entry.id) { mutableStateOf(false) }
+        var draft by remember(item.entry.id) { mutableStateOf(item.entry.journalText ?: "") }
+        var draftMood by remember(item.entry.id) { mutableStateOf(item.entry.moodEmoji) }
         AlertDialog(
             onDismissRequest = viewModel::closeHistoryDetail,
             title = { Text(formatHistoryDate(item.entry.date), style = MaterialTheme.typography.titleMedium) },
@@ -160,14 +170,42 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     Spacer(Modifier.height(20.dp))
                     Text(stringResource(R.string.your_reflection), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.height(8.dp))
-                    Text(
-                        (item.entry.moodEmoji?.let { "$it  " } ?: "") +
-                            (item.entry.journalText ?: "No reflection written for this day."),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    if (editing) {
+                        OutlinedTextField(
+                            value = draft,
+                            onValueChange = { draft = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 4,
+                            placeholder = { Text(stringResource(R.string.history_reflection_hint)) }
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        MoodPicker(selected = draftMood, onSelect = { draftMood = it })
+                    } else {
+                        Text(
+                            (item.entry.moodEmoji?.let { "$it  " } ?: "") +
+                                (item.entry.journalText ?: "No reflection written for this day."),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             },
-            confirmButton = { TextButton(onClick = viewModel::closeHistoryDetail) { Text(stringResource(R.string.close)) } }
+            confirmButton = {
+                if (editing) {
+                    TextButton(onClick = {
+                        viewModel.saveHistoryEntry(item, draft, draftMood)
+                        editing = false
+                    }) { Text(stringResource(R.string.save_entry)) }
+                } else {
+                    TextButton(onClick = viewModel::closeHistoryDetail) { Text(stringResource(R.string.close)) }
+                }
+            },
+            dismissButton = {
+                if (editing) {
+                    TextButton(onClick = { editing = false }) { Text(stringResource(R.string.cancel)) }
+                } else {
+                    TextButton(onClick = { editing = true }) { Text(stringResource(R.string.edit_entry)) }
+                }
+            }
         )
     }
 
@@ -306,3 +344,24 @@ private fun formatHistoryDate(isoDate: String): String =
     } catch (e: Exception) {
         isoDate
     }
+
+/** Mood choices for editing a past entry; tapping the selected one clears it. Same emojis as Home. */
+@Composable
+private fun MoodPicker(selected: String?, onSelect: (String?) -> Unit) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        MOOD_EMOJIS.forEachIndexed { index, emoji ->
+            val isSelected = selected == emoji
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f) else Color.Transparent)
+                    .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(if (isSelected) null else emoji) })
+                    .semantics { contentDescription = MOOD_LABELS[index] },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(emoji, style = MaterialTheme.typography.titleLarge)
+            }
+        }
+    }
+}

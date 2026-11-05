@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.library
 
+import java.time.LocalDate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.local.dao.CategoryDao
@@ -35,7 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val bookmarkRepository: BookmarkRepository,
-    journalRepository: JournalRepository,
+    private val journalRepository: JournalRepository,
     private val verseDao: VerseDao,
     categoryDao: CategoryDao,
     userPreferences: UserPreferences
@@ -86,6 +87,17 @@ class LibraryViewModel @Inject constructor(
     val historyDetail: StateFlow<JournalHistoryItem?> = _historyDetail.asStateFlow()
     fun showHistoryDetail(item: JournalHistoryItem) { _historyDetail.value = item }
     fun closeHistoryDetail() { _historyDetail.value = null }
+
+    /** Edit a past day's reflection and mood. Blank text clears the reflection (JournalRepository.save). */
+    fun saveHistoryEntry(item: JournalHistoryItem, text: String, mood: String?) {
+        viewModelScope.launch {
+            journalRepository.save(LocalDate.parse(item.entry.date), text, mood)
+            // keep the open dialog in step with what was just saved; the History list refreshes itself
+            _historyDetail.value = item.copy(
+                entry = item.entry.copy(journalText = text.ifBlank { null }, moodEmoji = mood)
+            )
+        }
+    }
 
     fun setQuery(q: String) { _query.value = q }
     fun openCategory(c: Category) { _selectedCategory.value = c }

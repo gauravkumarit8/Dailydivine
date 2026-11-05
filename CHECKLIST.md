@@ -1172,6 +1172,24 @@ Tests added: `ShareFormatTest` (6): dimensions; the longest verse never reaches 
 
 **Still open:** History tab polish; parameterised strings; screenshot tests; Hilt-enabled layout tests; verse-sequence decision; Judaism/Sikhism/Spiritual content.
 
+### 2026-11-05 — Round P (edit past journal entries, roadmap item)
+
+**What:** in Library > History, tapping a day opens its detail dialog; it now has an **Edit** button. Editing shows a text field and the five mood choices (the same emojis as Home; tapping the selected mood clears it); **Save** writes the change, **Cancel** discards it. Before this, only today's reflection could be written (on Home).
+
+| Piece | Detail |
+|---|---|
+| `LibraryViewModel.saveHistoryEntry(item, text, mood)` | calls the existing `JournalRepository.save(date, text, mood)` (blank text clears the reflection; a date with no entry is a no-op) and refreshes the open dialog; the History list updates itself from the database flow. `journalRepository` became a `private val` (it was only a constructor parameter) |
+| `LibraryScreen` | edit state per entry in the dialog; new private `MoodPicker` (radio semantics, spoken labels) |
+| strings | `edit_entry`, `save_entry`, `history_reflection_hint` ("What did this verse mean to you?", not "today") |
+
+No DAO or schema change (so no test fakes affected); the save logic is already covered by `JournalRepositoryTest`.
+
+**Verification run:** balance/duplicate imports, strings.xml valid and no duplicate keys, `check_imports` (139 files, 0), `check_symbols` (0), `check_release_readiness` OK, `tools/kotlinc_syntax_check.py` (0 syntax errors). **None of this is a full compile.**
+
+**NOT verified (device):** the dialog fits with the keyboard open and at large font; saving updates both the dialog and the History row; clearing text and mood leaves "No reflection". **Known edge:** editing today's entry here while Home's autosave is also active could overwrite one with the other; low risk, last write wins.
+
+**Still open:** History list grouped by month (not built); parameterised strings; screenshot tests; Hilt-enabled layout tests; verse-sequence decision; Judaism/Sikhism/Spiritual content; more verses per tradition.
+
 ---
 
 ## What's Next (as of this session)
