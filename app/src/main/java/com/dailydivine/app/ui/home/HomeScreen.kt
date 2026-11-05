@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.util.ShareFormat
 import com.dailydivine.app.R
 import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.StreakCopy
@@ -75,6 +76,7 @@ fun HomeScreen(
         if (autoRead && state.dailyVerse != null) viewModel.autoRead()
     }
 
+    var showShareChooser by remember { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -151,25 +153,30 @@ fun HomeScreen(
                         )
                     },
                     onBookmarkToggle = { viewModel.toggleBookmark() },
-                    onShare = {
-                        // F008-R02/R07: generate the image (off-main-thread,
-                        // see HomeViewModel.generateShareImage) then hand it
-                        // to Android's own share sheet -- we don't pick the
-                        // destination app ourselves, ACTION_SEND + chooser
-                        // is the correct, standard way to let the user do that.
-                        coroutineScope.launch {
-                            val uri = viewModel.generateShareImage()
-                            if (uri != null) {
-                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "image/png"
-                                    putExtra(Intent.EXTRA_STREAM, uri)
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    onShare = { showShareChooser = true }
+                )
+                if (showShareChooser) {
+                    ShareFormatDialog(
+                        onDismiss = { showShareChooser = false },
+                        onPick = { format ->
+                            showShareChooser = false
+                            // F008-R02/R07: generate the image (off-main-thread, see
+                            // HomeViewModel.generateShareImage) then hand it to Android's own share
+                            // sheet; ACTION_SEND + chooser lets the user pick the destination app.
+                            coroutineScope.launch {
+                                val uri = viewModel.generateShareImage(format)
+                                if (uri != null) {
+                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "image/png"
+                                        putExtra(Intent.EXTRA_STREAM, uri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(Intent.createChooser(shareIntent, "Share verse"))
                                 }
-                                context.startActivity(Intent.createChooser(shareIntent, "Share verse"))
                             }
                         }
-                    }
-                )
+                    )
+                }
                 Spacer(Modifier.height(16.dp))
                 ReflectionCard(
                     reflection = state.reflection,
@@ -392,5 +399,45 @@ private fun EmptyTraditionCard(name: String, onChooseAnother: () -> Unit) {
                 Text(stringResource(R.string.choose_another_tradition))
             }
         }
+    }
+}
+
+/** F008-R05/R06: pick the image format before sharing. */
+@Composable
+private fun ShareFormatDialog(onDismiss: () -> Unit, onPick: (ShareFormat) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.share_as)) },
+        text = {
+            Column {
+                ShareFormatOption(
+                    title = stringResource(R.string.share_square),
+                    hint = stringResource(R.string.share_square_hint),
+                    onClick = { onPick(ShareFormat.SQUARE) }
+                )
+                ShareFormatOption(
+                    title = stringResource(R.string.share_story),
+                    hint = stringResource(R.string.share_story_hint),
+                    onClick = { onPick(ShareFormat.STORY) }
+                )
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+    )
+}
+
+@Composable
+private fun ShareFormatOption(title: String, hint: String, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .defaultMinSize(minHeight = 56.dp)
+            .padding(horizontal = 8.dp, vertical = 10.dp)
+    ) {
+        Text(title, style = MaterialTheme.typography.titleMedium)
+        Text(hint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

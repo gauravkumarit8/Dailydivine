@@ -26,14 +26,14 @@ import java.io.FileOutputStream
  * palettes already defined in ui/theme/Color.kt (F008-R10's "auto-selected
  * based on religion theme color" without the full "10 templates" of
  * F008-R03, which is real design-asset work, not something to fabricate
- * here). 1080x1080 square only (F008-R05); the 1080x1920 story variant
- * (F008-R06) is a follow-up.
+ * here). Formats: 1080x1080 square (F008-R05) and 1080x1920 story (F008-R06), see ShareFormat.
  */
 class ShareImageGenerator(private val context: Context) {
 
-    fun generate(verseText: String, source: String, religionId: Int): Uri {
-        val size = 1080
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    fun generate(verseText: String, source: String, religionId: Int, format: ShareFormat = ShareFormat.SQUARE): Uri {
+        val width = format.width
+        val height = format.height
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
         val palette = paletteForReligionId(religionId)
@@ -44,26 +44,26 @@ class ShareImageGenerator(private val context: Context) {
         val bottomColor = darkenUntilContrast(palette.secondary, white)
         val backgroundPaint = Paint().apply {
             shader = LinearGradient(
-                0f, 0f, 0f, size.toFloat(),
+                0f, 0f, 0f, height.toFloat(),
                 topColor.toArgb(), bottomColor.toArgb(),
                 Shader.TileMode.CLAMP
             )
         }
-        canvas.drawRect(0f, 0f, size.toFloat(), size.toFloat(), backgroundPaint)
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
 
         val horizontalPadding = 110
-        val textWidth = size - horizontalPadding * 2
+        val textWidth = width - horizontalPadding * 2
 
         val versePaint = TextPaint().apply {
             color = Color.WHITE
-            textSize = 56f
+            textSize = format.baseTextSize
             isAntiAlias = true
         }
-        val quoted = "\u201C$verseText\u201D"
+        val quoted = "\u201C${VerseDisplayRules.normalize(verseText)}\u201D"
         // Long passages (some verses run 10+ lines) must still fit the square:
         // shrink the font in steps until the text block fits between the top
         // margin and the source/watermark area, down to a readable floor.
-        val maxVerseHeight = size - 2 * 200
+        val maxVerseHeight = format.maxVerseHeight
         var verseLayout = buildStaticLayout(quoted, versePaint, textWidth)
         while (verseLayout.height > maxVerseHeight && versePaint.textSize > 28f) {
             versePaint.textSize -= 4f
@@ -87,23 +87,22 @@ class ShareImageGenerator(private val context: Context) {
         }
 
         // Vertically center the verse block (verse + gap + source) as a unit.
-        val gapAfterVerse = 48f
-        val blockHeight = verseLayout.height + gapAfterVerse
-        val verseTop = (size - blockHeight) / 2f
+        val gapAfterVerse = ShareFormat.GAP_AFTER_VERSE
+        val verseTop = format.blockTop(verseLayout.height)
 
         canvas.save()
         canvas.translate(horizontalPadding.toFloat(), verseTop)
         verseLayout.draw(canvas)
         canvas.restore()
 
-        canvas.drawText("\u2014 $source", size / 2f, verseTop + verseLayout.height + gapAfterVerse, sourcePaint)
+        canvas.drawText("\u2014 $source", width / 2f, verseTop + verseLayout.height + gapAfterVerse, sourcePaint)
 
         // F008-R09: app watermark, bottom of the image.
-        canvas.drawText("DailyDivine", size / 2f, size - 64f, watermarkPaint)
+        canvas.drawText("DailyDivine", width / 2f, format.watermarkBaseline, watermarkPaint)
 
         val cacheDir = File(context.cacheDir, "images").apply { mkdirs() }
         deleteStaleShares(cacheDir)
-        val file = File(cacheDir, "${ShareCachePolicy.FILE_PREFIX}${System.currentTimeMillis()}.png")
+        val file = File(cacheDir, "${ShareCachePolicy.FILE_PREFIX}${format.name.lowercase()}_${System.currentTimeMillis()}.png")
         FileOutputStream(file).use { out -> bitmap.compress(Bitmap.CompressFormat.PNG, 100, out) }
         bitmap.recycle()
 

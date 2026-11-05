@@ -1151,6 +1151,27 @@ Tests added: `ShareCachePolicyTest` (3).
 
 **Mistake log addition:** generated identifiers (resource keys) must be checked against reserved words; validate by running the real aapt rules, not only my own list of problems.
 
+### 2026-11-05 — Round O (share as Story, PRD F008-R06)
+
+CI was green for Round N (user confirmed), so Rounds G to N all compile.
+
+**What:** tapping Share on Home now asks "Share as: Square post / Story". Story is a 1080x1920 image (the PRD's second format, which had been marked a follow-up since the first share pass).
+
+| Piece | Detail |
+|---|---|
+| `util/ShareFormat` (pure, enum) | `SQUARE` (1080x1080) and `STORY` (1080x1920) with their font size, tallest allowed verse block, watermark position and top safe margin. `blockTop` / `blockBottom` compute where the centred verse block lands |
+| Story safe area | Instagram and WhatsApp cover roughly the top and bottom 340 px with their own UI, so the story keeps text between y=340 and y=1560 (watermark at 1560); verse text starts larger (64 px) and shrinks to fit as before |
+| `ShareImageGenerator.generate(..., format)` | the hard-coded 1080 square is replaced by the format's width and height; the verse now also goes through `VerseDisplayRules.normalize` (real dashes, curly quotes), like Home |
+| Home | `ShareFormatDialog` (two rows with a hint each, Cancel); strings `share_as`, `share_square`, `share_square_hint`, `share_story`, `share_story_hint` in strings.xml |
+
+Tests added: `ShareFormatTest` (6): dimensions; the longest verse never reaches the watermark; never starts above the safe area; story watermark above the bottom 340 px; a short verse is centred. The same invariants were recomputed in Python (square: block 176 to 916, watermark 1016; story: 436 to 1496, watermark 1560).
+
+**Verification run:** balance/duplicate imports, strings.xml parses (no duplicate keys), `check_imports` (139 files, 0), `check_symbols` (0), `check_release_readiness` OK, `tools/kotlinc_syntax_check.py` (0 syntax errors). **None of this is a full compile.**
+
+**NOT verified (device):** the chooser dialog; the story image looks balanced and is not covered by Instagram/WhatsApp UI; both formats open in the system share sheet; very long verses (the 10-line Gita passages) fit the story height.
+
+**Still open:** History tab polish; parameterised strings; screenshot tests; Hilt-enabled layout tests; verse-sequence decision; Judaism/Sikhism/Spiritual content.
+
 ---
 
 ## What's Next (as of this session)

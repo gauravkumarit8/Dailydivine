@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.util.ShareFormat
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -293,12 +294,12 @@ class HomeViewModel @Inject constructor(
      * the caller (HomeScreen) skip launching a share sheet with nothing to
      * share rather than crashing.
      */
-    suspend fun generateShareImage(): Uri? {
+    suspend fun generateShareImage(format: ShareFormat = ShareFormat.SQUARE): Uri? {
         val daily = _uiState.value.dailyVerse ?: return null
         val religionId = _uiState.value.religion?.id ?: return null
         return withContext(Dispatchers.Default) {
             runCatching {
-                shareImageGenerator.generate(daily.verse.translatedText, daily.verse.sourceReference, religionId)
+                shareImageGenerator.generate(daily.verse.translatedText, daily.verse.sourceReference, religionId, format)
             }.getOrNull()
         }
     }

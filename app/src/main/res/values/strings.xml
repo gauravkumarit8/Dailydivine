@@ -93,4 +93,9 @@
     <string name="wake_up_to_today_s">Wake up to today\'s verse on your screen. DailyDivine refreshes it once a day.</string>
     <string name="what_does_this_verse_mean">What does this verse mean to you today?</string>
     <string name="your_reflection">YOUR REFLECTION</string>
+    <string name="share_as">Share as</string>
+    <string name="share_square">Square post</string>
+    <string name="share_square_hint">Best for chats and feeds</string>
+    <string name="share_story">Story</string>
+    <string name="share_story_hint">Tall, for Stories and status</string>
 </resources>
