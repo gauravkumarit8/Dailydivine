@@ -1137,6 +1137,20 @@ Tests added: `ShareCachePolicyTest` (3).
 
 **Assessed and deliberately NOT done:** the daily-verse sequence still shifts once when the verse count grows after the first cycle. With a single fixed install date the index is `day mod total`, so after a content update an existing user can see one repeated or skipped verse. Severity is low before launch; the proper fix (anchor per religion, or pin each day's verse) changes behaviour and needs a decision. **Still open:** story share format (1080x1920), History tab, parameterised strings, screenshot tests.
 
+### 2026-11-05 — Round N (CI hotfix for Round L) + a partial compile check for the sandbox
+
+**CI failure (user pasted the log):** `./gradlew testDebugUnitTest` stopped in `:app:mergeDebugResources`: `strings.xml: Error: continue is not a valid resource name (reserved Java keyword)`.
+
+**Cause (mine):** the Round L extraction script generated each key from the English text; the button "Continue" became the key `continue`. aapt rejects Java keywords (and in Kotlin `R.string.continue` would need backticks anyway). My Round L validation checked escaping, duplicates, missing and unused keys, but not reserved words.
+
+**Fix:** the key is now `action_continue` (strings.xml and the two uses in `ReligionSelectScreen` and `LanguageSelectScreen`). All 90 keys were checked against the Java and Kotlin keyword lists: `continue` was the only clash. `StringResourcesTest` gained `keysAreValidAndNotReservedWords` (valid identifier and not a reserved word), so this cannot recur unnoticed.
+
+**New capability, `tools/kotlinc_syntax_check.py`:** github.com is on the sandbox allow-list, so the Kotlin 1.9.22 compiler can be downloaded from its GitHub release (the handoff said "no kotlinc"; that was only true for the Android SDK and Compose libraries, which are NOT available). The tool compiles every source file without the Android/Compose classpath and reports (a) syntax errors and (b) unresolved references to names declared in this project. Run on the current tree: **0 syntax errors in all 137 files** and no real project-level error among the 56 "project name unresolved" reports (they are all explained by missing libraries: `Settings`, extension functions on `RowScope`, and so on). It cannot check Compose/Android API usage, which only the CI build can.
+
+**What is still unknown:** this was the FIRST error CI reached. Rounds G to M were never compiled by CI as far as the logs show (the last confirmed green build was after Round F), so further compile errors in those rounds are possible. If the build fails again, paste the failing step.
+
+**Mistake log addition:** generated identifiers (resource keys) must be checked against reserved words; validate by running the real aapt rules, not only my own list of problems.
+
 ---
 
 ## What's Next (as of this session)

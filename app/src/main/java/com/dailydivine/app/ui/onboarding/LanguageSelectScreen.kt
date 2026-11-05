@@ -28,7 +28,7 @@ fun LanguageSelectScreen(
         subtitle = religion?.let { "For ${it.name}" },
         actions = {
             Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
-                Text(stringResource(R.string.continue))
+                Text(stringResource(R.string.action_continue))
             }
         }
     ) {

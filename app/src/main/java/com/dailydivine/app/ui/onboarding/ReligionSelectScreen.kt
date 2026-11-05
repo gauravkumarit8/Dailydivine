@@ -41,7 +41,7 @@ fun ReligionSelectScreen(
                 onClick = onContinue,
                 enabled = selectedReligionId != null,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
-            ) { Text(stringResource(R.string.continue)) }
+            ) { Text(stringResource(R.string.action_continue)) }
         }
     ) {
         // Rows of two (not LazyVerticalGrid): this content already scrolls, and a

@@ -36,6 +36,21 @@ class StringResourcesTest {
         }
     }
 
+    @Test fun keysAreValidAndNotReservedWords() {
+        // CI failed once because a generated key was "continue": aapt rejects Java keywords (and the
+        // Kotlin ones would need backticks in R.string.x).
+        val reserved = (
+            "abstract assert boolean break byte case catch char class const continue default do double else enum " +
+                "extends final finally float for goto if implements import instanceof int interface long native new " +
+                "package private protected public return short static strictfp super switch synchronized this throw " +
+                "throws transient try void volatile while true false null as fun in is object typealias typeof val var when"
+            ).split(" ").toSet()
+        for (name in names) {
+            assertTrue("$name is not a valid resource name", Regex("[A-Za-z_][A-Za-z0-9_]*").matches(name))
+            assertTrue("$name is a reserved word", name !in reserved)
+        }
+    }
+
     @Test fun noFormatSpecifiersWithoutProperEscaping() {
         // Plain strings must not contain a bare % (aapt treats it as a format specifier).
         for (m in Regex("""<string name="([^"]+)">(.*?)</string>""", RegexOption.DOT_MATCHES_ALL).findAll(xml)) {
