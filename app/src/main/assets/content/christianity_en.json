@@ -1,32 +1,32 @@
 {
   "religion": "Christianity",
   "language": "en",
-  "version": 1,
+  "version": 2,
   "source": "King James Version (public domain in the United States)",
   "categories": [
     {
       "id": 201,
       "name": "Psalms",
       "icon": "book_psalms",
-      "verseCount": 22
+      "verseCount": 106
     },
     {
       "id": 202,
       "name": "Proverbs",
       "icon": "book_proverbs",
-      "verseCount": 18
+      "verseCount": 62
     },
     {
       "id": 203,
       "name": "Gospels",
       "icon": "book_gospels",
-      "verseCount": 14
+      "verseCount": 61
     },
     {
       "id": 204,
       "name": "Letters & Prophets",
       "icon": "book_letters",
-      "verseCount": 25
+      "verseCount": 128
     }
   ],
   "verses": [
@@ -740,6 +740,2508 @@
       "translatedText": "We love him, because he first loved us.",
       "sourceReference": "1 John 4:19 (KJV)",
       "tags": "love"
+    },
+    {
+      "id": 2080,
+      "categoryId": 204,
+      "dayNumber": 80,
+      "originalText": "",
+      "translatedText": "Let your conversation be without covetousness; and be content with such things as ye have: for he hath said, I will never leave thee, nor forsake thee. So that we may boldly say, The Lord is my helper, and I will not fear what man shall do unto me.",
+      "sourceReference": "Hebrews 13:5-6 (KJV)",
+      "tags": "contentment,courage"
+    },
+    {
+      "id": 2081,
+      "categoryId": 201,
+      "dayNumber": 81,
+      "originalText": "",
+      "translatedText": "LORD, thou hast heard the desire of the humble: thou wilt prepare their heart, thou wilt cause thine ear to hear:",
+      "sourceReference": "Psalm 10:17 (KJV)",
+      "tags": "hope,listening"
+    },
+    {
+      "id": 2082,
+      "categoryId": 203,
+      "dayNumber": 82,
+      "originalText": "",
+      "translatedText": "And he said, The things which are impossible with men are possible with God.",
+      "sourceReference": "Luke 18:27 (KJV)",
+      "tags": "hope,possibility"
+    },
+    {
+      "id": 2083,
+      "categoryId": 202,
+      "dayNumber": 83,
+      "originalText": "",
+      "translatedText": "Also, that the soul be without knowledge, it is not good; and he that hasteth with his feet sinneth.",
+      "sourceReference": "Proverbs 19:2 (KJV)",
+      "tags": "patience,haste"
+    },
+    {
+      "id": 2084,
+      "categoryId": 204,
+      "dayNumber": 84,
+      "originalText": "",
+      "translatedText": "But the LORD said unto Samuel, Look not on his countenance, or on the height of his stature; because I have refused him: for the LORD seeth not as man seeth; for man looketh on the outward appearance, but the LORD looketh on the heart.",
+      "sourceReference": "1 Samuel 16:7 (KJV)",
+      "tags": "heart,character"
+    },
+    {
+      "id": 2085,
+      "categoryId": 201,
+      "dayNumber": 85,
+      "originalText": "",
+      "translatedText": "For a day in thy courts is better than a thousand. I had rather be a doorkeeper in the house of my God, than to dwell in the tents of wickedness.",
+      "sourceReference": "Psalm 84:10 (KJV)",
+      "tags": "devotion"
+    },
+    {
+      "id": 2086,
+      "categoryId": 204,
+      "dayNumber": 86,
+      "originalText": "",
+      "translatedText": "For in him we live, and move, and have our being; as certain also of your own poets have said, For we are also his offspring.",
+      "sourceReference": "Acts 17:28 (KJV)",
+      "tags": "presence,life"
+    },
+    {
+      "id": 2087,
+      "categoryId": 201,
+      "dayNumber": 87,
+      "originalText": "",
+      "translatedText": "The entrance of thy words giveth light; it giveth understanding unto the simple.",
+      "sourceReference": "Psalm 119:130 (KJV)",
+      "tags": "light,understanding"
+    },
+    {
+      "id": 2088,
+      "categoryId": 203,
+      "dayNumber": 88,
+      "originalText": "",
+      "translatedText": "And Jesus looking upon them saith, With men it is impossible, but not with God: for with God all things are possible.",
+      "sourceReference": "Mark 10:27 (KJV)",
+      "tags": "hope,possibility"
+    },
+    {
+      "id": 2089,
+      "categoryId": 204,
+      "dayNumber": 89,
+      "originalText": "",
+      "translatedText": "Wherefore, my beloved brethren, let every man be swift to hear, slow to speak, slow to wrath:",
+      "sourceReference": "James 1:19 (KJV)",
+      "tags": "listening,patience"
+    },
+    {
+      "id": 2090,
+      "categoryId": 202,
+      "dayNumber": 90,
+      "originalText": "",
+      "translatedText": "There is that scattereth, and yet increaseth; and there is that withholdeth more than is meet, but it tendeth to poverty.",
+      "sourceReference": "Proverbs 11:24 (KJV)",
+      "tags": "generosity"
+    },
+    {
+      "id": 2091,
+      "categoryId": 201,
+      "dayNumber": 91,
+      "originalText": "",
+      "translatedText": "I have set the LORD always before me: because he is at my right hand, I shall not be moved.",
+      "sourceReference": "Psalm 16:8 (KJV)",
+      "tags": "presence,steadfast"
+    },
+    {
+      "id": 2092,
+      "categoryId": 204,
+      "dayNumber": 92,
+      "originalText": "",
+      "translatedText": "But he was wounded for our transgressions, he was bruised for our iniquities: the chastisement of our peace was upon him; and with his stripes we are healed.",
+      "sourceReference": "Isaiah 53:5 (KJV)",
+      "tags": "healing,peace"
+    },
+    {
+      "id": 2093,
+      "categoryId": 203,
+      "dayNumber": 93,
+      "originalText": "",
+      "translatedText": "And the light shineth in darkness; and the darkness comprehended it not.",
+      "sourceReference": "John 1:5 (KJV)",
+      "tags": "light,hope"
+    },
+    {
+      "id": 2094,
+      "categoryId": 204,
+      "dayNumber": 94,
+      "originalText": "",
+      "translatedText": "I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me: and the life which I now live in the flesh I live by the faith of the Son of God, who loved me, and gave himself for me.",
+      "sourceReference": "Galatians 2:20 (KJV)",
+      "tags": "faith,love"
+    },
+    {
+      "id": 2095,
+      "categoryId": 201,
+      "dayNumber": 95,
+      "originalText": "",
+      "translatedText": "Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over. Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever.",
+      "sourceReference": "Psalm 23:5-6 (KJV)",
+      "tags": "goodness,mercy"
+    },
+    {
+      "id": 2096,
+      "categoryId": 202,
+      "dayNumber": 96,
+      "originalText": "",
+      "translatedText": "The discretion of a man deferreth his anger; and it is his glory to pass over a transgression.",
+      "sourceReference": "Proverbs 19:11 (KJV)",
+      "tags": "patience,forgiveness"
+    },
+    {
+      "id": 2097,
+      "categoryId": 204,
+      "dayNumber": 97,
+      "originalText": "",
+      "translatedText": "So God created man in his own image, in the image of God created he him; male and female created he them.",
+      "sourceReference": "Genesis 1:27 (KJV)",
+      "tags": "dignity,creation"
+    },
+    {
+      "id": 2098,
+      "categoryId": 201,
+      "dayNumber": 98,
+      "originalText": "",
+      "translatedText": "The LORD is merciful and gracious, slow to anger, and plenteous in mercy.",
+      "sourceReference": "Psalm 103:8 (KJV)",
+      "tags": "mercy,patience"
+    },
+    {
+      "id": 2099,
+      "categoryId": 204,
+      "dayNumber": 99,
+      "originalText": "",
+      "translatedText": "And he said, My presence shall go with thee, and I will give thee rest.",
+      "sourceReference": "Exodus 33:14 (KJV)",
+      "tags": "presence,rest"
+    },
+    {
+      "id": 2100,
+      "categoryId": 203,
+      "dayNumber": 100,
+      "originalText": "",
+      "translatedText": "Jesus said unto him, If thou canst believe, all things are possible to him that believeth.",
+      "sourceReference": "Mark 9:23 (KJV)",
+      "tags": "faith,possibility"
+    },
+    {
+      "id": 2101,
+      "categoryId": 201,
+      "dayNumber": 101,
+      "originalText": "",
+      "translatedText": "The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit.",
+      "sourceReference": "Psalm 34:18 (KJV)",
+      "tags": "comfort,nearness"
+    },
+    {
+      "id": 2102,
+      "categoryId": 202,
+      "dayNumber": 102,
+      "originalText": "",
+      "translatedText": "Better is a dry morsel, and quietness therewith, than an house full of sacrifices with strife.",
+      "sourceReference": "Proverbs 17:1 (KJV)",
+      "tags": "peace,home"
+    },
+    {
+      "id": 2103,
+      "categoryId": 204,
+      "dayNumber": 103,
+      "originalText": "",
+      "translatedText": "Bear ye one another’s burdens, and so fulfil the law of Christ.",
+      "sourceReference": "Galatians 6:2 (KJV)",
+      "tags": "compassion,community"
+    },
+    {
+      "id": 2104,
+      "categoryId": 201,
+      "dayNumber": 104,
+      "originalText": "",
+      "translatedText": "Open thou mine eyes, that I may behold wondrous things out of thy law.",
+      "sourceReference": "Psalm 119:18 (KJV)",
+      "tags": "wonder,teaching"
+    },
+    {
+      "id": 2105,
+      "categoryId": 204,
+      "dayNumber": 105,
+      "originalText": "",
+      "translatedText": "For ye shall go out with joy, and be led forth with peace: the mountains and the hills shall break forth before you into singing, and all the trees of the field shall clap their hands.",
+      "sourceReference": "Isaiah 55:12 (KJV)",
+      "tags": "joy,peace"
+    },
+    {
+      "id": 2106,
+      "categoryId": 203,
+      "dayNumber": 106,
+      "originalText": "",
+      "translatedText": "I am come a light into the world, that whosoever believeth on me should not abide in darkness.",
+      "sourceReference": "John 12:46 (KJV)",
+      "tags": "light,faith"
+    },
+    {
+      "id": 2107,
+      "categoryId": 201,
+      "dayNumber": 107,
+      "originalText": "",
+      "translatedText": "Let the words of my mouth, and the meditation of my heart, be acceptable in thy sight, O LORD, my strength, and my redeemer.",
+      "sourceReference": "Psalm 19:14 (KJV)",
+      "tags": "words,meditation"
+    },
+    {
+      "id": 2108,
+      "categoryId": 204,
+      "dayNumber": 108,
+      "originalText": "",
+      "translatedText": "Let us hold fast the profession of our faith without wavering; (for he is faithful that promised;) And let us consider one another to provoke unto love and to good works:",
+      "sourceReference": "Hebrews 10:23-24 (KJV)",
+      "tags": "hope,community"
+    },
+    {
+      "id": 2109,
+      "categoryId": 202,
+      "dayNumber": 109,
+      "originalText": "",
+      "translatedText": "Where there is no vision, the people perish: but he that keepeth the law, happy is he.",
+      "sourceReference": "Proverbs 29:18 (KJV)",
+      "tags": "vision,guidance"
+    },
+    {
+      "id": 2110,
+      "categoryId": 204,
+      "dayNumber": 110,
+      "originalText": "",
+      "translatedText": "(For we walk by faith, not by sight:)",
+      "sourceReference": "2 Corinthians 5:7 (KJV)",
+      "tags": "faith,trust"
+    },
+    {
+      "id": 2111,
+      "categoryId": 201,
+      "dayNumber": 111,
+      "originalText": "",
+      "translatedText": "As the hart panteth after the water brooks, so panteth my soul after thee, O God. My soul thirsteth for God, for the living God: when shall I come and appear before God?",
+      "sourceReference": "Psalm 42:1-2 (KJV)",
+      "tags": "longing,thirst"
+    },
+    {
+      "id": 2112,
+      "categoryId": 203,
+      "dayNumber": 112,
+      "originalText": "",
+      "translatedText": "Take therefore no thought for the morrow: for the morrow shall take thought for the things of itself. Sufficient unto the day is the evil thereof.",
+      "sourceReference": "Matthew 6:34 (KJV)",
+      "tags": "anxiety,today"
+    },
+    {
+      "id": 2113,
+      "categoryId": 204,
+      "dayNumber": 113,
+      "originalText": "",
+      "translatedText": "Let no corrupt communication proceed out of your mouth, but that which is good to the use of edifying, that it may minister grace unto the hearers.",
+      "sourceReference": "Ephesians 4:29 (KJV)",
+      "tags": "speech,kindness"
+    },
+    {
+      "id": 2114,
+      "categoryId": 201,
+      "dayNumber": 114,
+      "originalText": "",
+      "translatedText": "The LORD is on my side; I will not fear: what can man do unto me?",
+      "sourceReference": "Psalm 118:6 (KJV)",
+      "tags": "courage,fear"
+    },
+    {
+      "id": 2115,
+      "categoryId": 202,
+      "dayNumber": 115,
+      "originalText": "",
+      "translatedText": "Without counsel purposes are disappointed: but in the multitude of counsellors they are established.",
+      "sourceReference": "Proverbs 15:22 (KJV)",
+      "tags": "advice,planning"
+    },
+    {
+      "id": 2116,
+      "categoryId": 204,
+      "dayNumber": 116,
+      "originalText": "",
+      "translatedText": "The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.",
+      "sourceReference": "Numbers 6:24-26 (KJV)",
+      "tags": "blessing,peace"
+    },
+    {
+      "id": 2117,
+      "categoryId": 201,
+      "dayNumber": 117,
+      "originalText": "",
+      "translatedText": "O sing unto the LORD a new song; for he hath done marvellous things: his right hand, and his holy arm, hath gotten him the victory.",
+      "sourceReference": "Psalm 98:1 (KJV)",
+      "tags": "song,joy"
+    },
+    {
+      "id": 2118,
+      "categoryId": 203,
+      "dayNumber": 118,
+      "originalText": "",
+      "translatedText": "But Jesus said, Suffer little children, and forbid them not, to come unto me: for of such is the kingdom of heaven.",
+      "sourceReference": "Matthew 19:14 (KJV)",
+      "tags": "children,welcome"
+    },
+    {
+      "id": 2119,
+      "categoryId": 204,
+      "dayNumber": 119,
+      "originalText": "",
+      "translatedText": "Jesus Christ the same yesterday, and to day, and for ever.",
+      "sourceReference": "Hebrews 13:8 (KJV)",
+      "tags": "steadfast,faith"
+    },
+    {
+      "id": 2120,
+      "categoryId": 202,
+      "dayNumber": 120,
+      "originalText": "",
+      "translatedText": "Righteousness exalteth a nation: but sin is a reproach to any people.",
+      "sourceReference": "Proverbs 14:34 (KJV)",
+      "tags": "justice,character"
+    },
+    {
+      "id": 2121,
+      "categoryId": 201,
+      "dayNumber": 121,
+      "originalText": "",
+      "translatedText": "In the multitude of my thoughts within me thy comforts delight my soul.",
+      "sourceReference": "Psalm 94:19 (KJV)",
+      "tags": "comfort,anxiety"
+    },
+    {
+      "id": 2122,
+      "categoryId": 204,
+      "dayNumber": 122,
+      "originalText": "",
+      "translatedText": "My brethren, count it all joy when ye fall into divers temptations; Knowing this, that the trying of your faith worketh patience. But let patience have her perfect work, that ye may be perfect and entire, wanting nothing.",
+      "sourceReference": "James 1:2-4 (KJV)",
+      "tags": "patience,perseverance"
+    },
+    {
+      "id": 2123,
+      "categoryId": 203,
+      "dayNumber": 123,
+      "originalText": "",
+      "translatedText": "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name. Thy kingdom come. Thy will be done in earth, as it is in heaven. Give us this day our daily bread. And forgive us our debts, as we forgive our debtors. And lead us not into temptation, but deliver us from evil: For thine is the kingdom, and the power, and the glory, for ever. Amen.",
+      "sourceReference": "Matthew 6:9-13 (KJV)",
+      "tags": "prayer,trust"
+    },
+    {
+      "id": 2124,
+      "categoryId": 204,
+      "dayNumber": 124,
+      "originalText": "",
+      "translatedText": "For I desired mercy, and not sacrifice; and the knowledge of God more than burnt offerings.",
+      "sourceReference": "Hosea 6:6 (KJV)",
+      "tags": "mercy,devotion"
+    },
+    {
+      "id": 2125,
+      "categoryId": 201,
+      "dayNumber": 125,
+      "originalText": "",
+      "translatedText": "O give thanks unto the LORD; for he is good: for his mercy endureth for ever.",
+      "sourceReference": "Psalm 136:1 (KJV)",
+      "tags": "gratitude,love"
+    },
+    {
+      "id": 2126,
+      "categoryId": 204,
+      "dayNumber": 126,
+      "originalText": "",
+      "translatedText": "Be not overcome of evil, but overcome evil with good.",
+      "sourceReference": "Romans 12:21 (KJV)",
+      "tags": "goodness,courage"
+    },
+    {
+      "id": 2127,
+      "categoryId": 202,
+      "dayNumber": 127,
+      "originalText": "",
+      "translatedText": "The light of the eyes rejoiceth the heart: and a good report maketh the bones fat.",
+      "sourceReference": "Proverbs 15:30 (KJV)",
+      "tags": "joy,encouragement"
+    },
+    {
+      "id": 2128,
+      "categoryId": 201,
+      "dayNumber": 128,
+      "originalText": "",
+      "translatedText": "Thy word have I hid in mine heart, that I might not sin against thee.",
+      "sourceReference": "Psalm 119:11 (KJV)",
+      "tags": "word,heart"
+    },
+    {
+      "id": 2129,
+      "categoryId": 204,
+      "dayNumber": 129,
+      "originalText": "",
+      "translatedText": "Although the fig tree shall not blossom, neither shall fruit be in the vines; the labour of the olive shall fail, and the fields shall yield no meat; the flock shall be cut off from the fold, and there shall be no herd in the stalls: Yet I will rejoice in the LORD, I will joy in the God of my salvation.",
+      "sourceReference": "Habakkuk 3:17-18 (KJV)",
+      "tags": "joy,trust"
+    },
+    {
+      "id": 2130,
+      "categoryId": 203,
+      "dayNumber": 130,
+      "originalText": "",
+      "translatedText": "And I say unto you, Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you. For every one that asketh receiveth; and he that seeketh findeth; and to him that knocketh it shall be opened.",
+      "sourceReference": "Luke 11:9-10 (KJV)",
+      "tags": "prayer,asking"
+    },
+    {
+      "id": 2131,
+      "categoryId": 201,
+      "dayNumber": 131,
+      "originalText": "",
+      "translatedText": "For he shall give his angels charge over thee, to keep thee in all thy ways. They shall bear thee up in their hands, lest thou dash thy foot against a stone.",
+      "sourceReference": "Psalm 91:11-12 (KJV)",
+      "tags": "protection,care"
+    },
+    {
+      "id": 2132,
+      "categoryId": 204,
+      "dayNumber": 132,
+      "originalText": "",
+      "translatedText": "The LORD hath appeared of old unto me, saying, Yea, I have loved thee with an everlasting love: therefore with lovingkindness have I drawn thee.",
+      "sourceReference": "Jeremiah 31:3 (KJV)",
+      "tags": "love,faithfulness"
+    },
+    {
+      "id": 2133,
+      "categoryId": 202,
+      "dayNumber": 133,
+      "originalText": "",
+      "translatedText": "He that walketh uprightly walketh surely: but he that perverteth his ways shall be known.",
+      "sourceReference": "Proverbs 10:9 (KJV)",
+      "tags": "integrity"
+    },
+    {
+      "id": 2134,
+      "categoryId": 201,
+      "dayNumber": 134,
+      "originalText": "",
+      "translatedText": "O God, thou art my God; early will I seek thee: my soul thirsteth for thee, my flesh longeth for thee in a dry and thirsty land, where no water is;",
+      "sourceReference": "Psalm 63:1 (KJV)",
+      "tags": "longing,morning"
+    },
+    {
+      "id": 2135,
+      "categoryId": 204,
+      "dayNumber": 135,
+      "originalText": "",
+      "translatedText": "But be ye doers of the word, and not hearers only, deceiving your own selves.",
+      "sourceReference": "James 1:22 (KJV)",
+      "tags": "action,faith"
+    },
+    {
+      "id": 2136,
+      "categoryId": 203,
+      "dayNumber": 136,
+      "originalText": "",
+      "translatedText": "But Jesus beheld them, and said unto them, With men this is impossible; but with God all things are possible.",
+      "sourceReference": "Matthew 19:26 (KJV)",
+      "tags": "hope,possibility"
+    },
+    {
+      "id": 2137,
+      "categoryId": 201,
+      "dayNumber": 137,
+      "originalText": "",
+      "translatedText": "Set a watch, O LORD, before my mouth; keep the door of my lips.",
+      "sourceReference": "Psalm 141:3 (KJV)",
+      "tags": "speech,self-control"
+    },
+    {
+      "id": 2138,
+      "categoryId": 204,
+      "dayNumber": 138,
+      "originalText": "",
+      "translatedText": "And the LORD, he it is that doth go before thee; he will be with thee, he will not fail thee, neither forsake thee: fear not, neither be dismayed.",
+      "sourceReference": "Deuteronomy 31:8 (KJV)",
+      "tags": "courage,presence"
+    },
+    {
+      "id": 2139,
+      "categoryId": 202,
+      "dayNumber": 139,
+      "originalText": "",
+      "translatedText": "A merry heart doeth good like a medicine: but a broken spirit drieth the bones.",
+      "sourceReference": "Proverbs 17:22 (KJV)",
+      "tags": "joy,health"
+    },
+    {
+      "id": 2140,
+      "categoryId": 204,
+      "dayNumber": 140,
+      "originalText": "",
+      "translatedText": "Arise, shine; for thy light is come, and the glory of the LORD is risen upon thee.",
+      "sourceReference": "Isaiah 60:1 (KJV)",
+      "tags": "light,morning"
+    },
+    {
+      "id": 2141,
+      "categoryId": 201,
+      "dayNumber": 141,
+      "originalText": "",
+      "translatedText": "Rest in the LORD, and wait patiently for him: fret not thyself because of him who prospereth in his way, because of the man who bringeth wicked devices to pass.",
+      "sourceReference": "Psalm 37:7 (KJV)",
+      "tags": "patience,rest"
+    },
+    {
+      "id": 2142,
+      "categoryId": 203,
+      "dayNumber": 142,
+      "originalText": "",
+      "translatedText": "Therefore I say unto you, What things soever ye desire, when ye pray, believe that ye receive them, and ye shall have them.",
+      "sourceReference": "Mark 11:24 (KJV)",
+      "tags": "prayer,faith"
+    },
+    {
+      "id": 2143,
+      "categoryId": 204,
+      "dayNumber": 143,
+      "originalText": "",
+      "translatedText": "Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God. He that loveth not knoweth not God; for God is love.",
+      "sourceReference": "1 John 4:7-8 (KJV)",
+      "tags": "love"
+    },
+    {
+      "id": 2144,
+      "categoryId": 201,
+      "dayNumber": 144,
+      "originalText": "",
+      "translatedText": "Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful. But his delight is in the law of the LORD; and in his law doth he meditate day and night. And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither; and whatsoever he doeth shall prosper.",
+      "sourceReference": "Psalm 1:1-3 (KJV)",
+      "tags": "blessing,roots"
+    },
+    {
+      "id": 2145,
+      "categoryId": 204,
+      "dayNumber": 145,
+      "originalText": "",
+      "translatedText": "The LORD thy God in the midst of thee is mighty; he will save, he will rejoice over thee with joy; he will rest in his love, he will joy over thee with singing.",
+      "sourceReference": "Zephaniah 3:17 (KJV)",
+      "tags": "joy,love"
+    },
+    {
+      "id": 2146,
+      "categoryId": 202,
+      "dayNumber": 146,
+      "originalText": "",
+      "translatedText": "Death and life are in the power of the tongue: and they that love it shall eat the fruit thereof.",
+      "sourceReference": "Proverbs 18:21 (KJV)",
+      "tags": "speech,words"
+    },
+    {
+      "id": 2147,
+      "categoryId": 201,
+      "dayNumber": 147,
+      "originalText": "",
+      "translatedText": "Except the LORD build the house, they labour in vain that build it: except the LORD keep the city, the watchman waketh but in vain.",
+      "sourceReference": "Psalm 127:1 (KJV)",
+      "tags": "work,trust"
+    },
+    {
+      "id": 2148,
+      "categoryId": 203,
+      "dayNumber": 148,
+      "originalText": "",
+      "translatedText": "My sheep hear my voice, and I know them, and they follow me: And I give unto them eternal life; and they shall never perish, neither shall any man pluck them out of my hand.",
+      "sourceReference": "John 10:27-28 (KJV)",
+      "tags": "guidance,belonging"
+    },
+    {
+      "id": 2149,
+      "categoryId": 204,
+      "dayNumber": 149,
+      "originalText": "",
+      "translatedText": "Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need.",
+      "sourceReference": "Hebrews 4:16 (KJV)",
+      "tags": "prayer,grace"
+    },
+    {
+      "id": 2150,
+      "categoryId": 201,
+      "dayNumber": 150,
+      "originalText": "",
+      "translatedText": "For as the heaven is high above the earth, so great is his mercy toward them that fear him. As far as the east is from the west, so far hath he removed our transgressions from us.",
+      "sourceReference": "Psalm 103:11-12 (KJV)",
+      "tags": "mercy,forgiveness"
+    },
+    {
+      "id": 2151,
+      "categoryId": 204,
+      "dayNumber": 151,
+      "originalText": "",
+      "translatedText": "Humble yourselves in the sight of the Lord, and he shall lift you up.",
+      "sourceReference": "James 4:10 (KJV)",
+      "tags": "humility"
+    },
+    {
+      "id": 2152,
+      "categoryId": 202,
+      "dayNumber": 152,
+      "originalText": "",
+      "translatedText": "Pride goeth before destruction, and an haughty spirit before a fall.",
+      "sourceReference": "Proverbs 16:18 (KJV)",
+      "tags": "humility,pride"
+    },
+    {
+      "id": 2153,
+      "categoryId": 203,
+      "dayNumber": 153,
+      "originalText": "",
+      "translatedText": "And as ye would that men should do to you, do ye also to them likewise.",
+      "sourceReference": "Luke 6:31 (KJV)",
+      "tags": "kindness,golden-rule"
+    },
+    {
+      "id": 2154,
+      "categoryId": 204,
+      "dayNumber": 154,
+      "originalText": "",
+      "translatedText": "What shall we then say to these things? If God be for us, who can be against us?",
+      "sourceReference": "Romans 8:31 (KJV)",
+      "tags": "courage,assurance"
+    },
+    {
+      "id": 2155,
+      "categoryId": 201,
+      "dayNumber": 155,
+      "originalText": "",
+      "translatedText": "But I have trusted in thy mercy; my heart shall rejoice in thy salvation. I will sing unto the LORD, because he hath dealt bountifully with me.",
+      "sourceReference": "Psalm 13:5-6 (KJV)",
+      "tags": "trust,joy"
+    },
+    {
+      "id": 2156,
+      "categoryId": 204,
+      "dayNumber": 156,
+      "originalText": "",
+      "translatedText": "For the eyes of the LORD run to and fro throughout the whole earth, to shew himself strong in the behalf of them whose heart is perfect toward him. Herein thou hast done foolishly: therefore from henceforth thou shalt have wars.",
+      "sourceReference": "2 Chronicles 16:9 (KJV)",
+      "tags": "strength,heart"
+    },
+    {
+      "id": 2157,
+      "categoryId": 201,
+      "dayNumber": 157,
+      "originalText": "",
+      "translatedText": "And now, Lord, what wait I for? my hope is in thee.",
+      "sourceReference": "Psalm 39:7 (KJV)",
+      "tags": "hope"
+    },
+    {
+      "id": 2158,
+      "categoryId": 202,
+      "dayNumber": 158,
+      "originalText": "",
+      "translatedText": "A man hath joy by the answer of his mouth: and a word spoken in due season, how good is it!",
+      "sourceReference": "Proverbs 15:23 (KJV)",
+      "tags": "speech,joy"
+    },
+    {
+      "id": 2159,
+      "categoryId": 204,
+      "dayNumber": 159,
+      "originalText": "",
+      "translatedText": "A new heart also will I give you, and a new spirit will I put within you: and I will take away the stony heart out of your flesh, and I will give you an heart of flesh.",
+      "sourceReference": "Ezekiel 36:26 (KJV)",
+      "tags": "renewal,heart"
+    },
+    {
+      "id": 2160,
+      "categoryId": 203,
+      "dayNumber": 160,
+      "originalText": "",
+      "translatedText": "Therefore I say unto you, Take no thought for your life, what ye shall eat, or what ye shall drink; nor yet for your body, what ye shall put on. Is not the life more than meat, and the body than raiment? Behold the fowls of the air: for they sow not, neither do they reap, nor gather into barns; yet your heavenly Father feedeth them. Are ye not much better than they?",
+      "sourceReference": "Matthew 6:25-26 (KJV)",
+      "tags": "anxiety,trust"
+    },
+    {
+      "id": 2161,
+      "categoryId": 201,
+      "dayNumber": 161,
+      "originalText": "",
+      "translatedText": "Shew me thy ways, O LORD; teach me thy paths. Lead me in thy truth, and teach me: for thou art the God of my salvation; on thee do I wait all the day.",
+      "sourceReference": "Psalm 25:4-5 (KJV)",
+      "tags": "guidance,teaching"
+    },
+    {
+      "id": 2162,
+      "categoryId": 204,
+      "dayNumber": 162,
+      "originalText": "",
+      "translatedText": "But now thus saith the LORD that created thee, O Jacob, and he that formed thee, O Israel, Fear not: for I have redeemed thee, I have called thee by thy name; thou art mine. When thou passest through the waters, I will be with thee; and through the rivers, they shall not overflow thee: when thou walkest through the fire, thou shalt not be burned; neither shall the flame kindle upon thee.",
+      "sourceReference": "Isaiah 43:1-2 (KJV)",
+      "tags": "courage,presence"
+    },
+    {
+      "id": 2163,
+      "categoryId": 201,
+      "dayNumber": 163,
+      "originalText": "",
+      "translatedText": "I was glad when they said unto me, Let us go into the house of the LORD.",
+      "sourceReference": "Psalm 122:1 (KJV)",
+      "tags": "joy,gathering"
+    },
+    {
+      "id": 2164,
+      "categoryId": 204,
+      "dayNumber": 164,
+      "originalText": "",
+      "translatedText": "Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.",
+      "sourceReference": "1 Timothy 4:12 (KJV)",
+      "tags": "courage,example"
+    },
+    {
+      "id": 2165,
+      "categoryId": 202,
+      "dayNumber": 165,
+      "originalText": "",
+      "translatedText": "A sound heart is the life of the flesh: but envy the rottenness of the bones.",
+      "sourceReference": "Proverbs 14:30 (KJV)",
+      "tags": "peace,heart"
+    },
+    {
+      "id": 2166,
+      "categoryId": 203,
+      "dayNumber": 166,
+      "originalText": "",
+      "translatedText": "These things have I spoken unto you, that my joy might remain in you, and that your joy might be full.",
+      "sourceReference": "John 15:11 (KJV)",
+      "tags": "joy"
+    },
+    {
+      "id": 2167,
+      "categoryId": 201,
+      "dayNumber": 167,
+      "originalText": "",
+      "translatedText": "I will bless the LORD at all times: his praise shall continually be in my mouth.",
+      "sourceReference": "Psalm 34:1 (KJV)",
+      "tags": "praise,gratitude"
+    },
+    {
+      "id": 2168,
+      "categoryId": 204,
+      "dayNumber": 168,
+      "originalText": "",
+      "translatedText": "And Ruth said, Intreat me not to leave thee, or to return from following after thee: for whither thou goest, I will go; and where thou lodgest, I will lodge: thy people shall be my people, and thy God my God:",
+      "sourceReference": "Ruth 1:16 (KJV)",
+      "tags": "loyalty,love"
+    },
+    {
+      "id": 2169,
+      "categoryId": 204,
+      "dayNumber": 169,
+      "originalText": "",
+      "translatedText": "But God commendeth his love toward us, in that, while we were yet sinners, Christ died for us.",
+      "sourceReference": "Romans 5:8 (KJV)",
+      "tags": "love,grace"
+    },
+    {
+      "id": 2170,
+      "categoryId": 201,
+      "dayNumber": 170,
+      "originalText": "",
+      "translatedText": "Great is the LORD, and greatly to be praised; and his greatness is unsearchable.",
+      "sourceReference": "Psalm 145:3 (KJV)",
+      "tags": "praise,greatness"
+    },
+    {
+      "id": 2171,
+      "categoryId": 202,
+      "dayNumber": 171,
+      "originalText": "",
+      "translatedText": "He that covereth his sins shall not prosper: but whoso confesseth and forsaketh them shall have mercy.",
+      "sourceReference": "Proverbs 28:13 (KJV)",
+      "tags": "honesty,mercy"
+    },
+    {
+      "id": 2172,
+      "categoryId": 203,
+      "dayNumber": 172,
+      "originalText": "",
+      "translatedText": "For where your treasure is, there will your heart be also.",
+      "sourceReference": "Luke 12:34 (KJV)",
+      "tags": "heart,priorities"
+    },
+    {
+      "id": 2173,
+      "categoryId": 204,
+      "dayNumber": 173,
+      "originalText": "",
+      "translatedText": "Love worketh no ill to his neighbour: therefore love is the fulfilling of the law.",
+      "sourceReference": "Romans 13:10 (KJV)",
+      "tags": "love,kindness"
+    },
+    {
+      "id": 2174,
+      "categoryId": 201,
+      "dayNumber": 174,
+      "originalText": "",
+      "translatedText": "I waited patiently for the LORD; and he inclined unto me, and heard my cry. He brought me up also out of an horrible pit, out of the miry clay, and set my feet upon a rock, and established my goings.",
+      "sourceReference": "Psalm 40:1-2 (KJV)",
+      "tags": "patience,rescue"
+    },
+    {
+      "id": 2175,
+      "categoryId": 204,
+      "dayNumber": 175,
+      "originalText": "",
+      "translatedText": "For, brethren, ye have been called unto liberty; only use not liberty for an occasion to the flesh, but by love serve one another.",
+      "sourceReference": "Galatians 5:13 (KJV)",
+      "tags": "freedom,service"
+    },
+    {
+      "id": 2176,
+      "categoryId": 203,
+      "dayNumber": 176,
+      "originalText": "",
+      "translatedText": "For with God nothing shall be impossible.",
+      "sourceReference": "Luke 1:37 (KJV)",
+      "tags": "hope,possibility"
+    },
+    {
+      "id": 2177,
+      "categoryId": 201,
+      "dayNumber": 177,
+      "originalText": "",
+      "translatedText": "They that trust in the LORD shall be as mount Zion, which cannot be removed, but abideth for ever. As the mountains are round about Jerusalem, so the LORD is round about his people from henceforth even for ever.",
+      "sourceReference": "Psalm 125:1-2 (KJV)",
+      "tags": "steadfast,protection"
+    },
+    {
+      "id": 2178,
+      "categoryId": 202,
+      "dayNumber": 178,
+      "originalText": "",
+      "translatedText": "Withhold not good from them to whom it is due, when it is in the power of thine hand to do it.",
+      "sourceReference": "Proverbs 3:27 (KJV)",
+      "tags": "kindness,generosity"
+    },
+    {
+      "id": 2179,
+      "categoryId": 204,
+      "dayNumber": 179,
+      "originalText": "",
+      "translatedText": "But my God shall supply all your need according to his riches in glory by Christ Jesus.",
+      "sourceReference": "Philippians 4:19 (KJV)",
+      "tags": "trust,provision"
+    },
+    {
+      "id": 2180,
+      "categoryId": 201,
+      "dayNumber": 180,
+      "originalText": "",
+      "translatedText": "The earth is the LORD’s, and the fulness thereof; the world, and they that dwell therein.",
+      "sourceReference": "Psalm 24:1 (KJV)",
+      "tags": "creation"
+    },
+    {
+      "id": 2181,
+      "categoryId": 204,
+      "dayNumber": 181,
+      "originalText": "",
+      "translatedText": "But the wisdom that is from above is first pure, then peaceable, gentle, and easy to be intreated, full of mercy and good fruits, without partiality, and without hypocrisy.",
+      "sourceReference": "James 3:17 (KJV)",
+      "tags": "wisdom,peace"
+    },
+    {
+      "id": 2182,
+      "categoryId": 203,
+      "dayNumber": 182,
+      "originalText": "",
+      "translatedText": "And he answering said, Thou shalt love the Lord thy God with all thy heart, and with all thy soul, and with all thy strength, and with all thy mind; and thy neighbour as thyself.",
+      "sourceReference": "Luke 10:27 (KJV)",
+      "tags": "love,commandment"
+    },
+    {
+      "id": 2183,
+      "categoryId": 204,
+      "dayNumber": 183,
+      "originalText": "",
+      "translatedText": "And let us not be weary in well doing: for in due season we shall reap, if we faint not.",
+      "sourceReference": "Galatians 6:9 (KJV)",
+      "tags": "patience,perseverance"
+    },
+    {
+      "id": 2184,
+      "categoryId": 201,
+      "dayNumber": 184,
+      "originalText": "",
+      "translatedText": "They that sow in tears shall reap in joy. He that goeth forth and weepeth, bearing precious seed, shall doubtless come again with rejoicing, bringing his sheaves with him.",
+      "sourceReference": "Psalm 126:5-6 (KJV)",
+      "tags": "hope,joy"
+    },
+    {
+      "id": 2185,
+      "categoryId": 202,
+      "dayNumber": 185,
+      "originalText": "",
+      "translatedText": "Through wisdom is an house builded; and by understanding it is established: And by knowledge shall the chambers be filled with all precious and pleasant riches.",
+      "sourceReference": "Proverbs 24:3-4 (KJV)",
+      "tags": "home,wisdom"
+    },
+    {
+      "id": 2186,
+      "categoryId": 204,
+      "dayNumber": 186,
+      "originalText": "",
+      "translatedText": "Brethren, I count not myself to have apprehended: but this one thing I do, forgetting those things which are behind, and reaching forth unto those things which are before, I press toward the mark for the prize of the high calling of God in Christ Jesus.",
+      "sourceReference": "Philippians 3:13-14 (KJV)",
+      "tags": "perseverance,hope"
+    },
+    {
+      "id": 2187,
+      "categoryId": 201,
+      "dayNumber": 187,
+      "originalText": "",
+      "translatedText": "O send out thy light and thy truth: let them lead me; let them bring me unto thy holy hill, and to thy tabernacles.",
+      "sourceReference": "Psalm 43:3 (KJV)",
+      "tags": "light,truth"
+    },
+    {
+      "id": 2188,
+      "categoryId": 204,
+      "dayNumber": 188,
+      "originalText": "",
+      "translatedText": "Rejoice with them that do rejoice, and weep with them that weep.",
+      "sourceReference": "Romans 12:15 (KJV)",
+      "tags": "compassion,community"
+    },
+    {
+      "id": 2189,
+      "categoryId": 203,
+      "dayNumber": 189,
+      "originalText": "",
+      "translatedText": "And ye shall know the truth, and the truth shall make you free.",
+      "sourceReference": "John 8:32 (KJV)",
+      "tags": "truth,freedom"
+    },
+    {
+      "id": 2190,
+      "categoryId": 202,
+      "dayNumber": 190,
+      "originalText": "",
+      "translatedText": "A good name is rather to be chosen than great riches, and loving favour rather than silver and gold.",
+      "sourceReference": "Proverbs 22:1 (KJV)",
+      "tags": "character,name"
+    },
+    {
+      "id": 2191,
+      "categoryId": 201,
+      "dayNumber": 191,
+      "originalText": "",
+      "translatedText": "What time I am afraid, I will trust in thee. In God I will praise his word, in God I have put my trust; I will not fear what flesh can do unto me.",
+      "sourceReference": "Psalm 56:3-4 (KJV)",
+      "tags": "courage,trust"
+    },
+    {
+      "id": 2192,
+      "categoryId": 204,
+      "dayNumber": 192,
+      "originalText": "",
+      "translatedText": "The LORD shall fight for you, and ye shall hold your peace.",
+      "sourceReference": "Exodus 14:14 (KJV)",
+      "tags": "stillness,trust"
+    },
+    {
+      "id": 2193,
+      "categoryId": 201,
+      "dayNumber": 193,
+      "originalText": "",
+      "translatedText": "O give thanks unto the LORD; for he is good: because his mercy endureth for ever.",
+      "sourceReference": "Psalm 118:1 (KJV)",
+      "tags": "gratitude,love"
+    },
+    {
+      "id": 2194,
+      "categoryId": 204,
+      "dayNumber": 194,
+      "originalText": "",
+      "translatedText": "Call unto me, and I will answer thee, and shew thee great and mighty things, which thou knowest not.",
+      "sourceReference": "Jeremiah 33:3 (KJV)",
+      "tags": "prayer,seeking"
+    },
+    {
+      "id": 2195,
+      "categoryId": 203,
+      "dayNumber": 195,
+      "originalText": "",
+      "translatedText": "For even the Son of man came not to be ministered unto, but to minister, and to give his life a ransom for many.",
+      "sourceReference": "Mark 10:45 (KJV)",
+      "tags": "service"
+    },
+    {
+      "id": 2196,
+      "categoryId": 202,
+      "dayNumber": 196,
+      "originalText": "",
+      "translatedText": "Boast not thyself of to morrow; for thou knowest not what a day may bring forth.",
+      "sourceReference": "Proverbs 27:1 (KJV)",
+      "tags": "today,humility"
+    },
+    {
+      "id": 2197,
+      "categoryId": 204,
+      "dayNumber": 197,
+      "originalText": "",
+      "translatedText": "Behold, God is my salvation; I will trust, and not be afraid: for the LORD JEHOVAH is my strength and my song; he also is become my salvation.",
+      "sourceReference": "Isaiah 12:2 (KJV)",
+      "tags": "trust,salvation"
+    },
+    {
+      "id": 2198,
+      "categoryId": 201,
+      "dayNumber": 198,
+      "originalText": "",
+      "translatedText": "I will sing of the mercies of the LORD for ever: with my mouth will I make known thy faithfulness to all generations.",
+      "sourceReference": "Psalm 89:1 (KJV)",
+      "tags": "faithfulness,song"
+    },
+    {
+      "id": 2199,
+      "categoryId": 204,
+      "dayNumber": 199,
+      "originalText": "",
+      "translatedText": "My little children, let us not love in word, neither in tongue; but in deed and in truth.",
+      "sourceReference": "1 John 3:18 (KJV)",
+      "tags": "love,action"
+    },
+    {
+      "id": 2200,
+      "categoryId": 201,
+      "dayNumber": 200,
+      "originalText": "",
+      "translatedText": "When I consider thy heavens, the work of thy fingers, the moon and the stars, which thou hast ordained; What is man, that thou art mindful of him? and the son of man, that thou visitest him?",
+      "sourceReference": "Psalm 8:3-4 (KJV)",
+      "tags": "wonder,creation"
+    },
+    {
+      "id": 2201,
+      "categoryId": 203,
+      "dayNumber": 201,
+      "originalText": "",
+      "translatedText": "For what is a man profited, if he shall gain the whole world, and lose his own soul? or what shall a man give in exchange for his soul?",
+      "sourceReference": "Matthew 16:26 (KJV)",
+      "tags": "priorities,soul"
+    },
+    {
+      "id": 2202,
+      "categoryId": 204,
+      "dayNumber": 202,
+      "originalText": "",
+      "translatedText": "Therefore if any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new.",
+      "sourceReference": "2 Corinthians 5:17 (KJV)",
+      "tags": "renewal,hope"
+    },
+    {
+      "id": 2203,
+      "categoryId": 202,
+      "dayNumber": 203,
+      "originalText": "",
+      "translatedText": "For wisdom is better than rubies; and all the things that may be desired are not to be compared to it.",
+      "sourceReference": "Proverbs 8:11 (KJV)",
+      "tags": "wisdom,value"
+    },
+    {
+      "id": 2204,
+      "categoryId": 201,
+      "dayNumber": 204,
+      "originalText": "",
+      "translatedText": "O sing unto the LORD a new song: sing unto the LORD, all the earth. Sing unto the LORD, bless his name; shew forth his salvation from day to day.",
+      "sourceReference": "Psalm 96:1-2 (KJV)",
+      "tags": "song,praise"
+    },
+    {
+      "id": 2205,
+      "categoryId": 204,
+      "dayNumber": 205,
+      "originalText": "",
+      "translatedText": "Sow to yourselves in righteousness, reap in mercy; break up your fallow ground: for it is time to seek the LORD, till he come and rain righteousness upon you.",
+      "sourceReference": "Hosea 10:12 (KJV)",
+      "tags": "growth,justice"
+    },
+    {
+      "id": 2206,
+      "categoryId": 203,
+      "dayNumber": 206,
+      "originalText": "",
+      "translatedText": "But I say unto you which hear, Love your enemies, do good to them which hate you, Bless them that curse you, and pray for them which despitefully use you.",
+      "sourceReference": "Luke 6:27-28 (KJV)",
+      "tags": "love,enemies"
+    },
+    {
+      "id": 2207,
+      "categoryId": 201,
+      "dayNumber": 207,
+      "originalText": "",
+      "translatedText": "I will instruct thee and teach thee in the way which thou shalt go: I will guide thee with mine eye.",
+      "sourceReference": "Psalm 32:8 (KJV)",
+      "tags": "guidance,care"
+    },
+    {
+      "id": 2208,
+      "categoryId": 204,
+      "dayNumber": 208,
+      "originalText": "",
+      "translatedText": "For I know that my redeemer liveth, and that he shall stand at the latter day upon the earth:",
+      "sourceReference": "Job 19:25 (KJV)",
+      "tags": "hope,trust"
+    },
+    {
+      "id": 2209,
+      "categoryId": 202,
+      "dayNumber": 209,
+      "originalText": "",
+      "translatedText": "Favour is deceitful, and beauty is vain: but a woman that feareth the LORD, she shall be praised.",
+      "sourceReference": "Proverbs 31:30 (KJV)",
+      "tags": "character,reverence"
+    },
+    {
+      "id": 2210,
+      "categoryId": 201,
+      "dayNumber": 210,
+      "originalText": "",
+      "translatedText": "For thou art my hope, O Lord GOD: thou art my trust from my youth.",
+      "sourceReference": "Psalm 71:5 (KJV)",
+      "tags": "hope,trust"
+    },
+    {
+      "id": 2211,
+      "categoryId": 204,
+      "dayNumber": 211,
+      "originalText": "",
+      "translatedText": "Two are better than one; because they have a good reward for their labour. For if they fall, the one will lift up his fellow: but woe to him that is alone when he falleth; for he hath not another to help him up.",
+      "sourceReference": "Ecclesiastes 4:9-10 (KJV)",
+      "tags": "friendship,community"
+    },
+    {
+      "id": 2212,
+      "categoryId": 203,
+      "dayNumber": 212,
+      "originalText": "",
+      "translatedText": "The thief cometh not, but for to steal, and to kill, and to destroy: I am come that they might have life, and that they might have it more abundantly.",
+      "sourceReference": "John 10:10 (KJV)",
+      "tags": "life,abundance"
+    },
+    {
+      "id": 2213,
+      "categoryId": 204,
+      "dayNumber": 213,
+      "originalText": "",
+      "translatedText": "If my people, which are called by my name, shall humble themselves, and pray, and seek my face, and turn from their wicked ways; then will I hear from heaven, and will forgive their sin, and will heal their land.",
+      "sourceReference": "2 Chronicles 7:14 (KJV)",
+      "tags": "humility,prayer"
+    },
+    {
+      "id": 2214,
+      "categoryId": 201,
+      "dayNumber": 214,
+      "originalText": "",
+      "translatedText": "My voice shalt thou hear in the morning, O LORD; in the morning will I direct my prayer unto thee, and will look up.",
+      "sourceReference": "Psalm 5:3 (KJV)",
+      "tags": "morning,prayer"
+    },
+    {
+      "id": 2215,
+      "categoryId": 202,
+      "dayNumber": 215,
+      "originalText": "",
+      "translatedText": "The fear of the LORD is the beginning of knowledge: but fools despise wisdom and instruction.",
+      "sourceReference": "Proverbs 1:7 (KJV)",
+      "tags": "wisdom,learning"
+    },
+    {
+      "id": 2216,
+      "categoryId": 204,
+      "dayNumber": 216,
+      "originalText": "",
+      "translatedText": "And ye shall seek me, and find me, when ye shall search for me with all your heart.",
+      "sourceReference": "Jeremiah 29:13 (KJV)",
+      "tags": "seeking,prayer"
+    },
+    {
+      "id": 2217,
+      "categoryId": 201,
+      "dayNumber": 217,
+      "originalText": "",
+      "translatedText": "From the rising of the sun unto the going down of the same the LORD’s name is to be praised.",
+      "sourceReference": "Psalm 113:3 (KJV)",
+      "tags": "praise,day"
+    },
+    {
+      "id": 2218,
+      "categoryId": 203,
+      "dayNumber": 218,
+      "originalText": "",
+      "translatedText": "Jesus said unto her, I am the resurrection, and the life: he that believeth in me, though he were dead, yet shall he live: And whosoever liveth and believeth in me shall never die. Believest thou this?",
+      "sourceReference": "John 11:25-26 (KJV)",
+      "tags": "hope,life"
+    },
+    {
+      "id": 2219,
+      "categoryId": 204,
+      "dayNumber": 219,
+      "originalText": "",
+      "translatedText": "Watch ye, stand fast in the faith, quit you like men, be strong. Let all your things be done with charity.",
+      "sourceReference": "1 Corinthians 16:13-14 (KJV)",
+      "tags": "courage,love"
+    },
+    {
+      "id": 2220,
+      "categoryId": 201,
+      "dayNumber": 220,
+      "originalText": "",
+      "translatedText": "I will sing unto the LORD as long as I live: I will sing praise to my God while I have my being.",
+      "sourceReference": "Psalm 104:33 (KJV)",
+      "tags": "praise,life"
+    },
+    {
+      "id": 2221,
+      "categoryId": 204,
+      "dayNumber": 221,
+      "originalText": "",
+      "translatedText": "In the beginning God created the heaven and the earth.",
+      "sourceReference": "Genesis 1:1 (KJV)",
+      "tags": "beginning,creation"
+    },
+    {
+      "id": 2222,
+      "categoryId": 202,
+      "dayNumber": 222,
+      "originalText": "",
+      "translatedText": "He that followeth after righteousness and mercy findeth life, righteousness, and honour.",
+      "sourceReference": "Proverbs 21:21 (KJV)",
+      "tags": "kindness,righteousness"
+    },
+    {
+      "id": 2223,
+      "categoryId": 201,
+      "dayNumber": 223,
+      "originalText": "",
+      "translatedText": "How amiable are thy tabernacles, O LORD of hosts! My soul longeth, yea, even fainteth for the courts of the LORD: my heart and my flesh crieth out for the living God.",
+      "sourceReference": "Psalm 84:1-2 (KJV)",
+      "tags": "longing,joy"
+    },
+    {
+      "id": 2224,
+      "categoryId": 204,
+      "dayNumber": 224,
+      "originalText": "",
+      "translatedText": "Blessed be God, even the Father of our Lord Jesus Christ, the Father of mercies, and the God of all comfort; Who comforteth us in all our tribulation, that we may be able to comfort them which are in any trouble, by the comfort wherewith we ourselves are comforted of God.",
+      "sourceReference": "2 Corinthians 1:3-4 (KJV)",
+      "tags": "comfort,compassion"
+    },
+    {
+      "id": 2225,
+      "categoryId": 203,
+      "dayNumber": 225,
+      "originalText": "",
+      "translatedText": "I will not leave you comfortless: I will come to you.",
+      "sourceReference": "John 14:18 (KJV)",
+      "tags": "presence,comfort"
+    },
+    {
+      "id": 2226,
+      "categoryId": 204,
+      "dayNumber": 226,
+      "originalText": "",
+      "translatedText": "And if it seem evil unto you to serve the LORD, choose you this day whom ye will serve; whether the gods which your fathers served that were on the other side of the flood, or the gods of the Amorites, in whose land ye dwell: but as for me and my house, we will serve the LORD.",
+      "sourceReference": "Joshua 24:15 (KJV)",
+      "tags": "choice,devotion"
+    },
+    {
+      "id": 2227,
+      "categoryId": 201,
+      "dayNumber": 227,
+      "originalText": "",
+      "translatedText": "Whither shall I go from thy spirit? or whither shall I flee from thy presence? If I ascend up into heaven, thou art there: if I make my bed in hell, behold, thou art there. If I take the wings of the morning, and dwell in the uttermost parts of the sea; Even there shall thy hand lead me, and thy right hand shall hold me.",
+      "sourceReference": "Psalm 139:7-10 (KJV)",
+      "tags": "presence,nearness"
+    },
+    {
+      "id": 2228,
+      "categoryId": 202,
+      "dayNumber": 228,
+      "originalText": "",
+      "translatedText": "Counsel in the heart of man is like deep water; but a man of understanding will draw it out.",
+      "sourceReference": "Proverbs 20:5 (KJV)",
+      "tags": "wisdom,understanding"
+    },
+    {
+      "id": 2229,
+      "categoryId": 204,
+      "dayNumber": 229,
+      "originalText": "",
+      "translatedText": "For unto us a child is born, unto us a son is given: and the government shall be upon his shoulder: and his name shall be called Wonderful, Counsellor, The mighty God, The everlasting Father, The Prince of Peace.",
+      "sourceReference": "Isaiah 9:6 (KJV)",
+      "tags": "hope,peace"
+    },
+    {
+      "id": 2230,
+      "categoryId": 201,
+      "dayNumber": 230,
+      "originalText": "",
+      "translatedText": "My flesh and my heart faileth: but God is the strength of my heart, and my portion for ever.",
+      "sourceReference": "Psalm 73:26 (KJV)",
+      "tags": "strength,heart"
+    },
+    {
+      "id": 2231,
+      "categoryId": 203,
+      "dayNumber": 231,
+      "originalText": "",
+      "translatedText": "And this is life eternal, that they might know thee the only true God, and Jesus Christ, whom thou hast sent.",
+      "sourceReference": "John 17:3 (KJV)",
+      "tags": "knowledge,life"
+    },
+    {
+      "id": 2232,
+      "categoryId": 204,
+      "dayNumber": 232,
+      "originalText": "",
+      "translatedText": "There hath no temptation taken you but such as is common to man: but God is faithful, who will not suffer you to be tempted above that ye are able; but will with the temptation also make a way to escape, that ye may be able to bear it.",
+      "sourceReference": "1 Corinthians 10:13 (KJV)",
+      "tags": "endurance,hope"
+    },
+    {
+      "id": 2233,
+      "categoryId": 201,
+      "dayNumber": 233,
+      "originalText": "",
+      "translatedText": "Lord, thou hast been our dwelling place in all generations. Before the mountains were brought forth, or ever thou hadst formed the earth and the world, even from everlasting to everlasting, thou art God.",
+      "sourceReference": "Psalm 90:1-2 (KJV)",
+      "tags": "home,eternity"
+    },
+    {
+      "id": 2234,
+      "categoryId": 202,
+      "dayNumber": 234,
+      "originalText": "",
+      "translatedText": "Hope deferred maketh the heart sick: but when the desire cometh, it is a tree of life.",
+      "sourceReference": "Proverbs 13:12 (KJV)",
+      "tags": "hope,patience"
+    },
+    {
+      "id": 2235,
+      "categoryId": 204,
+      "dayNumber": 235,
+      "originalText": "",
+      "translatedText": "And whatsoever ye do in word or deed, do all in the name of the Lord Jesus, giving thanks to God and the Father by him.",
+      "sourceReference": "Colossians 3:17 (KJV)",
+      "tags": "gratitude,work"
+    },
+    {
+      "id": 2236,
+      "categoryId": 203,
+      "dayNumber": 236,
+      "originalText": "",
+      "translatedText": "Let not your heart be troubled: ye believe in God, believe also in me.",
+      "sourceReference": "John 14:1 (KJV)",
+      "tags": "peace,trust"
+    },
+    {
+      "id": 2237,
+      "categoryId": 201,
+      "dayNumber": 237,
+      "originalText": "",
+      "translatedText": "O give thanks unto the LORD, for he is good: for his mercy endureth for ever.",
+      "sourceReference": "Psalm 107:1 (KJV)",
+      "tags": "gratitude,love"
+    },
+    {
+      "id": 2238,
+      "categoryId": 204,
+      "dayNumber": 238,
+      "originalText": "",
+      "translatedText": "Hear, O Israel: The LORD our God is one LORD: And thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might.",
+      "sourceReference": "Deuteronomy 6:4-5 (KJV)",
+      "tags": "love,devotion"
+    },
+    {
+      "id": 2239,
+      "categoryId": 201,
+      "dayNumber": 239,
+      "originalText": "",
+      "translatedText": "He shall not be afraid of evil tidings: his heart is fixed, trusting in the LORD.",
+      "sourceReference": "Psalm 112:7 (KJV)",
+      "tags": "courage,trust"
+    },
+    {
+      "id": 2240,
+      "categoryId": 204,
+      "dayNumber": 240,
+      "originalText": "",
+      "translatedText": "For the mountains shall depart, and the hills be removed; but my kindness shall not depart from thee, neither shall the covenant of my peace be removed, saith the LORD that hath mercy on thee.",
+      "sourceReference": "Isaiah 54:10 (KJV)",
+      "tags": "love,peace"
+    },
+    {
+      "id": 2241,
+      "categoryId": 202,
+      "dayNumber": 241,
+      "originalText": "",
+      "translatedText": "The way of a fool is right in his own eyes: but he that hearkeneth unto counsel is wise.",
+      "sourceReference": "Proverbs 12:15 (KJV)",
+      "tags": "listening,advice"
+    },
+    {
+      "id": 2242,
+      "categoryId": 203,
+      "dayNumber": 242,
+      "originalText": "",
+      "translatedText": "God is a Spirit: and they that worship him must worship him in spirit and in truth.",
+      "sourceReference": "John 4:24 (KJV)",
+      "tags": "worship,truth"
+    },
+    {
+      "id": 2243,
+      "categoryId": 204,
+      "dayNumber": 243,
+      "originalText": "",
+      "translatedText": "Being confident of this very thing, that he which hath begun a good work in you will perform it until the day of Jesus Christ:",
+      "sourceReference": "Philippians 1:6 (KJV)",
+      "tags": "hope,trust"
+    },
+    {
+      "id": 2244,
+      "categoryId": 201,
+      "dayNumber": 244,
+      "originalText": "",
+      "translatedText": "For with thee is the fountain of life: in thy light shall we see light.",
+      "sourceReference": "Psalm 36:9 (KJV)",
+      "tags": "life,light"
+    },
+    {
+      "id": 2245,
+      "categoryId": 204,
+      "dayNumber": 245,
+      "originalText": "",
+      "translatedText": "Remember ye not the former things, neither consider the things of old. Behold, I will do a new thing; now it shall spring forth; shall ye not know it? I will even make a way in the wilderness, and rivers in the desert.",
+      "sourceReference": "Isaiah 43:18-19 (KJV)",
+      "tags": "renewal,hope"
+    },
+    {
+      "id": 2246,
+      "categoryId": 201,
+      "dayNumber": 246,
+      "originalText": "",
+      "translatedText": "And call upon me in the day of trouble: I will deliver thee, and thou shalt glorify me.",
+      "sourceReference": "Psalm 50:15 (KJV)",
+      "tags": "prayer,help"
+    },
+    {
+      "id": 2247,
+      "categoryId": 202,
+      "dayNumber": 247,
+      "originalText": "",
+      "translatedText": "Let not mercy and truth forsake thee: bind them about thy neck; write them upon the table of thine heart: So shalt thou find favour and good understanding in the sight of God and man.",
+      "sourceReference": "Proverbs 3:3-4 (KJV)",
+      "tags": "kindness,truth"
+    },
+    {
+      "id": 2248,
+      "categoryId": 203,
+      "dayNumber": 248,
+      "originalText": "",
+      "translatedText": "But it shall not be so among you: but whosoever will be great among you, let him be your minister; And whosoever will be chief among you, let him be your servant: Even as the Son of man came not to be ministered unto, but to minister, and to give his life a ransom for many.",
+      "sourceReference": "Matthew 20:26-28 (KJV)",
+      "tags": "service,humility"
+    },
+    {
+      "id": 2249,
+      "categoryId": 204,
+      "dayNumber": 249,
+      "originalText": "",
+      "translatedText": "And unto man he said, Behold, the fear of the LORD, that is wisdom; and to depart from evil is understanding.",
+      "sourceReference": "Job 28:28 (KJV)",
+      "tags": "wisdom,reverence"
+    },
+    {
+      "id": 2250,
+      "categoryId": 201,
+      "dayNumber": 250,
+      "originalText": "",
+      "translatedText": "Thou crownest the year with thy goodness; and thy paths drop fatness.",
+      "sourceReference": "Psalm 65:11 (KJV)",
+      "tags": "abundance,gratitude"
+    },
+    {
+      "id": 2251,
+      "categoryId": 204,
+      "dayNumber": 251,
+      "originalText": "",
+      "translatedText": "With all lowliness and meekness, with longsuffering, forbearing one another in love; Endeavouring to keep the unity of the Spirit in the bond of peace.",
+      "sourceReference": "Ephesians 4:2-3 (KJV)",
+      "tags": "patience,peace"
+    },
+    {
+      "id": 2252,
+      "categoryId": 201,
+      "dayNumber": 252,
+      "originalText": "",
+      "translatedText": "And they that know thy name will put their trust in thee: for thou, LORD, hast not forsaken them that seek thee.",
+      "sourceReference": "Psalm 9:10 (KJV)",
+      "tags": "trust,name"
+    },
+    {
+      "id": 2253,
+      "categoryId": 202,
+      "dayNumber": 253,
+      "originalText": "",
+      "translatedText": "In the multitude of words there wanteth not sin: but he that refraineth his lips is wise.",
+      "sourceReference": "Proverbs 10:19 (KJV)",
+      "tags": "speech,restraint"
+    },
+    {
+      "id": 2254,
+      "categoryId": 204,
+      "dayNumber": 254,
+      "originalText": "",
+      "translatedText": "There is no fear in love; but perfect love casteth out fear: because fear hath torment. He that feareth is not made perfect in love.",
+      "sourceReference": "1 John 4:18 (KJV)",
+      "tags": "love,fear"
+    },
+    {
+      "id": 2255,
+      "categoryId": 203,
+      "dayNumber": 255,
+      "originalText": "",
+      "translatedText": "And he said unto them, Come ye yourselves apart into a desert place, and rest a while: for there were many coming and going, and they had no leisure so much as to eat.",
+      "sourceReference": "Mark 6:31 (KJV)",
+      "tags": "rest,renewal"
+    },
+    {
+      "id": 2256,
+      "categoryId": 204,
+      "dayNumber": 256,
+      "originalText": "",
+      "translatedText": "I have shewed you all things, how that so labouring ye ought to support the weak, and to remember the words of the Lord Jesus, how he said, It is more blessed to give than to receive.",
+      "sourceReference": "Acts 20:35 (KJV)",
+      "tags": "generosity,giving"
+    },
+    {
+      "id": 2257,
+      "categoryId": 201,
+      "dayNumber": 257,
+      "originalText": "",
+      "translatedText": "The LORD is my strength and my shield; my heart trusted in him, and I am helped: therefore my heart greatly rejoiceth; and with my song will I praise him.",
+      "sourceReference": "Psalm 28:7 (KJV)",
+      "tags": "strength,joy"
+    },
+    {
+      "id": 2258,
+      "categoryId": 204,
+      "dayNumber": 258,
+      "originalText": "",
+      "translatedText": "If it be possible, as much as lieth in you, live peaceably with all men.",
+      "sourceReference": "Romans 12:18 (KJV)",
+      "tags": "peace,kindness"
+    },
+    {
+      "id": 2259,
+      "categoryId": 202,
+      "dayNumber": 259,
+      "originalText": "",
+      "translatedText": "Go to the ant, thou sluggard; consider her ways, and be wise:",
+      "sourceReference": "Proverbs 6:6 (KJV)",
+      "tags": "work,diligence"
+    },
+    {
+      "id": 2260,
+      "categoryId": 201,
+      "dayNumber": 260,
+      "originalText": "",
+      "translatedText": "The LORD is gracious, and full of compassion; slow to anger, and of great mercy. The LORD is good to all: and his tender mercies are over all his works.",
+      "sourceReference": "Psalm 145:8-9 (KJV)",
+      "tags": "mercy,goodness"
+    },
+    {
+      "id": 2261,
+      "categoryId": 203,
+      "dayNumber": 261,
+      "originalText": "",
+      "translatedText": "In the beginning was the Word, and the Word was with God, and the Word was God. The same was in the beginning with God. All things were made by him; and without him was not any thing made that was made. In him was life; and the life was the light of men.",
+      "sourceReference": "John 1:1-4 (KJV)",
+      "tags": "word,light,life"
+    },
+    {
+      "id": 2262,
+      "categoryId": 204,
+      "dayNumber": 262,
+      "originalText": "",
+      "translatedText": "This book of the law shall not depart out of thy mouth; but thou shalt meditate therein day and night, that thou mayest observe to do according to all that is written therein: for then thou shalt make thy way prosperous, and then thou shalt have good success.",
+      "sourceReference": "Joshua 1:8 (KJV)",
+      "tags": "meditation,guidance"
+    },
+    {
+      "id": 2263,
+      "categoryId": 201,
+      "dayNumber": 263,
+      "originalText": "",
+      "translatedText": "Let every thing that hath breath praise the LORD. Praise ye the LORD.",
+      "sourceReference": "Psalm 150:6 (KJV)",
+      "tags": "praise,breath"
+    },
+    {
+      "id": 2264,
+      "categoryId": 204,
+      "dayNumber": 264,
+      "originalText": "",
+      "translatedText": "That Christ may dwell in your hearts by faith; that ye, being rooted and grounded in love, May be able to comprehend with all saints what is the breadth, and length, and depth, and height; And to know the love of Christ, which passeth knowledge, that ye might be filled with all the fulness of God.",
+      "sourceReference": "Ephesians 3:17-19 (KJV)",
+      "tags": "love,roots"
+    },
+    {
+      "id": 2265,
+      "categoryId": 203,
+      "dayNumber": 265,
+      "originalText": "",
+      "translatedText": "And he said unto them, Take heed, and beware of covetousness: for a man’s life consisteth not in the abundance of the things which he possesseth.",
+      "sourceReference": "Luke 12:15 (KJV)",
+      "tags": "priorities,contentment"
+    },
+    {
+      "id": 2266,
+      "categoryId": 202,
+      "dayNumber": 266,
+      "originalText": "",
+      "translatedText": "If thine enemy be hungry, give him bread to eat; and if he be thirsty, give him water to drink: For thou shalt heap coals of fire upon his head, and the LORD shall reward thee.",
+      "sourceReference": "Proverbs 25:21-22 (KJV)",
+      "tags": "kindness,enemies"
+    },
+    {
+      "id": 2267,
+      "categoryId": 201,
+      "dayNumber": 267,
+      "originalText": "",
+      "translatedText": "Some trust in chariots, and some in horses: but we will remember the name of the LORD our God.",
+      "sourceReference": "Psalm 20:7 (KJV)",
+      "tags": "trust"
+    },
+    {
+      "id": 2268,
+      "categoryId": 204,
+      "dayNumber": 268,
+      "originalText": "",
+      "translatedText": "Every man according as he purposeth in his heart, so let him give; not grudgingly, or of necessity: for God loveth a cheerful giver.",
+      "sourceReference": "2 Corinthians 9:7 (KJV)",
+      "tags": "generosity,joy"
+    },
+    {
+      "id": 2269,
+      "categoryId": 204,
+      "dayNumber": 269,
+      "originalText": "",
+      "translatedText": "For thus saith the Lord GOD, the Holy One of Israel; In returning and rest shall ye be saved; in quietness and in confidence shall be your strength: and ye would not.",
+      "sourceReference": "Isaiah 30:15 (KJV)",
+      "tags": "rest,quietness"
+    },
+    {
+      "id": 2270,
+      "categoryId": 201,
+      "dayNumber": 270,
+      "originalText": "",
+      "translatedText": "My heart is fixed, O God, my heart is fixed: I will sing and give praise.",
+      "sourceReference": "Psalm 57:7 (KJV)",
+      "tags": "steadfast,song"
+    },
+    {
+      "id": 2271,
+      "categoryId": 203,
+      "dayNumber": 271,
+      "originalText": "",
+      "translatedText": "Lay not up for yourselves treasures upon earth, where moth and rust doth corrupt, and where thieves break through and steal: But lay up for yourselves treasures in heaven, where neither moth nor rust doth corrupt, and where thieves do not break through nor steal: For where your treasure is, there will your heart be also.",
+      "sourceReference": "Matthew 6:19-21 (KJV)",
+      "tags": "priorities,heart"
+    },
+    {
+      "id": 2272,
+      "categoryId": 202,
+      "dayNumber": 272,
+      "originalText": "",
+      "translatedText": "By humility and the fear of the LORD are riches, and honour, and life.",
+      "sourceReference": "Proverbs 22:4 (KJV)",
+      "tags": "humility,reverence"
+    },
+    {
+      "id": 2273,
+      "categoryId": 204,
+      "dayNumber": 273,
+      "originalText": "",
+      "translatedText": "And we have known and believed the love that God hath to us. God is love; and he that dwelleth in love dwelleth in God, and God in him.",
+      "sourceReference": "1 John 4:16 (KJV)",
+      "tags": "love,presence"
+    },
+    {
+      "id": 2274,
+      "categoryId": 201,
+      "dayNumber": 274,
+      "originalText": "",
+      "translatedText": "I love the LORD, because he hath heard my voice and my supplications. Because he hath inclined his ear unto me, therefore will I call upon him as long as I live.",
+      "sourceReference": "Psalm 116:1-2 (KJV)",
+      "tags": "prayer,love"
+    },
+    {
+      "id": 2275,
+      "categoryId": 204,
+      "dayNumber": 275,
+      "originalText": "",
+      "translatedText": "Be not forgetful to entertain strangers: for thereby some have entertained angels unawares.",
+      "sourceReference": "Hebrews 13:2 (KJV)",
+      "tags": "kindness,welcome"
+    },
+    {
+      "id": 2276,
+      "categoryId": 201,
+      "dayNumber": 276,
+      "originalText": "",
+      "translatedText": "Wait on the LORD: be of good courage, and he shall strengthen thine heart: wait, I say, on the LORD.",
+      "sourceReference": "Psalm 27:14 (KJV)",
+      "tags": "patience,courage"
+    },
+    {
+      "id": 2277,
+      "categoryId": 203,
+      "dayNumber": 277,
+      "originalText": "",
+      "translatedText": "And Jesus said unto them, I am the bread of life: he that cometh to me shall never hunger; and he that believeth on me shall never thirst.",
+      "sourceReference": "John 6:35 (KJV)",
+      "tags": "nourishment,faith"
+    },
+    {
+      "id": 2278,
+      "categoryId": 204,
+      "dayNumber": 278,
+      "originalText": "",
+      "translatedText": "For which cause we faint not; but though our outward man perish, yet the inward man is renewed day by day. For our light affliction, which is but for a moment, worketh for us a far more exceeding and eternal weight of glory; While we look not at the things which are seen, but at the things which are not seen: for the things which are seen are temporal; but the things which are not seen are eternal.",
+      "sourceReference": "2 Corinthians 4:16-18 (KJV)",
+      "tags": "hope,renewal"
+    },
+    {
+      "id": 2279,
+      "categoryId": 202,
+      "dayNumber": 279,
+      "originalText": "",
+      "translatedText": "He that answereth a matter before he heareth it, it is folly and shame unto him.",
+      "sourceReference": "Proverbs 18:13 (KJV)",
+      "tags": "listening,patience"
+    },
+    {
+      "id": 2280,
+      "categoryId": 201,
+      "dayNumber": 280,
+      "originalText": "",
+      "translatedText": "One thing have I desired of the LORD, that will I seek after; that I may dwell in the house of the LORD all the days of my life, to behold the beauty of the LORD, and to enquire in his temple.",
+      "sourceReference": "Psalm 27:4 (KJV)",
+      "tags": "devotion,beauty"
+    },
+    {
+      "id": 2281,
+      "categoryId": 204,
+      "dayNumber": 281,
+      "originalText": "",
+      "translatedText": "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+      "sourceReference": "Jeremiah 29:11 (KJV)",
+      "tags": "hope,purpose"
+    },
+    {
+      "id": 2282,
+      "categoryId": 201,
+      "dayNumber": 282,
+      "originalText": "",
+      "translatedText": "Blessed be the Lord, who daily loadeth us with benefits, even the God of our salvation. Selah.",
+      "sourceReference": "Psalm 68:19 (KJV)",
+      "tags": "gratitude,burdens"
+    },
+    {
+      "id": 2283,
+      "categoryId": 204,
+      "dayNumber": 283,
+      "originalText": "",
+      "translatedText": "Be ye therefore followers of God, as dear children; And walk in love, as Christ also hath loved us, and hath given himself for us an offering and a sacrifice to God for a sweetsmelling savour.",
+      "sourceReference": "Ephesians 5:1-2 (KJV)",
+      "tags": "love,kindness"
+    },
+    {
+      "id": 2284,
+      "categoryId": 203,
+      "dayNumber": 284,
+      "originalText": "",
+      "translatedText": "Neither shall they say, Lo here! or, lo there! for, behold, the kingdom of God is within you.",
+      "sourceReference": "Luke 17:21 (KJV)",
+      "tags": "peace,presence"
+    },
+    {
+      "id": 2285,
+      "categoryId": 202,
+      "dayNumber": 285,
+      "originalText": "",
+      "translatedText": "He that keepeth his mouth keepeth his life: but he that openeth wide his lips shall have destruction.",
+      "sourceReference": "Proverbs 13:3 (KJV)",
+      "tags": "speech,restraint"
+    },
+    {
+      "id": 2286,
+      "categoryId": 204,
+      "dayNumber": 286,
+      "originalText": "",
+      "translatedText": "Behold, I stand at the door, and knock: if any man hear my voice, and open the door, I will come in to him, and will sup with him, and he with me.",
+      "sourceReference": "Revelation 3:20 (KJV)",
+      "tags": "welcome,presence"
+    },
+    {
+      "id": 2287,
+      "categoryId": 201,
+      "dayNumber": 287,
+      "originalText": "",
+      "translatedText": "The LORD will give strength unto his people; the LORD will bless his people with peace.",
+      "sourceReference": "Psalm 29:11 (KJV)",
+      "tags": "strength,peace"
+    },
+    {
+      "id": 2288,
+      "categoryId": 204,
+      "dayNumber": 288,
+      "originalText": "",
+      "translatedText": "For my thoughts are not your thoughts, neither are your ways my ways, saith the LORD. For as the heavens are higher than the earth, so are my ways higher than your ways, and my thoughts than your thoughts.",
+      "sourceReference": "Isaiah 55:8-9 (KJV)",
+      "tags": "humility,wisdom"
+    },
+    {
+      "id": 2289,
+      "categoryId": 203,
+      "dayNumber": 289,
+      "originalText": "",
+      "translatedText": "But as many as received him, to them gave he power to become the sons of God, even to them that believe on his name:",
+      "sourceReference": "John 1:12 (KJV)",
+      "tags": "belonging,faith"
+    },
+    {
+      "id": 2290,
+      "categoryId": 201,
+      "dayNumber": 290,
+      "originalText": "",
+      "translatedText": "It is a good thing to give thanks unto the LORD, and to sing praises unto thy name, O most High: To shew forth thy lovingkindness in the morning, and thy faithfulness every night,",
+      "sourceReference": "Psalm 92:1-2 (KJV)",
+      "tags": "gratitude,morning"
+    },
+    {
+      "id": 2291,
+      "categoryId": 202,
+      "dayNumber": 291,
+      "originalText": "",
+      "translatedText": "A fool uttereth all his mind: but a wise man keepeth it in till afterwards.",
+      "sourceReference": "Proverbs 29:11 (KJV)",
+      "tags": "self-control,anger"
+    },
+    {
+      "id": 2292,
+      "categoryId": 204,
+      "dayNumber": 292,
+      "originalText": "",
+      "translatedText": "For by grace are ye saved through faith; and that not of yourselves: it is the gift of God: Not of works, lest any man should boast.",
+      "sourceReference": "Ephesians 2:8-9 (KJV)",
+      "tags": "grace,gratitude"
+    },
+    {
+      "id": 2293,
+      "categoryId": 201,
+      "dayNumber": 293,
+      "originalText": "",
+      "translatedText": "He healeth the broken in heart, and bindeth up their wounds.",
+      "sourceReference": "Psalm 147:3 (KJV)",
+      "tags": "healing,comfort"
+    },
+    {
+      "id": 2294,
+      "categoryId": 204,
+      "dayNumber": 294,
+      "originalText": "",
+      "translatedText": "And thine ears shall hear a word behind thee, saying, This is the way, walk ye in it, when ye turn to the right hand, and when ye turn to the left.",
+      "sourceReference": "Isaiah 30:21 (KJV)",
+      "tags": "guidance"
+    },
+    {
+      "id": 2295,
+      "categoryId": 203,
+      "dayNumber": 295,
+      "originalText": "",
+      "translatedText": "Therefore all things whatsoever ye would that men should do to you, do ye even so to them: for this is the law and the prophets.",
+      "sourceReference": "Matthew 7:12 (KJV)",
+      "tags": "kindness,golden-rule"
+    },
+    {
+      "id": 2296,
+      "categoryId": 201,
+      "dayNumber": 296,
+      "originalText": "",
+      "translatedText": "O come, let us sing unto the LORD: let us make a joyful noise to the rock of our salvation. Let us come before his presence with thanksgiving, and make a joyful noise unto him with psalms.",
+      "sourceReference": "Psalm 95:1-2 (KJV)",
+      "tags": "joy,praise"
+    },
+    {
+      "id": 2297,
+      "categoryId": 204,
+      "dayNumber": 297,
+      "originalText": "",
+      "translatedText": "Let love be without dissimulation. Abhor that which is evil; cleave to that which is good. Be kindly affectioned one to another with brotherly love; in honour preferring one another;",
+      "sourceReference": "Romans 12:9-10 (KJV)",
+      "tags": "love,kindness"
+    },
+    {
+      "id": 2298,
+      "categoryId": 202,
+      "dayNumber": 298,
+      "originalText": "",
+      "translatedText": "He that is slow to anger is better than the mighty; and he that ruleth his spirit than he that taketh a city.",
+      "sourceReference": "Proverbs 16:32 (KJV)",
+      "tags": "patience,self-control"
+    },
+    {
+      "id": 2299,
+      "categoryId": 204,
+      "dayNumber": 299,
+      "originalText": "",
+      "translatedText": "Hast thou not known? hast thou not heard, that the everlasting God, the LORD, the Creator of the ends of the earth, fainteth not, neither is weary? there is no searching of his understanding. He giveth power to the faint; and to them that have no might he increaseth strength.",
+      "sourceReference": "Isaiah 40:28-29 (KJV)",
+      "tags": "strength,rest"
+    },
+    {
+      "id": 2300,
+      "categoryId": 201,
+      "dayNumber": 300,
+      "originalText": "",
+      "translatedText": "Our soul waiteth for the LORD: he is our help and our shield. For our heart shall rejoice in him, because we have trusted in his holy name. Let thy mercy, O LORD, be upon us, according as we hope in thee.",
+      "sourceReference": "Psalm 33:20-22 (KJV)",
+      "tags": "hope,trust"
+    },
+    {
+      "id": 2301,
+      "categoryId": 203,
+      "dayNumber": 301,
+      "originalText": "",
+      "translatedText": "But straightway Jesus spake unto them, saying, Be of good cheer; it is I; be not afraid.",
+      "sourceReference": "Matthew 14:27 (KJV)",
+      "tags": "courage,peace"
+    },
+    {
+      "id": 2302,
+      "categoryId": 204,
+      "dayNumber": 302,
+      "originalText": "",
+      "translatedText": "And above all things have fervent charity among yourselves: for charity shall cover the multitude of sins.",
+      "sourceReference": "1 Peter 4:8 (KJV)",
+      "tags": "love,forgiveness"
+    },
+    {
+      "id": 2303,
+      "categoryId": 201,
+      "dayNumber": 303,
+      "originalText": "",
+      "translatedText": "God be merciful unto us, and bless us; and cause his face to shine upon us; Selah. That thy way may be known upon earth, thy saving health among all nations.",
+      "sourceReference": "Psalm 67:1-2 (KJV)",
+      "tags": "blessing,grace"
+    },
+    {
+      "id": 2304,
+      "categoryId": 202,
+      "dayNumber": 304,
+      "originalText": "",
+      "translatedText": "Wisdom is the principal thing; therefore get wisdom: and with all thy getting get understanding.",
+      "sourceReference": "Proverbs 4:7 (KJV)",
+      "tags": "wisdom,understanding"
+    },
+    {
+      "id": 2305,
+      "categoryId": 204,
+      "dayNumber": 305,
+      "originalText": "",
+      "translatedText": "And let the peace of God rule in your hearts, to the which also ye are called in one body; and be ye thankful.",
+      "sourceReference": "Colossians 3:15 (KJV)",
+      "tags": "peace,gratitude"
+    },
+    {
+      "id": 2306,
+      "categoryId": 201,
+      "dayNumber": 306,
+      "originalText": "",
+      "translatedText": "Why art thou cast down, O my soul? and why art thou disquieted within me? hope thou in God: for I shall yet praise him, who is the health of my countenance, and my God.",
+      "sourceReference": "Psalm 42:11 (KJV)",
+      "tags": "hope,hope"
+    },
+    {
+      "id": 2307,
+      "categoryId": 203,
+      "dayNumber": 307,
+      "originalText": "",
+      "translatedText": "But I say unto you, Love your enemies, bless them that curse you, do good to them that hate you, and pray for them which despitefully use you, and persecute you; That ye may be the children of your Father which is in heaven: for he maketh his sun to rise on the evil and on the good, and sendeth rain on the just and on the unjust.",
+      "sourceReference": "Matthew 5:44-45 (KJV)",
+      "tags": "love,enemies"
+    },
+    {
+      "id": 2308,
+      "categoryId": 204,
+      "dayNumber": 308,
+      "originalText": "",
+      "translatedText": "Put on therefore, as the elect of God, holy and beloved, bowels of mercies, kindness, humbleness of mind, meekness, longsuffering; Forbearing one another, and forgiving one another, if any man have a quarrel against any: even as Christ forgave you, so also do ye. And above all these things put on charity, which is the bond of perfectness.",
+      "sourceReference": "Colossians 3:12-14 (KJV)",
+      "tags": "compassion,love,kindness"
+    },
+    {
+      "id": 2309,
+      "categoryId": 201,
+      "dayNumber": 309,
+      "originalText": "",
+      "translatedText": "Be of good courage, and he shall strengthen your heart, all ye that hope in the LORD.",
+      "sourceReference": "Psalm 31:24 (KJV)",
+      "tags": "courage,hope"
+    },
+    {
+      "id": 2310,
+      "categoryId": 202,
+      "dayNumber": 310,
+      "originalText": "",
+      "translatedText": "The merciful man doeth good to his own soul: but he that is cruel troubleth his own flesh.",
+      "sourceReference": "Proverbs 11:17 (KJV)",
+      "tags": "kindness"
+    },
+    {
+      "id": 2311,
+      "categoryId": 204,
+      "dayNumber": 311,
+      "originalText": "",
+      "translatedText": "Therefore, my beloved brethren, be ye stedfast, unmoveable, always abounding in the work of the Lord, forasmuch as ye know that your labour is not in vain in the Lord.",
+      "sourceReference": "1 Corinthians 15:58 (KJV)",
+      "tags": "steadfast,work"
+    },
+    {
+      "id": 2312,
+      "categoryId": 201,
+      "dayNumber": 312,
+      "originalText": "",
+      "translatedText": "Thy mercy, O LORD, is in the heavens; and thy faithfulness reacheth unto the clouds.",
+      "sourceReference": "Psalm 36:5 (KJV)",
+      "tags": "faithfulness,love"
+    },
+    {
+      "id": 2313,
+      "categoryId": 204,
+      "dayNumber": 313,
+      "originalText": "",
+      "translatedText": "Charity never faileth: but whether there be prophecies, they shall fail; whether there be tongues, they shall cease; whether there be knowledge, it shall vanish away.",
+      "sourceReference": "1 Corinthians 13:8 (KJV)",
+      "tags": "love,faithfulness"
+    },
+    {
+      "id": 2314,
+      "categoryId": 203,
+      "dayNumber": 314,
+      "originalText": "",
+      "translatedText": "And the King shall answer and say unto them, Verily I say unto you, Inasmuch as ye have done it unto one of the least of these my brethren, ye have done it unto me.",
+      "sourceReference": "Matthew 25:40 (KJV)",
+      "tags": "kindness,service"
+    },
+    {
+      "id": 2315,
+      "categoryId": 204,
+      "dayNumber": 315,
+      "originalText": "",
+      "translatedText": "To every thing there is a season, and a time to every purpose under the heaven: A time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted; A time to kill, and a time to heal; a time to break down, and a time to build up; A time to weep, and a time to laugh; a time to mourn, and a time to dance;",
+      "sourceReference": "Ecclesiastes 3:1-4 (KJV)",
+      "tags": "seasons,time"
+    },
+    {
+      "id": 2316,
+      "categoryId": 201,
+      "dayNumber": 316,
+      "originalText": "",
+      "translatedText": "Enter into his gates with thanksgiving, and into his courts with praise: be thankful unto him, and bless his name. For the LORD is good; his mercy is everlasting; and his truth endureth to all generations.",
+      "sourceReference": "Psalm 100:4-5 (KJV)",
+      "tags": "gratitude,goodness"
+    },
+    {
+      "id": 2317,
+      "categoryId": 202,
+      "dayNumber": 317,
+      "originalText": "",
+      "translatedText": "But the path of the just is as the shining light, that shineth more and more unto the perfect day.",
+      "sourceReference": "Proverbs 4:18 (KJV)",
+      "tags": "light,growth"
+    },
+    {
+      "id": 2318,
+      "categoryId": 204,
+      "dayNumber": 318,
+      "originalText": "",
+      "translatedText": "But godliness with contentment is great gain. For we brought nothing into this world, and it is certain we can carry nothing out. And having food and raiment let us be therewith content.",
+      "sourceReference": "1 Timothy 6:6-8 (KJV)",
+      "tags": "contentment"
+    },
+    {
+      "id": 2319,
+      "categoryId": 203,
+      "dayNumber": 319,
+      "originalText": "",
+      "translatedText": "And thou shalt love the Lord thy God with all thy heart, and with all thy soul, and with all thy mind, and with all thy strength: this is the first commandment. And the second is like, namely this, Thou shalt love thy neighbour as thyself. There is none other commandment greater than these.",
+      "sourceReference": "Mark 12:30-31 (KJV)",
+      "tags": "love,commandment"
+    },
+    {
+      "id": 2320,
+      "categoryId": 201,
+      "dayNumber": 320,
+      "originalText": "",
+      "translatedText": "Teach me thy way, O LORD; I will walk in thy truth: unite my heart to fear thy name.",
+      "sourceReference": "Psalm 86:11 (KJV)",
+      "tags": "teaching,heart"
+    },
+    {
+      "id": 2321,
+      "categoryId": 204,
+      "dayNumber": 321,
+      "originalText": "",
+      "translatedText": "Wherefore seeing we also are compassed about with so great a cloud of witnesses, let us lay aside every weight, and the sin which doth so easily beset us, and let us run with patience the race that is set before us, Looking unto Jesus the author and finisher of our faith; who for the joy that was set before him endured the cross, despising the shame, and is set down at the right hand of the throne of God.",
+      "sourceReference": "Hebrews 12:1-2 (KJV)",
+      "tags": "perseverance,faith"
+    },
+    {
+      "id": 2322,
+      "categoryId": 201,
+      "dayNumber": 322,
+      "originalText": "",
+      "translatedText": "In the day when I cried thou answeredst me, and strengthenedst me with strength in my soul.",
+      "sourceReference": "Psalm 138:3 (KJV)",
+      "tags": "prayer,strength"
+    },
+    {
+      "id": 2323,
+      "categoryId": 202,
+      "dayNumber": 323,
+      "originalText": "",
+      "translatedText": "A merry heart maketh a cheerful countenance: but by sorrow of the heart the spirit is broken.",
+      "sourceReference": "Proverbs 15:13 (KJV)",
+      "tags": "joy,heart"
+    },
+    {
+      "id": 2324,
+      "categoryId": 204,
+      "dayNumber": 324,
+      "originalText": "",
+      "translatedText": "Finally, brethren, whatsoever things are true, whatsoever things are honest, whatsoever things are just, whatsoever things are pure, whatsoever things are lovely, whatsoever things are of good report; if there be any virtue, and if there be any praise, think on these things.",
+      "sourceReference": "Philippians 4:8 (KJV)",
+      "tags": "thoughts,mind"
+    },
+    {
+      "id": 2325,
+      "categoryId": 203,
+      "dayNumber": 325,
+      "originalText": "",
+      "translatedText": "Blessed are they which do hunger and thirst after righteousness: for they shall be filled.",
+      "sourceReference": "Matthew 5:6 (KJV)",
+      "tags": "longing,justice"
+    },
+    {
+      "id": 2326,
+      "categoryId": 201,
+      "dayNumber": 326,
+      "originalText": "",
+      "translatedText": "I will praise thee; for I am fearfully and wonderfully made: marvellous are thy works; and that my soul knoweth right well.",
+      "sourceReference": "Psalm 139:14 (KJV)",
+      "tags": "wonder,gratitude"
+    },
+    {
+      "id": 2327,
+      "categoryId": 204,
+      "dayNumber": 327,
+      "originalText": "",
+      "translatedText": "And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away.",
+      "sourceReference": "Revelation 21:4 (KJV)",
+      "tags": "hope,comfort"
+    },
+    {
+      "id": 2328,
+      "categoryId": 202,
+      "dayNumber": 328,
+      "originalText": "",
+      "translatedText": "A word fitly spoken is like apples of gold in pictures of silver.",
+      "sourceReference": "Proverbs 25:11 (KJV)",
+      "tags": "speech,kindness"
+    },
+    {
+      "id": 2329,
+      "categoryId": 204,
+      "dayNumber": 329,
+      "originalText": "",
+      "translatedText": "And not only so, but we glory in tribulations also: knowing that tribulation worketh patience; And patience, experience; and experience, hope: And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the Holy Ghost which is given unto us.",
+      "sourceReference": "Romans 5:3-5 (KJV)",
+      "tags": "hope,patience"
+    },
+    {
+      "id": 2330,
+      "categoryId": 201,
+      "dayNumber": 330,
+      "originalText": "",
+      "translatedText": "The fear of the LORD is the beginning of wisdom: a good understanding have all they that do his commandments: his praise endureth for ever.",
+      "sourceReference": "Psalm 111:10 (KJV)",
+      "tags": "wisdom"
+    },
+    {
+      "id": 2331,
+      "categoryId": 203,
+      "dayNumber": 331,
+      "originalText": "",
+      "translatedText": "For where two or three are gathered together in my name, there am I in the midst of them.",
+      "sourceReference": "Matthew 18:20 (KJV)",
+      "tags": "community,presence"
+    },
+    {
+      "id": 2332,
+      "categoryId": 204,
+      "dayNumber": 332,
+      "originalText": "",
+      "translatedText": "Let your speech be alway with grace, seasoned with salt, that ye may know how ye ought to answer every man.",
+      "sourceReference": "Colossians 4:6 (KJV)",
+      "tags": "speech,kindness"
+    },
+    {
+      "id": 2333,
+      "categoryId": 201,
+      "dayNumber": 333,
+      "originalText": "",
+      "translatedText": "Search me, O God, and know my heart: try me, and know my thoughts: And see if there be any wicked way in me, and lead me in the way everlasting.",
+      "sourceReference": "Psalm 139:23-24 (KJV)",
+      "tags": "honesty,guidance"
+    },
+    {
+      "id": 2334,
+      "categoryId": 204,
+      "dayNumber": 334,
+      "originalText": "",
+      "translatedText": "For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.",
+      "sourceReference": "2 Timothy 1:7 (KJV)",
+      "tags": "courage,self-control"
+    },
+    {
+      "id": 2335,
+      "categoryId": 202,
+      "dayNumber": 335,
+      "originalText": "",
+      "translatedText": "When pride cometh, then cometh shame: but with the lowly is wisdom.",
+      "sourceReference": "Proverbs 11:2 (KJV)",
+      "tags": "humility"
+    },
+    {
+      "id": 2336,
+      "categoryId": 201,
+      "dayNumber": 336,
+      "originalText": "",
+      "translatedText": "Restore unto me the joy of thy salvation; and uphold me with thy free spirit.",
+      "sourceReference": "Psalm 51:12 (KJV)",
+      "tags": "joy,renewal"
+    },
+    {
+      "id": 2337,
+      "categoryId": 203,
+      "dayNumber": 337,
+      "originalText": "",
+      "translatedText": "Give, and it shall be given unto you; good measure, pressed down, and shaken together, and running over, shall men give into your bosom. For with the same measure that ye mete withal it shall be measured to you again.",
+      "sourceReference": "Luke 6:38 (KJV)",
+      "tags": "generosity"
+    },
+    {
+      "id": 2338,
+      "categoryId": 204,
+      "dayNumber": 338,
+      "originalText": "",
+      "translatedText": "Finally, my brethren, be strong in the Lord, and in the power of his might.",
+      "sourceReference": "Ephesians 6:10 (KJV)",
+      "tags": "strength"
+    },
+    {
+      "id": 2339,
+      "categoryId": 201,
+      "dayNumber": 339,
+      "originalText": "",
+      "translatedText": "I wait for the LORD, my soul doth wait, and in his word do I hope. My soul waiteth for the Lord more than they that watch for the morning: I say, more than they that watch for the morning.",
+      "sourceReference": "Psalm 130:5-6 (KJV)",
+      "tags": "patience,hope"
+    },
+    {
+      "id": 2340,
+      "categoryId": 204,
+      "dayNumber": 340,
+      "originalText": "",
+      "translatedText": "Wherefore comfort yourselves together, and edify one another, even as also ye do.",
+      "sourceReference": "1 Thessalonians 5:11 (KJV)",
+      "tags": "encouragement,community"
+    },
+    {
+      "id": 2341,
+      "categoryId": 202,
+      "dayNumber": 341,
+      "originalText": "",
+      "translatedText": "For the LORD giveth wisdom: out of his mouth cometh knowledge and understanding.",
+      "sourceReference": "Proverbs 2:6 (KJV)",
+      "tags": "wisdom,gift"
+    },
+    {
+      "id": 2342,
+      "categoryId": 201,
+      "dayNumber": 342,
+      "originalText": "",
+      "translatedText": "Behold, how good and how pleasant it is for brethren to dwell together in unity!",
+      "sourceReference": "Psalm 133:1 (KJV)",
+      "tags": "unity,kindness"
+    },
+    {
+      "id": 2343,
+      "categoryId": 204,
+      "dayNumber": 343,
+      "originalText": "",
+      "translatedText": "Then he answered and spake unto me, saying, This is the word of the LORD unto Zerubbabel, saying, Not by might, nor by power, but by my spirit, saith the LORD of hosts.",
+      "sourceReference": "Zechariah 4:6 (KJV)",
+      "tags": "strength,spirit"
+    },
+    {
+      "id": 2344,
+      "categoryId": 203,
+      "dayNumber": 344,
+      "originalText": "",
+      "translatedText": "If ye love me, keep my commandments.",
+      "sourceReference": "John 14:15 (KJV)",
+      "tags": "love,commandment"
+    },
+    {
+      "id": 2345,
+      "categoryId": 204,
+      "dayNumber": 345,
+      "originalText": "",
+      "translatedText": "And, behold, I am with thee, and will keep thee in all places whither thou goest, and will bring thee again into this land; for I will not leave thee, until I have done that which I have spoken to thee of.",
+      "sourceReference": "Genesis 28:15 (KJV)",
+      "tags": "presence,promise"
+    },
+    {
+      "id": 2346,
+      "categoryId": 201,
+      "dayNumber": 346,
+      "originalText": "",
+      "translatedText": "I will love thee, O LORD, my strength. The LORD is my rock, and my fortress, and my deliverer; my God, my strength, in whom I will trust; my buckler, and the horn of my salvation, and my high tower.",
+      "sourceReference": "Psalm 18:1-2 (KJV)",
+      "tags": "strength,refuge"
+    },
+    {
+      "id": 2347,
+      "categoryId": 202,
+      "dayNumber": 347,
+      "originalText": "",
+      "translatedText": "Strength and honour are her clothing; and she shall rejoice in time to come. She openeth her mouth with wisdom; and in her tongue is the law of kindness.",
+      "sourceReference": "Proverbs 31:25-26 (KJV)",
+      "tags": "strength,wisdom"
+    },
+    {
+      "id": 2348,
+      "categoryId": 204,
+      "dayNumber": 348,
+      "originalText": "",
+      "translatedText": "Blessed is the man that trusteth in the LORD, and whose hope the LORD is. For he shall be as a tree planted by the waters, and that spreadeth out her roots by the river, and shall not see when heat cometh, but her leaf shall be green; and shall not be careful in the year of drought, neither shall cease from yielding fruit.",
+      "sourceReference": "Jeremiah 17:7-8 (KJV)",
+      "tags": "trust,roots"
+    },
+    {
+      "id": 2349,
+      "categoryId": 203,
+      "dayNumber": 349,
+      "originalText": "",
+      "translatedText": "Blessed are the poor in spirit: for theirs is the kingdom of heaven. Blessed are they that mourn: for they shall be comforted. Blessed are the meek: for they shall inherit the earth.",
+      "sourceReference": "Matthew 5:3-5 (KJV)",
+      "tags": "humility,comfort,blessing"
+    },
+    {
+      "id": 2350,
+      "categoryId": 201,
+      "dayNumber": 350,
+      "originalText": "",
+      "translatedText": "The steps of a good man are ordered by the LORD: and he delighteth in his way. Though he fall, he shall not be utterly cast down: for the LORD upholdeth him with his hand.",
+      "sourceReference": "Psalm 37:23-24 (KJV)",
+      "tags": "guidance,steadiness"
+    },
+    {
+      "id": 2351,
+      "categoryId": 204,
+      "dayNumber": 351,
+      "originalText": "",
+      "translatedText": "Draw nigh to God, and he will draw nigh to you. Cleanse your hands, ye sinners; and purify your hearts, ye double minded.",
+      "sourceReference": "James 4:8 (KJV)",
+      "tags": "prayer,nearness"
+    },
+    {
+      "id": 2352,
+      "categoryId": 201,
+      "dayNumber": 352,
+      "originalText": "",
+      "translatedText": "The LORD shall preserve thee from all evil: he shall preserve thy soul. The LORD shall preserve thy going out and thy coming in from this time forth, and even for evermore.",
+      "sourceReference": "Psalm 121:7-8 (KJV)",
+      "tags": "protection,care"
+    },
+    {
+      "id": 2353,
+      "categoryId": 204,
+      "dayNumber": 353,
+      "originalText": "",
+      "translatedText": "For I reckon that the sufferings of this present time are not worthy to be compared with the glory which shall be revealed in us.",
+      "sourceReference": "Romans 8:18 (KJV)",
+      "tags": "hope,patience"
+    },
+    {
+      "id": 2354,
+      "categoryId": 202,
+      "dayNumber": 354,
+      "originalText": "",
+      "translatedText": "If thou faint in the day of adversity, thy strength is small.",
+      "sourceReference": "Proverbs 24:10 (KJV)",
+      "tags": "courage,adversity"
+    },
+    {
+      "id": 2355,
+      "categoryId": 203,
+      "dayNumber": 355,
+      "originalText": "",
+      "translatedText": "Be ye therefore merciful, as your Father also is merciful. Judge not, and ye shall not be judged: condemn not, and ye shall not be condemned: forgive, and ye shall be forgiven:",
+      "sourceReference": "Luke 6:36-37 (KJV)",
+      "tags": "mercy,forgiveness"
+    },
+    {
+      "id": 2356,
+      "categoryId": 201,
+      "dayNumber": 356,
+      "originalText": "",
+      "translatedText": "From the end of the earth will I cry unto thee, when my heart is overwhelmed: lead me to the rock that is higher than I.",
+      "sourceReference": "Psalm 61:2 (KJV)",
+      "tags": "refuge,prayer"
+    },
+    {
+      "id": 2357,
+      "categoryId": 204,
+      "dayNumber": 357,
+      "originalText": "",
+      "translatedText": "Let nothing be done through strife or vainglory; but in lowliness of mind let each esteem other better than themselves. Look not every man on his own things, but every man also on the things of others.",
+      "sourceReference": "Philippians 2:3-4 (KJV)",
+      "tags": "humility,kindness"
     }
   ]
 }

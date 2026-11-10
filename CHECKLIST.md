@@ -1190,6 +1190,23 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **Still open:** History list grouped by month (not built); parameterised strings; screenshot tests; Hilt-enabled layout tests; verse-sequence decision; Judaism/Sikhism/Spiritual content; more verses per tradition.
 
+### 2026-11-10 — Round Q (Christianity 79 -> 357 passages, redone after the sandbox wipe)
+
+**Why:** 79 passages repeat after about 11 weeks.
+
+| Piece | Detail |
+|---|---|
+| `tools/build_christianity_en.py` | old list kept as frozen `R_V1`; new `V2_TEXT` (278 references: Psalms 106 total, Proverbs 62, Gospels 61, Letters/Prophets/Law 128); v2 ordered by spreading each category evenly; JSON `version` 2; aborts on a missing chapter/verse, any duplicate or overlapping passage, unexpected ALL-CAPS words (only LORD, GOD, JEHOVAH allowed), double spaces, text over 450 chars, or if the first 79 verses differ from the shipped file |
+| source quirks | Psalm 92:1 and Proverbs 22:1 are printed in capitals by the dataset: exact asserted `CASE_FIXES` |
+| `christianity_en.json` | 357 passages, ids 2001-2357, dayNumbers 1..357, longest 409 chars; first 79 byte-identical to v1 |
+| `CategoryDao.insertAll` | `IGNORE` -> `REPLACE` (annotation only, no foreign keys, so test fakes unaffected) so `verseCount` refreshes on existing installs; `ContentMigrationManager` already inserts only missing verse ids and refreshes categories when the version rises |
+| `ContentIntegrityTest` (new) | all content files: unique ids, dayNumbers 1..N, no empty text/source, known categories, verseCount matches; SHA-256 freeze of the first 79 Christianity verses (`4ee2f245...eb95`, recomputed from the repo file) |
+| `licenses/CONTENT_SOURCES.md` | passage count, version, quirks, review note |
+
+**Side effect (known):** the daily verse is `day mod total`, so growing the file shifts the sequence once for users past their first cycle.
+
+**NOT verified:** none of this is a compile; CI has not run. Passage selection is editorial and needs review by someone from the tradition. Texts are pulled by reference from the dataset, not typed. Not checked on a device.
+
 ---
 
 ## What's Next (as of this session)
