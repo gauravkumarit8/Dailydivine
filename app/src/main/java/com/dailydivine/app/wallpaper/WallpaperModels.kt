@@ -40,6 +40,7 @@ fun describeLastCheck(
     val source = when (sourceName) {
         "ALARM" -> "background alarm"
         "WORK" -> "background job"
+        "MORNING_ALARM" -> "your morning alarm"
         "APP_OPEN" -> "you opened the app"
         "MANUAL" -> "Update now"
         else -> "unknown"

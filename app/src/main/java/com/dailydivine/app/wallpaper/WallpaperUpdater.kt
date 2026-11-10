@@ -37,7 +37,7 @@ class WallpaperUpdater @Inject constructor(
     enum class Result { APPLIED, UP_TO_DATE, DISABLED, NO_VERSE, FAILED }
 
     /** Who asked for this run; recorded so the Wallpaper screen can show whether the background job really fires. */
-    enum class Trigger { ALARM, WORK, APP_OPEN, MANUAL }
+    enum class Trigger { ALARM, WORK, APP_OPEN, MANUAL, MORNING_ALARM }
 
     private val renderer = WallpaperRenderer()
     private val mutex = Mutex()
@@ -65,7 +65,7 @@ class WallpaperUpdater @Inject constructor(
     /** Every background run is recorded (that is what the diagnostics are for); app-open checks
      *  that found nothing to do would only be noise. */
     private suspend fun record(trigger: Trigger, result: Result) {
-        val background = trigger == Trigger.ALARM || trigger == Trigger.WORK
+        val background = trigger == Trigger.ALARM || trigger == Trigger.WORK || trigger == Trigger.MORNING_ALARM
         if (background || result == Result.APPLIED || result == Result.FAILED || result == Result.NO_VERSE) {
             userPreferences.setWallpaperLastAttempt(System.currentTimeMillis(), trigger.name, result.name)
         }

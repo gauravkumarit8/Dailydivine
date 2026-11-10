@@ -1225,6 +1225,25 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run. Devanagari rendering and line wrapping on the Home card have not been seen; the Sanskrit and Hindi are an AI translation reviewed by one person, so a Sanskrit/Hindi scholar should check before release. The Sanskrit text itself is not proofread against a printed edition.
 
+### 2026-11-10 — Round S (daily wallpaper reliability, first step)
+
+**Decision:** the user chose to focus on making the daily wallpaper reliable before anything else, and to consider paid plans only after real users exist. Honest assessment given: the feature is not unique (other apps do it), it is the least reliable part of the app, and it was never confirmed on a device.
+
+**Code review findings (wallpaper path):** the wallpaper was applied only by (1) the daily `setAndAllowWhileIdle` alarm (inexact, can be delayed), (2) a WorkManager backup (also delayed by Doze) and (3) when the user opens the app. The user's own morning alarm (the one trigger Doze does not delay) never refreshed it.
+
+| Change | Detail |
+|---|---|
+| `AlarmService.refreshWallpaperForToday()` | when an alarm rings, call `WallpaperUpdater.updateIfNeeded(Trigger.MORNING_ALARM)`; a cheap no-op if already applied or the feature is off; errors are logged and never affect the alarm |
+| `WallpaperUpdater.Trigger.MORNING_ALARM` | new trigger, recorded like the other background triggers |
+| `describeLastCheck` | shows "your morning alarm" on the Wallpaper screen diagnostics |
+| test | `WallpaperLastCheckTest` covers the new label |
+
+**Deliberately NOT done:** switching the daily wallpaper job to exact alarms. The app declares USE_EXACT_ALARM for the alarm feature; using exact alarms for the wallpaper is not core alarm functionality and risks a Play policy problem.
+
+**Known remaining weak points (not fixed):** Xiaomi/HyperOS and other theme engines can override or block wallpaper changes and kill background work; no retry after a FAILED attempt; the app replaces the user's wallpaper and cannot restore the old one; the whole wallpaper path has never been confirmed on a device.
+
+**NOT verified:** none of this is a compile or a device run. Whether the alarm trigger actually updates the wallpaper on the Redmi is unknown.
+
 ---
 
 ## What's Next (as of this session)

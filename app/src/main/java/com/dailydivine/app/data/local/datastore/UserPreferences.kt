@@ -46,7 +46,7 @@ data class UserPrefsState(
     // Diagnostics: when/why the wallpaper job last ran, so "it only updates when I open the app"
     // can be answered from the app itself (Wallpaper screen > "Last check").
     val wallpaperLastAttemptMillis: Long = 0L,
-    val wallpaperLastAttemptSource: String = "",  // ALARM | WORK | APP_OPEN | MANUAL
+    val wallpaperLastAttemptSource: String = "",  // ALARM | WORK | APP_OPEN | MANUAL | MORNING_ALARM
     val wallpaperLastAttemptResult: String = "",  // APPLIED | UP_TO_DATE | DISABLED | NO_VERSE | FAILED
     // Idempotence: the alarm and the WorkManager backup can both fire; post each notification once a day.
     val lastVerseNotifEpochDay: Long = -1L,

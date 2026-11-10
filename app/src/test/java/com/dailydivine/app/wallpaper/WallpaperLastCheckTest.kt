@@ -20,6 +20,12 @@ class WallpaperLastCheckTest {
             describeLastCheck(ms(13, 5, 2), "ALARM", "APPLIED", now, ZoneOffset.UTC)
         )
 
+    @Test fun `a run started by the morning alarm is described plainly`() =
+        assertEquals(
+            "today 6:30 AM, your morning alarm: wallpaper updated",
+            describeLastCheck(ms(13, 6, 30), "MORNING_ALARM", "APPLIED", now, ZoneOffset.UTC)
+        )
+
     @Test fun `an older run shows its date`() =
         assertEquals(
             "12 Oct 8:15 PM, you opened the app: wallpaper updated",

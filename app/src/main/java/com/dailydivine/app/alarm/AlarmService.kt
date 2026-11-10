@@ -11,7 +11,10 @@ import android.media.RingtoneManager
 import android.util.Log
 import android.os.*
 import androidx.core.app.NotificationCompat
+import com.dailydivine.app.notifications.NotificationEntryPoint
 import com.dailydivine.app.ui.alarm.AlarmRingActivity
+import com.dailydivine.app.wallpaper.WallpaperUpdater
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.*
 
 /**
@@ -108,8 +111,25 @@ class AlarmService : Service() {
         // Each (re-)fire is a fresh ring cycle for escalation timing.
         ringStartElapsedMs = SystemClock.elapsedRealtime()
         startEscalationTicker()
+        refreshWallpaperForToday()
 
         return START_NOT_STICKY
+    }
+
+    /**
+     * The alarm clock is the one trigger Doze never delays, so a ringing alarm also applies today's
+     * wallpaper (a cheap no-op if it is already applied or the feature is off). The user then wakes
+     * up to the new verse even when the phone's own background-job delivery was late.
+     */
+    private fun refreshWallpaperForToday() {
+        serviceScope.launch {
+            try {
+                EntryPointAccessors.fromApplication(applicationContext, NotificationEntryPoint::class.java)
+                    .wallpaperUpdater().updateIfNeeded(WallpaperUpdater.Trigger.MORNING_ALARM)
+            } catch (e: Exception) {
+                Log.e("AlarmService", "Wallpaper refresh on alarm failed", e)
+            }
+        }
     }
 
     private fun startEscalationTicker() {
