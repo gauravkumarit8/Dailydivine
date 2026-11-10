@@ -143,6 +143,7 @@ fun HomeScreen(
             state.dailyVerse?.let { daily ->
                 DailyVerseCard(
                     verseText = daily.verse.translatedText,
+                    originalText = daily.verse.originalText,
                     source = daily.verse.sourceReference,
                     isBookmarked = daily.isBookmarked,
                     isSpeaking = state.isSpeaking,
@@ -255,6 +256,7 @@ private fun ReflectionCard(
 @Composable
 private fun DailyVerseCard(
     verseText: String,
+    originalText: String,
     source: String,
     isBookmarked: Boolean,
     isSpeaking: Boolean,
@@ -277,6 +279,16 @@ private fun DailyVerseCard(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(Modifier.height(16.dp))
+            // The original-language text (Sanskrit for the Gita verses) is shown above the English
+            // when a verse has it; most verses have none.
+            if (originalText.isNotBlank()) {
+                Text(
+                    originalText,
+                    style = MaterialTheme.typography.titleMedium.copy(lineHeight = 30.sp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(14.dp))
+            }
             val verseSize = VerseDisplayRules.fontSizeSp(verseText.length)
             Text(
                 "\u201C${VerseDisplayRules.normalize(verseText)}\u201D",

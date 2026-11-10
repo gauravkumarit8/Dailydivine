@@ -1207,6 +1207,24 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile; CI has not run. Passage selection is editorial and needs review by someone from the tradition. Texts are pulled by reference from the dataset, not typed. Not checked on a device.
 
+### 2026-11-10 — Round R (Bhagavad Gita verses in Sanskrit with English; Hindi reviewed)
+
+**Why:** Hinduism had 46 passages; the user asked for Gita verses in sequence from free sources, with no server, and agreed to review Hindi translations written by me.
+
+| Piece | Detail |
+|---|---|
+| Sources | Sanskrit text only from github.com/gita/gita `data/verse.json` (Unlicense). The other Gita datasets found (e.g. vedicscriptures, GPL-3.0) bundle modern translators (Ramsukhdas, Sivananda, Tejomayananda...), so none of their translations were used |
+| `tools/gita/gita_pilot.json` | 50 verses: cleaned Sanskrit, Hindi and English meanings written from the Sanskrit; the user reviewed the Markdown review file and replied that it is correct |
+| `tools/build_hinduism_gita.py` | rebuilds `hinduism_en.json` from the 46 Arnold passages plus 49 verses (3.35 excluded: "dharma" = own duty, misreadable as "stay in your own religion"), version 3, ids 1147-1195, dayNumbers 47-95, spread across the four existing categories; idempotent |
+| `HomeScreen` | `DailyVerseCard` shows `originalText` (Sanskrit) above the English when a verse has one |
+| Not shown yet | Hindi (needs a Hindi UI / localisation), Sanskrit in Library, share image, wallpaper and notification (English only there) |
+
+**Content notes:** flagged verses 5.18 (names a caste group), 18.66 and 4.18 (contested wording), 2.38 and 8.7 (war context) were kept as reviewed; revisit if a reviewer objects. 12.13 and 12.18 end with "..." because the sentence continues.
+
+**Known side effect:** daily verse is `day mod total`, so the Hinduism sequence shifts once for users past their first cycle.
+
+**NOT verified:** none of this is a compile or a device run. Devanagari rendering and line wrapping on the Home card have not been seen; the Sanskrit and Hindi are an AI translation reviewed by one person, so a Sanskrit/Hindi scholar should check before release. The Sanskrit text itself is not proofread against a printed edition.
+
 ---
 
 ## What's Next (as of this session)

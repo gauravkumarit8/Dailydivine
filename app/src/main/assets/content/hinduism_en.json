@@ -1,32 +1,32 @@
 {
   "religion": "Hinduism",
   "language": "en",
-  "version": 2,
-  "source": "The Song Celestial (Bhagavad-Gita), tr. Sir Edwin Arnold, 1885. Public domain; Project Gutenberg #2388.",
+  "version": 3,
+  "source": "The Song Celestial (Bhagavad-Gita), tr. Sir Edwin Arnold, 1885 (public domain; Project Gutenberg #2388), plus Bhagavad Gita verses: Sanskrit text (public domain) with English meanings written for DailyDivine.",
   "categories": [
     {
       "id": 111,
       "name": "Wisdom of the Soul",
       "icon": "book_gita",
-      "verseCount": 11
+      "verseCount": 20
     },
     {
       "id": 112,
       "name": "Duty & Action",
       "icon": "book_gita",
-      "verseCount": 10
+      "verseCount": 22
     },
     {
       "id": 113,
       "name": "Peace & Self-Mastery",
       "icon": "book_gita",
-      "verseCount": 12
+      "verseCount": 26
     },
     {
       "id": 114,
       "name": "Devotion & Virtue",
       "icon": "book_gita",
-      "verseCount": 13
+      "verseCount": 27
     }
   ],
   "verses": [
@@ -443,6 +443,447 @@
       "translatedText": "Serenity of soul, benignity,\nSway of the silent Spirit, constant stress\nTo sanctify the Nature,--these things make\nGood rite, and true religiousness of Mind.",
       "sourceReference": "The Song Celestial, Ch. XVII (Arnold, 1885)",
       "tags": "mind,serenity"
+    },
+    {
+      "id": 1147,
+      "categoryId": 113,
+      "dayNumber": 47,
+      "originalText": "नास्ति बुद्धिरयुक्तस्य न चायुक्तस्य भावना ।\nन चाभावयतः शान्तिरशान्तस्य कुतः सुखम् ॥",
+      "translatedText": "One who is not self-controlled has no steady wisdom and no meditation; without meditation there is no peace; and without peace, how can there be happiness?",
+      "sourceReference": "Bhagavad Gita 2.66",
+      "tags": "gita"
+    },
+    {
+      "id": 1148,
+      "categoryId": 114,
+      "dayNumber": 48,
+      "originalText": "समोऽहं सर्वभूतेषु न मे द्वेष्योऽस्ति न प्रियः ।\nये भजन्ति तु मां भक्त्या मयि ते तेषु चाप्यहम् ॥",
+      "translatedText": "I am the same to all beings; none is hateful to me, none is dear. But those who worship me with devotion are in me, and I am in them.",
+      "sourceReference": "Bhagavad Gita 9.29",
+      "tags": "gita"
+    },
+    {
+      "id": 1149,
+      "categoryId": 112,
+      "dayNumber": 49,
+      "originalText": "कर्मण्यकर्म यः पश्येदकर्मणि च कर्म यः ।\nस बुद्धिमान् मनुष्येषु स युक्तः कृत्स्नकर्मकृत् ॥",
+      "translatedText": "One who sees inaction in action and action in inaction is wise among people, is a yogi, and has accomplished all that is to be done.",
+      "sourceReference": "Bhagavad Gita 4.18",
+      "tags": "gita"
+    },
+    {
+      "id": 1150,
+      "categoryId": 111,
+      "dayNumber": 50,
+      "originalText": "यो मां पश्यति सर्वत्र सर्वं च मयि पश्यति ।\nतस्याहं न प्रणश्यामि स च मे न प्रणश्यति ॥",
+      "translatedText": "One who sees me everywhere and sees everything in me: I am never lost to that person, nor are they lost to me.",
+      "sourceReference": "Bhagavad Gita 6.30",
+      "tags": "gita"
+    },
+    {
+      "id": 1151,
+      "categoryId": 113,
+      "dayNumber": 51,
+      "originalText": "ध्यायतो विषयान्पुंसः सङ्गस्तेषूपजायते ।\nसङ्गात् संजायते कामः कामात्क्रोधोऽभिजायते ॥",
+      "translatedText": "Dwelling on the objects of the senses, a person grows attached to them; from attachment springs desire, and from desire anger arises.",
+      "sourceReference": "Bhagavad Gita 2.62",
+      "tags": "gita"
+    },
+    {
+      "id": 1152,
+      "categoryId": 114,
+      "dayNumber": 52,
+      "originalText": "मन्मना भव मद्भक्तो मद्याजी मां नमस्कुरु ।\nमामेवैष्यसि युक्त्वैवमात्मानं मत्परायणः ॥",
+      "translatedText": "Fix your mind on me, be devoted to me, worship me, bow to me; thus united with me and intent on me, you will come to me.",
+      "sourceReference": "Bhagavad Gita 9.34",
+      "tags": "gita"
+    },
+    {
+      "id": 1153,
+      "categoryId": 112,
+      "dayNumber": 53,
+      "originalText": "यद्यदाचरति श्रेष्ठस्तत्तदेवेतरो जनः ।\nस यत्प्रमाणं कुरुते लोकस्तदनुवर्तते ॥",
+      "translatedText": "Whatever a great person does, others follow; whatever standard they set, the world goes by.",
+      "sourceReference": "Bhagavad Gita 3.21",
+      "tags": "gita"
+    },
+    {
+      "id": 1154,
+      "categoryId": 111,
+      "dayNumber": 54,
+      "originalText": "मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः ।\nआगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत ॥",
+      "translatedText": "O son of Kunti, the contact of the senses with their objects brings cold and heat, pleasure and pain. They come and go and do not last: bear them patiently, O Bharata.",
+      "sourceReference": "Bhagavad Gita 2.14",
+      "tags": "gita"
+    },
+    {
+      "id": 1155,
+      "categoryId": 113,
+      "dayNumber": 55,
+      "originalText": "उद्धरेदात्मनाऽऽत्मानं नात्मानमवसादयेत् ।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः ॥",
+      "translatedText": "Let a person lift themselves by their own self and not degrade themselves; for the self alone is one's friend, and the self alone is one's enemy.",
+      "sourceReference": "Bhagavad Gita 6.5",
+      "tags": "self,effort"
+    },
+    {
+      "id": 1156,
+      "categoryId": 114,
+      "dayNumber": 56,
+      "originalText": "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज ।\nअहं त्वा सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥",
+      "translatedText": "Abandoning all duties, come to me alone for refuge. I will free you from all sins; do not grieve.",
+      "sourceReference": "Bhagavad Gita 18.66",
+      "tags": "refuge,trust"
+    },
+    {
+      "id": 1157,
+      "categoryId": 112,
+      "dayNumber": 57,
+      "originalText": "युक्ताहारविहारस्य युक्तचेष्टस्य कर्मसु ।\nयुक्तस्वप्नावबोधस्य योगो भवति दुःखहा ॥",
+      "translatedText": "For one who is moderate in food and recreation, moderate in effort at work, and moderate in sleep and waking, yoga becomes the destroyer of sorrow.",
+      "sourceReference": "Bhagavad Gita 6.17",
+      "tags": "gita"
+    },
+    {
+      "id": 1158,
+      "categoryId": 113,
+      "dayNumber": 58,
+      "originalText": "विहाय कामान्यः सर्वान्पुमांश्चरति निःस्पृहः ।\nनिर्ममो निरहंकारः स शांतिमधिगच्छति ॥",
+      "translatedText": "One who gives up all desires and moves through life free from longing, possessiveness and ego attains peace.",
+      "sourceReference": "Bhagavad Gita 2.71",
+      "tags": "gita"
+    },
+    {
+      "id": 1159,
+      "categoryId": 114,
+      "dayNumber": 59,
+      "originalText": "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत ।\nअभ्युत्थानमधर्मस्य तदाऽऽत्मानं सृजाम्यहम् ॥",
+      "translatedText": "Whenever righteousness declines and unrighteousness rises, O Bharata, I bring myself forth.",
+      "sourceReference": "Bhagavad Gita 4.7",
+      "tags": "dharma,hope"
+    },
+    {
+      "id": 1160,
+      "categoryId": 111,
+      "dayNumber": 60,
+      "originalText": "सर्वस्य चाहं हृदि सन्निविष्टो मत्तः स्मृतिर्ज्ञानमपोहनं च ।\nवेदैश्च सर्वैरहमेव वेद्यो वेदान्तकृद्वेदविदेव चाहम् ॥",
+      "translatedText": "I dwell in the heart of all; from me come memory, knowledge and their loss. I alone am to be known through all the Vedas; I am the author of Vedanta and the knower of the Vedas.",
+      "sourceReference": "Bhagavad Gita 15.15",
+      "tags": "gita"
+    },
+    {
+      "id": 1161,
+      "categoryId": 112,
+      "dayNumber": 61,
+      "originalText": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥",
+      "translatedText": "You have a right to your actions, but never to their fruits. Do not let the fruit of action be your motive, and do not cling to inaction.",
+      "sourceReference": "Bhagavad Gita 2.47",
+      "tags": "action,detachment"
+    },
+    {
+      "id": 1162,
+      "categoryId": 113,
+      "dayNumber": 62,
+      "originalText": "असंशयं महाबाहो मनो दुर्निग्रहं चलं ।\nअभ्यासेन तु कौन्तेय वैराग्येण च गृह्यते ॥",
+      "translatedText": "The Lord said: Without doubt, O mighty-armed, the mind is restless and hard to restrain; but by practice and detachment, O son of Kunti, it can be held.",
+      "sourceReference": "Bhagavad Gita 6.35",
+      "tags": "gita"
+    },
+    {
+      "id": 1163,
+      "categoryId": 114,
+      "dayNumber": 63,
+      "originalText": "तेषां सततयुक्तानां भजतां प्रीतिपूर्वकम् ।\nददामि बुद्धियोगं तं येन मामुपयान्ति ते ॥",
+      "translatedText": "To those who are constantly devoted and worship me with love, I give the yoga of understanding by which they come to me.",
+      "sourceReference": "Bhagavad Gita 10.10",
+      "tags": "gita"
+    },
+    {
+      "id": 1164,
+      "categoryId": 112,
+      "dayNumber": 64,
+      "originalText": "योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय ।\nसिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते ॥",
+      "translatedText": "Established in yoga, do your work, O Dhananjaya, letting go of attachment and staying the same in success and failure. This evenness of mind is called yoga.",
+      "sourceReference": "Bhagavad Gita 2.48",
+      "tags": "balance,action"
+    },
+    {
+      "id": 1165,
+      "categoryId": 111,
+      "dayNumber": 65,
+      "originalText": "समं सर्वेषु भूतेषु तिष्ठन्तं परमेश्वरम् ।\nविनश्यत्स्वविनश्यन्तं यः पश्यति स पश्यति ॥",
+      "translatedText": "One who sees the Supreme Lord dwelling equally in all beings, imperishable amid the perishing, truly sees.",
+      "sourceReference": "Bhagavad Gita 13.28",
+      "tags": "gita"
+    },
+    {
+      "id": 1166,
+      "categoryId": 113,
+      "dayNumber": 66,
+      "originalText": "यस्मान्नोद्विजते लोको लोकान्नोद्विजते च यः ।\nहर्षामर्षभयोद्वेगैर्मुक्तो यः स च मे प्रियः ॥",
+      "translatedText": "One who does not disturb the world, and is not disturbed by the world, who is free from elation, impatience, fear and agitation, is dear to me.",
+      "sourceReference": "Bhagavad Gita 12.15",
+      "tags": "gita"
+    },
+    {
+      "id": 1167,
+      "categoryId": 114,
+      "dayNumber": 67,
+      "originalText": "सन्तुष्टः सततं योगी यतात्मा दृढनिश्चयः ।\nमय्यर्पितमनोबुद्धिर्यो मद्भक्तः स मे प्रियः ॥",
+      "translatedText": "The yogi who is always content, self-controlled, firm in resolve, with mind and intellect offered to me: such a devotee of mine is dear to me.",
+      "sourceReference": "Bhagavad Gita 12.14",
+      "tags": "gita"
+    },
+    {
+      "id": 1168,
+      "categoryId": 112,
+      "dayNumber": 68,
+      "originalText": "नात्यश्नतस्तु योगोऽस्ति न चैकान्तमनश्नतः ।\nन चातिस्वप्नशीलस्य जाग्रतो नैव चार्जुन ॥",
+      "translatedText": "Yoga is not for one who eats too much or fasts completely, nor for one who sleeps too much or stays awake too much, O Arjuna.",
+      "sourceReference": "Bhagavad Gita 6.16",
+      "tags": "gita"
+    },
+    {
+      "id": 1169,
+      "categoryId": 113,
+      "dayNumber": 69,
+      "originalText": "त्रिविधं नरकस्येदं द्वारं नाशनमात्मनः ।\nकामः क्रोधस्तथा लोभस्तस्मादेतत्त्रयं त्यजेत् ॥",
+      "translatedText": "Desire, anger and greed: these three are the gates of hell, destroying the self; therefore one should give up all three.",
+      "sourceReference": "Bhagavad Gita 16.21",
+      "tags": "gita"
+    },
+    {
+      "id": 1170,
+      "categoryId": 114,
+      "dayNumber": 70,
+      "originalText": "परित्राणाय साधूनां विनाशाय च दुष्कृताम् ।\nधर्मसंस्थापनार्थाय संभवामि युगे युगे ॥",
+      "translatedText": "To protect the good, to destroy evildoers and to establish dharma, I come into being age after age.",
+      "sourceReference": "Bhagavad Gita 4.8",
+      "tags": "gita"
+    },
+    {
+      "id": 1171,
+      "categoryId": 111,
+      "dayNumber": 71,
+      "originalText": "देहिनोऽस्मिन्यथा देहे कौमारं यौवनं जरा ।\nतथा देहान्तरप्राप्तिर्धीरस्तत्र न मुह्यति ॥",
+      "translatedText": "Just as the embodied self passes through childhood, youth and old age in this body, so it passes into another body. The steady-minded are not troubled by this.",
+      "sourceReference": "Bhagavad Gita 2.13",
+      "tags": "gita"
+    },
+    {
+      "id": 1172,
+      "categoryId": 113,
+      "dayNumber": 72,
+      "originalText": "इति ते ज्ञानमाख्यातं गुह्याद्गुह्यतरं मया ।\nविमृश्यैतदशेषेण यथेच्छसि तथा कुरु ॥",
+      "translatedText": "Thus I have told you knowledge more secret than any secret; reflect on it fully, then do as you wish.",
+      "sourceReference": "Bhagavad Gita 18.63",
+      "tags": "gita"
+    },
+    {
+      "id": 1173,
+      "categoryId": 114,
+      "dayNumber": 73,
+      "originalText": "पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति ।\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ॥",
+      "translatedText": "Whoever offers me with devotion a leaf, a flower, a fruit or water, that loving offering of a pure-hearted person I accept.",
+      "sourceReference": "Bhagavad Gita 9.26",
+      "tags": "gita"
+    },
+    {
+      "id": 1174,
+      "categoryId": 112,
+      "dayNumber": 74,
+      "originalText": "यतः प्रवृत्तिर्भूतानां येन सर्वमिदं ततम् ।\nस्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानवः ॥",
+      "translatedText": "By worshipping, through one's own work, that from which all beings arise and by which all this is pervaded, a person attains perfection.",
+      "sourceReference": "Bhagavad Gita 18.46",
+      "tags": "gita"
+    },
+    {
+      "id": 1175,
+      "categoryId": 113,
+      "dayNumber": 75,
+      "originalText": "विद्याविनयसंपन्ने ब्राह्मणे गवि हस्तिनि ।\nशुनि चैव श्वपाके च पण्डिताः समदर्शिनः ॥",
+      "translatedText": "The wise see with an equal eye a learned and humble brahmin, a cow, an elephant, a dog, and an outcaste (shvapaka).",
+      "sourceReference": "Bhagavad Gita 5.18",
+      "tags": "gita"
+    },
+    {
+      "id": 1176,
+      "categoryId": 114,
+      "dayNumber": 76,
+      "originalText": "ये यथा मां प्रपद्यन्ते तांस्तथैव भजाम्यहम् ।\nमम वर्त्मानुवर्तन्ते मनुष्याः पार्थ सर्वशः ॥",
+      "translatedText": "In whatever way people approach me, in that same way I receive them; people follow my path in every way, O Partha.",
+      "sourceReference": "Bhagavad Gita 4.11",
+      "tags": "gita"
+    },
+    {
+      "id": 1177,
+      "categoryId": 111,
+      "dayNumber": 77,
+      "originalText": "न जायते म्रियते वा कदाचिन्नायं भूत्वा भविता वा न भूयः ।\nअजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे ॥",
+      "translatedText": "The self is never born and never dies, nor, having come to be, will it cease to be. Unborn, eternal, everlasting and ancient, it is not killed when the body is killed.",
+      "sourceReference": "Bhagavad Gita 2.20",
+      "tags": "gita"
+    },
+    {
+      "id": 1178,
+      "categoryId": 112,
+      "dayNumber": 78,
+      "originalText": "अनुद्वेगकरं वाक्यं सत्यं प्रियहितं च यत् ।\nस्वाध्यायाभ्यसनं चैव वाङ्मयं तप उच्यते ॥",
+      "translatedText": "Speech that causes no distress, that is truthful, pleasing and beneficial, together with the regular study of scripture: this is called the discipline of speech.",
+      "sourceReference": "Bhagavad Gita 17.15",
+      "tags": "gita"
+    },
+    {
+      "id": 1179,
+      "categoryId": 113,
+      "dayNumber": 79,
+      "originalText": "समः शत्रौ च मित्रे च तथा मानापमानयोः ।\nशीतोष्णसुखदुःखेषु समः सङ्गविवर्जितः ॥",
+      "translatedText": "The one who is the same toward foe and friend, in honour and dishonour, in cold and heat, in pleasure and pain, and free from attachment...",
+      "sourceReference": "Bhagavad Gita 12.18",
+      "tags": "gita"
+    },
+    {
+      "id": 1180,
+      "categoryId": 114,
+      "dayNumber": 80,
+      "originalText": "मच्चित्तः सर्वदुर्गाणि मत्प्रसादात्तरिष्यसि ।\nअथ चेत्त्वमहङ्कारान्न श्रोष्यसि विनङ्क्ष्यसि ॥",
+      "translatedText": "With your mind on me, by my grace you will cross all obstacles; but if from ego you will not listen, you will be lost.",
+      "sourceReference": "Bhagavad Gita 18.58",
+      "tags": "gita"
+    },
+    {
+      "id": 1181,
+      "categoryId": 112,
+      "dayNumber": 81,
+      "originalText": "प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः ।\nअहङ्कारविमूढात्मा कर्ताऽहमिति मन्यते ॥",
+      "translatedText": "All actions are carried out by the qualities of nature; but one deluded by ego thinks, 'I am the doer.'",
+      "sourceReference": "Bhagavad Gita 3.27",
+      "tags": "gita"
+    },
+    {
+      "id": 1182,
+      "categoryId": 111,
+      "dayNumber": 82,
+      "originalText": "न हि ज्ञानेन सदृशं पवित्रमिह विद्यते ।\nतत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति ॥",
+      "translatedText": "Truly, nothing in this world purifies like knowledge. One perfected in yoga finds it within the self in due time.",
+      "sourceReference": "Bhagavad Gita 4.38",
+      "tags": "gita"
+    },
+    {
+      "id": 1183,
+      "categoryId": 113,
+      "dayNumber": 83,
+      "originalText": "क्रोधाद्भवति संमोहः संमोहात्स्मृतिविभ्रमः ।\nस्मृतिभ्रंशाद् बुद्धिनाशो बुद्धिनाशात्प्रणश्यति ॥",
+      "translatedText": "From anger comes delusion; from delusion, confusion of memory; from confusion of memory, the loss of discernment; and from the loss of discernment, a person is ruined.",
+      "sourceReference": "Bhagavad Gita 2.63",
+      "tags": "gita"
+    },
+    {
+      "id": 1184,
+      "categoryId": 114,
+      "dayNumber": 84,
+      "originalText": "अनन्याश्चिन्तयन्तो मां ये जनाः पर्युपासते ।\nतेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् ॥",
+      "translatedText": "To those who worship me with undivided devotion, thinking of me alone, ever steadfast, I bring what they lack and preserve what they have.",
+      "sourceReference": "Bhagavad Gita 9.22",
+      "tags": "trust,care"
+    },
+    {
+      "id": 1185,
+      "categoryId": 112,
+      "dayNumber": 85,
+      "originalText": "नेहाभिक्रमनाशोऽस्ति प्रत्यवायो न विद्यते ।\nस्वल्पमप्यस्य धर्मस्य त्रायते महतो भयात् ॥",
+      "translatedText": "On this path no effort is lost and no harm results. Even a little of this practice protects from great fear.",
+      "sourceReference": "Bhagavad Gita 2.40",
+      "tags": "gita"
+    },
+    {
+      "id": 1186,
+      "categoryId": 113,
+      "dayNumber": 86,
+      "originalText": "दुःखेष्वनुद्विग्नमनाः सुखेषु विगतस्पृहः ।\nवीतरागभयक्रोधः स्थितधीर्मुनिरुच्यते ॥",
+      "translatedText": "One whose mind is not shaken by sorrows, who does not crave pleasures, and who is free from attachment, fear and anger is called a sage of steady wisdom.",
+      "sourceReference": "Bhagavad Gita 2.56",
+      "tags": "gita"
+    },
+    {
+      "id": 1187,
+      "categoryId": 114,
+      "dayNumber": 87,
+      "originalText": "अद्वेष्टा सर्वभूतानां मैत्रः करुण एव च ।\nनिर्ममो निरहङ्कारः समदुःखसुखः क्षमी ॥",
+      "translatedText": "One who hates no being, who is friendly and compassionate, free from possessiveness and ego, the same in pain and pleasure, and forgiving...",
+      "sourceReference": "Bhagavad Gita 12.13",
+      "tags": "gita"
+    },
+    {
+      "id": 1188,
+      "categoryId": 111,
+      "dayNumber": 88,
+      "originalText": "वासांसि जीर्णानि यथा विहाय नवानि गृह्णाति नरोऽपराणि ।\nतथा शरीराणि विहाय जीर्णान्यन्यानि संयाति नवानि देही ॥",
+      "translatedText": "As a person casts off worn-out clothes and puts on new ones, so the embodied self casts off worn-out bodies and enters new ones.",
+      "sourceReference": "Bhagavad Gita 2.22",
+      "tags": "gita"
+    },
+    {
+      "id": 1189,
+      "categoryId": 112,
+      "dayNumber": 89,
+      "originalText": "तस्मादसक्तः सततं कार्यं कर्म समाचर ।\nअसक्तो ह्याचरन्कर्म परमाप्नोति पूरुषः ॥",
+      "translatedText": "Therefore, without attachment, always do the work that needs to be done; for a person who works without attachment reaches the highest.",
+      "sourceReference": "Bhagavad Gita 3.19",
+      "tags": "gita"
+    },
+    {
+      "id": 1190,
+      "categoryId": 113,
+      "dayNumber": 90,
+      "originalText": "बन्धुरात्माऽऽत्मनस्तस्य येनात्मैवात्मना जितः ।\nअनात्मनस्तु शत्रुत्वे वर्तेतात्मैव शत्रुवत् ॥",
+      "translatedText": "For one who has conquered the self by the self, the self is a friend; but for one who has not, the self behaves like an enemy.",
+      "sourceReference": "Bhagavad Gita 6.6",
+      "tags": "gita"
+    },
+    {
+      "id": 1191,
+      "categoryId": 114,
+      "dayNumber": 91,
+      "originalText": "यत्र योगेश्वरः कृष्णो यत्र पार्थो धनुर्धरः ।\nतत्र श्रीर्विजयो भूतिर्ध्रुवा नीतिर्मतिर्मम ॥",
+      "translatedText": "Where Krishna, lord of yoga, is, and where Arjuna the archer is, there are prosperity, victory, well-being and steady justice: this is my conviction.",
+      "sourceReference": "Bhagavad Gita 18.78",
+      "tags": "gita"
+    },
+    {
+      "id": 1192,
+      "categoryId": 111,
+      "dayNumber": 92,
+      "originalText": "दैवी ह्येषा गुणमयी मम माया दुरत्यया ।\nमामेव ये प्रपद्यन्ते मायामेतां तरन्ति ते ॥",
+      "translatedText": "This divine power of mine, made of the three qualities, is hard to cross; but those who take refuge in me alone cross beyond it.",
+      "sourceReference": "Bhagavad Gita 7.14",
+      "tags": "gita"
+    },
+    {
+      "id": 1193,
+      "categoryId": 112,
+      "dayNumber": 93,
+      "originalText": "सुखदुःखे समे कृत्वा लाभालाभौ जयाजयौ ।\nततो युद्धाय युज्यस्व नैवं पापमवाप्स्यसि ॥",
+      "translatedText": "Treating pleasure and pain, gain and loss, victory and defeat alike, then engage in the battle; in this way you will incur no sin.",
+      "sourceReference": "Bhagavad Gita 2.38",
+      "tags": "gita"
+    },
+    {
+      "id": 1194,
+      "categoryId": 113,
+      "dayNumber": 94,
+      "originalText": "आपूर्यमाणमचलप्रतिष्ठं समुद्रमापः प्रविशन्ति यद्वत् ।\nतद्वत्कामा यं प्रविशन्ति सर्वे स शान्तिमाप्नोति न कामकामी ॥",
+      "translatedText": "As waters flow into the sea, ever full and unmoved, so the one in whom all desires flow without disturbing him attains peace; not the one who runs after desires.",
+      "sourceReference": "Bhagavad Gita 2.70",
+      "tags": "gita"
+    },
+    {
+      "id": 1195,
+      "categoryId": 114,
+      "dayNumber": 95,
+      "originalText": "तस्मात्सर्वेषु कालेषु मामनुस्मर युध्य च ।\nमय्यर्पितमनोबुद्धिर्मामेवैष्यस्यसंशयम् ॥",
+      "translatedText": "Therefore remember me at all times and fight; with mind and intellect offered to me, you will surely come to me alone.",
+      "sourceReference": "Bhagavad Gita 8.7",
+      "tags": "gita"
     }
   ]
 }
