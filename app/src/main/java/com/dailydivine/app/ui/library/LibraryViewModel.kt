@@ -3,6 +3,7 @@ package com.dailydivine.app.ui.library
 import java.time.LocalDate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailydivine.app.data.content.VerseLocalizer
 import com.dailydivine.app.data.local.dao.CategoryDao
 import com.dailydivine.app.data.local.dao.VerseDao
 import com.dailydivine.app.data.local.datastore.UserPreferences
@@ -36,6 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val bookmarkRepository: BookmarkRepository,
+    private val localizer: VerseLocalizer,
     private val journalRepository: JournalRepository,
     private val verseDao: VerseDao,
     categoryDao: CategoryDao,
@@ -66,22 +68,31 @@ class LibraryViewModel @Inject constructor(
     val detailVerse: StateFlow<Verse?> = _detailVerse.asStateFlow()
 
     /** Search results when a query is typed, else the open category's verses. */
-    val verses: StateFlow<List<Verse>> = combine(religionId, _selectedCategory, _query) { rid, cat, q ->
-        Triple(rid, cat, q.trim())
-    }.flatMapLatest { (rid, cat, q) ->
-        when {
+    val verses: StateFlow<List<Verse>> = combine(religionId, _selectedCategory, _query, localizer.languageCode) { rid, cat, q, lang ->
+        listOf(rid, cat, q.trim(), lang)
+    }.flatMapLatest { args ->
+        val rid = args[0] as Int
+        val cat = args[1] as Category?
+        val q = args[2] as String
+        val lang = args[3] as String
+        val source = when {
             q.isNotEmpty() -> verseDao.searchVerses(rid, q)
             cat != null -> verseDao.getVersesByCategory(cat.id)
             else -> flowOf(emptyList<Verse>())
         }
+        source.map { localizer.localize(it, lang) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val bookmarkedVerses: StateFlow<List<Verse>> = bookmarkRepository.getBookmarkedVerses()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val bookmarkedVerses: StateFlow<List<Verse>> =
+        combine(bookmarkRepository.getBookmarkedVerses(), localizer.languageCode) { list, lang ->
+            localizer.localize(list, lang)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     /** Past days (newest first) with each day's verse and reflection. */
-    val history: StateFlow<List<JournalHistoryItem>> = journalRepository.history()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val history: StateFlow<List<JournalHistoryItem>> =
+        combine(journalRepository.history(), localizer.languageCode) { items, lang ->
+            if (lang == "en") items else items.map { it.copy(verse = it.verse?.let { v -> localizer.localize(v, lang) }) }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _historyDetail = MutableStateFlow<JournalHistoryItem?>(null)
     val historyDetail: StateFlow<JournalHistoryItem?> = _historyDetail.asStateFlow()

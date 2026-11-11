@@ -1261,6 +1261,27 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or device run. `clear()` behaviour differs between phones (some theme engines ignore it); not tried on the Redmi. No unit test: the logic is one platform call.
 
+### 2026-11-11 — Round U (verse language in Settings: Hindi for Hinduism)
+
+**Why:** the user noticed Settings had no way to change the language, although Hinduism now has Sanskrit (shown above the English) and reviewed Hindi meanings.
+
+**How the app handles language (found in the code):** the database holds ONE language per religion; queries do not filter by language; `LanguageSupport` allowed English only; one content version per religion. A second full language in the database would have meant a schema change and rewriting selection logic, so Hindi is an **overlay**: the stored verse stays English and the Hindi text (same verse ids) replaces it on the way to the screen.
+
+| Piece | Detail |
+|---|---|
+| `assets/content_overlays/hinduism_hi.json` | 49 Gita verses (ids 1147-1195, days 47-95). Kept outside `assets/content` on purpose so the content-integrity rules do not apply to it. Written by `tools/build_hinduism_gita.py` from the reviewed `gita_pilot.json` |
+| `VerseLocalizer` (new, singleton) | loads the overlay lazily; `localize(verse, lang)` swaps `translatedText` and `languageCode` (so TTS speaks Hindi); a verse without an entry, a blank entry, or a broken file all fall back to English |
+| `VerseRepository.getDailyVerse` | in Hindi mode the day's verse is chosen among the 49 translated verses (`DailyVerseSelector.dayNumberInBlock`), so a Hindi reader gets Hindi every day. This also covers the notification, wallpaper, share image, alarm preview and read-aloud, which all use this call |
+| `LibraryViewModel` | browse, search results, favourites and history are localized and refresh when the language changes |
+| `HomeViewModel` | reloads the verse when the language preference changes |
+| `LanguageSupport` | English everywhere; other languages per religion, derived from `VerseLocalizer.OVERLAY_ASSETS` (Hindi for Hinduism only). Onboarding Language step uses the same rule |
+| Settings | Language row is tappable only when the tradition has more than one language; dialog "Verse language" with a note that Hindi covers the Gita verses and the menus stay English. Changing language resets the wallpaper's "applied today" marker so the next check redraws it. Changing tradition resets an unavailable language to English |
+| Tests | `VerseLocalizerTest` (overlay swap, fallbacks, daily block, per-religion availability); `ContentIntegrityTest.hindiOverlayMatchesTheHinduismContent` |
+
+**Honest limits:** Hindi covers 49 of the 95 Hinduism passages (the Arnold passages have no Hindi), so the Hindi daily rotation is 49 days. App menus and buttons are still English (no `values-hi`). Library search is run against the English text and the Sanskrit, so a Hindi query finds nothing. Hindi text in the share image and wallpaper relies on the phone's Devanagari font fallback and has not been seen.
+
+**NOT verified:** none of this is a compile or device run. The new `combine(...)` of four flows in `LibraryViewModel` and the overlay asset loading are the parts most worth watching in CI and on the phone.
+
 ---
 
 ## What's Next (as of this session)

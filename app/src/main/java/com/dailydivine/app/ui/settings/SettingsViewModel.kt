@@ -8,6 +8,7 @@ import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.datastore.UserPrefsState
 import com.dailydivine.app.data.local.db.AppDatabase
 import com.dailydivine.app.data.repository.AlarmRepository
+import com.dailydivine.app.util.LanguageSupport
 import com.dailydivine.app.util.ReligionMeta
 import com.dailydivine.app.util.Religions
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,6 +70,21 @@ class SettingsViewModel @Inject constructor(
                 runCatching { contentMigrationManager.migrateIfNeeded(religionId, asset, "en") }
             }
             userPreferences.setReligion(religionId)
+            // A language chosen for one tradition (Hindi for Hinduism) must not linger on another.
+            if (!LanguageSupport.isAvailable(religionId, userPreferences.state.first().languageCode)) {
+                userPreferences.setLanguage("en")
+            }
+        }
+    }
+
+    /** Verse language for the current tradition. Only offered languages are accepted. */
+    fun setLanguage(code: String) {
+        viewModelScope.launch {
+            val religionId = userPreferences.state.first().religionId
+            if (!LanguageSupport.isAvailable(religionId, code)) return@launch
+            userPreferences.setLanguage(code)
+            // Today's wallpaper was drawn in the old language: let the next check draw it again.
+            userPreferences.setWallpaperLastEpochDay(0L)
         }
     }
 

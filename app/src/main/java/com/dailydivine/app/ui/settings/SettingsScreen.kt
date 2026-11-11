@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import com.dailydivine.app.ui.components.dialogMaxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.ui.semantics.Role
 import android.content.Intent
 import android.provider.Settings
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dailydivine.app.util.AppLinks
 import com.dailydivine.app.util.ContentCredits
+import com.dailydivine.app.util.LanguageSupport
 import com.dailydivine.app.util.Religions
 import com.dailydivine.app.wallpaper.WallpaperTarget
 
@@ -45,6 +47,7 @@ fun SettingsScreen(
     val languageCode by viewModel.languageCode.collectAsState()
     var showClearConfirm by remember { mutableStateOf(false) }
     var showReligionPicker by remember { mutableStateOf(false) }
+    var showLanguagePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showCredits by remember { mutableStateOf(false) }
     val prefs by viewModel.prefs.collectAsState()
@@ -65,13 +68,19 @@ fun SettingsScreen(
             trailingContent = { Text(stringResource(R.string.change), color = MaterialTheme.colorScheme.primary) }
         )
         GroupDivider()
+        val languageOptions = LanguageSupport.optionsFor(religion?.id)
         SettingsRow(
+            // Only tappable when the current tradition has more than one language (Hinduism: English and Hindi).
+            modifier = if (languageOptions.size > 1) Modifier.clickable { showLanguagePicker = true } else Modifier,
             headlineContent = { Text(stringResource(R.string.language)) },
-            supportingContent = { Text(languageDisplayName(languageCode)) }
+            supportingContent = { Text(languageDisplayName(languageCode)) },
+            trailingContent = if (languageOptions.size > 1) {
+                { Text(stringResource(R.string.change), color = MaterialTheme.colorScheme.primary) }
+            } else null
         )
         }
-        // Religion is editable (F001-R04). Language stays read-only until
-        // more than English content/UI strings exist.
+        // Religion is editable (F001-R04). Language is editable only for traditions that have
+        // verses in more than English (see LanguageSupport).
 
         Spacer(Modifier.height(24.dp))
         Text(stringResource(R.string.personalise), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
@@ -270,6 +279,42 @@ fun SettingsScreen(
             },
             confirmButton = {},
             dismissButton = { TextButton(onClick = { showReligionPicker = false }) { Text(stringResource(R.string.cancel)) } }
+        )
+    }
+
+    if (showLanguagePicker) {
+        val options = LanguageSupport.optionsFor(religion?.id)
+        AlertDialog(
+            onDismissRequest = { showLanguagePicker = false },
+            title = { Text(stringResource(R.string.choose_verse_language)) },
+            text = {
+                Column {
+                    options.forEach { (name, code) ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .selectable(selected = languageCode == code, role = Role.RadioButton) {
+                                    showLanguagePicker = false
+                                    viewModel.setLanguage(code)
+                                }
+                        ) {
+                            RadioButton(selected = languageCode == code, onClick = null)
+                            Spacer(Modifier.width(12.dp))
+                            Text(name, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.hindi_gita_note),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { showLanguagePicker = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 

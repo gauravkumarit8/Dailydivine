@@ -35,7 +35,7 @@ fun LanguageSelectScreen(
         languages.forEach { (displayName, code) ->
             // One selectable row (radio is decorative inside it), so TalkBack reads
             // "English, selected, radio button" once instead of two controls.
-            val available = LanguageSupport.isAvailable(code)
+            val available = LanguageSupport.isAvailable(religion?.id, code)
             ListItem(
                 headlineContent = { Text(displayName) },
                 supportingContent = if (!available) { { Text(stringResource(R.string.coming_soon)) } } else null,

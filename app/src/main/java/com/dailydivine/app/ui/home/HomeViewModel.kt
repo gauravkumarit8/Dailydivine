@@ -108,9 +108,10 @@ class HomeViewModel @Inject constructor(
         // the Home tab.
         viewModelScope.launch {
             userPreferences.state
-                .map { it.religionId to it.installEpochDay }
+                // The language is part of the key so a change in Settings reloads today's verse.
+                .map { Triple(it.religionId, it.installEpochDay, it.languageCode) }
                 .distinctUntilChanged()
-                .collect { (religionIdRaw, installEpochDay) ->
+                .collect { (religionIdRaw, installEpochDay, _) ->
                     loadVerseAndStreak(religionIdRaw, installEpochDay)
                 }
         }

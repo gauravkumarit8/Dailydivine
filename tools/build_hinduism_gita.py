@@ -46,3 +46,21 @@ doc['source'] = ('The Song Celestial (Bhagavad-Gita), tr. Sir Edwin Arnold, 1885
                  'plus Bhagavad Gita verses: Sanskrit text (public domain) with English meanings written for DailyDivine.')
 json.dump(doc, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 print(len(vs), 'verses', counts)
+
+# ---- Hindi overlay: same verse ids, Hindi meaning in translatedText (see data/content/VerseLocalizer.kt).
+# Kept OUT of assets/content so the content-integrity rules (own categories, dayNumbers 1..N) do not apply to it.
+gita = [v for v in vs if v['id'] > 1146]
+ov_dir = os.path.join(HERE, '..', 'app', 'src', 'main', 'assets', 'content_overlays')
+os.makedirs(ov_dir, exist_ok=True)
+by_ref = {f"Bhagavad Gita {r}": row for r, row in rows.items()}
+ov = []
+for v in gita:
+    hi = by_ref[v['sourceReference']]['hindi'].strip()
+    assert hi, v['sourceReference']
+    ov.append({'id': v['id'], 'dayNumber': v['dayNumber'], 'translatedText': hi})
+days = [x['dayNumber'] for x in ov]
+assert days == list(range(days[0], days[0] + len(days))), 'Hindi overlay day numbers must be contiguous'
+json.dump({'religion': 'Hinduism', 'language': 'hi',
+           'source': 'Hindi meanings of Bhagavad Gita verses written for DailyDivine from the Sanskrit and reviewed by the project owner',
+           'verses': ov}, open(os.path.join(ov_dir, 'hinduism_hi.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+print(len(ov), 'Hindi overlay verses, days', days[0], '-', days[-1])

@@ -12,4 +12,10 @@ object DailyVerseSelector {
         require(totalVerses > 0) { "totalVerses must be positive" }
         return Math.floorMod(daysSinceInstall, totalVerses.toLong()).toInt() + 1
     }
+
+    /** Same idea over a consecutive block of day numbers [first, first + count - 1]. */
+    fun dayNumberInBlock(daysSinceInstall: Long, first: Int, count: Int): Int {
+        require(count > 0) { "count must be positive" }
+        return first + Math.floorMod(daysSinceInstall, count.toLong()).toInt()
+    }
 }

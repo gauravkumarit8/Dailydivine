@@ -59,6 +59,24 @@ class ContentIntegrityTest {
         }
     }
 
+    /** Hindi overlay: every entry points at a real Hinduism verse, with a consecutive block of day numbers. */
+    @Test fun hindiOverlayMatchesTheHinduismContent() {
+        val overlay = parse(File("src/main/assets/content_overlays/hinduism_hi.json"))
+        val ids = parse(File(dir, "hinduism_en.json")).getAsJsonArray("verses")
+            .associate { it.asJsonObject.get("id").asInt to it.asJsonObject.get("dayNumber").asInt }
+        val entries = overlay.getAsJsonArray("verses").map { it.asJsonObject }
+        assertTrue(entries.isNotEmpty())
+        assertEquals("duplicate ids in the overlay", entries.size, entries.map { it.get("id").asInt }.toSet().size)
+        for (e in entries) {
+            val id = e.get("id").asInt
+            assertTrue("overlay id $id is not a Hinduism verse", id in ids)
+            assertEquals("overlay day number of $id", ids[id], e.get("dayNumber").asInt)
+            assertFalse("empty Hindi text for $id", e.get("translatedText").asString.isBlank())
+        }
+        val days = entries.map { it.get("dayNumber").asInt }.sorted()
+        assertEquals("the Hindi day numbers must be consecutive", (days.first()..days.last()).toList(), days)
+    }
+
     /** The first 79 Christianity passages shipped in version 1 and must never change (users may have them saved). */
     @Test fun christianityFirst79VersesAreFrozen() {
         val verses = parse(File(dir, "christianity_en.json")).getAsJsonArray("verses")

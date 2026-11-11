@@ -64,7 +64,7 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun selectLanguage(languageCode: String) {
-        if (!LanguageSupport.isAvailable(languageCode)) return // no verses in it yet
+        if (!LanguageSupport.isAvailable(_uiState.value.selectedReligionId, languageCode)) return // no verses in it yet
         _uiState.value = _uiState.value.copy(selectedLanguageCode = languageCode)
     }
 
