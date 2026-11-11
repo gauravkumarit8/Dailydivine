@@ -62,6 +62,27 @@ class WallpaperUpdater @Inject constructor(
         result
     }
 
+    /**
+     * Gives the home and/or lock screen back to the phone's own default wallpaper (the app cannot
+     * restore the exact picture the user had before: reading it needs a storage permission we do
+     * not hold). Returns false when the phone refuses.
+     */
+    suspend fun restoreSystemDefault(target: WallpaperTarget): Boolean = mutex.withLock {
+        withContext(Dispatchers.Default) {
+            var flags = 0
+            if (target.home) flags = flags or WallpaperManager.FLAG_SYSTEM
+            if (target.lock) flags = flags or WallpaperManager.FLAG_LOCK
+            if (flags == 0) return@withContext true
+            try {
+                WallpaperManager.getInstance(context).clear(flags)
+                true
+            } catch (e: Exception) {
+                Log.e(TAG, "Restoring the default wallpaper failed", e)
+                false
+            }
+        }
+    }
+
     /** Every background run is recorded (that is what the diagnostics are for); app-open checks
      *  that found nothing to do would only be noise. */
     private suspend fun record(trigger: Trigger, result: Result) {

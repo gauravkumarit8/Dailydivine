@@ -181,6 +181,11 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
                 enabled = !state.busy,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
             ) { Text(if (state.busy) "Working\u2026" else "Update wallpaper now") }
+            TextButton(
+                onClick = viewModel::turnOffAndRestoreDefault,
+                enabled = !state.busy,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+            ) { Text(stringResource(R.string.turn_off_and_reset_to_default_wallpaper)) }
         }
 
         // Battery: some phones stop background apps overnight, which is the main reason a daily
@@ -213,8 +218,8 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
 
         Spacer(Modifier.height(20.dp))
         Text(
-            "Good to know: DailyDivine replaces your wallpaper once a day and can't restore the one you had before. " +
-                "Turn this off any time and the last wallpaper simply stays until you change it in your phone's settings. " +
+            "Good to know: DailyDivine replaces your wallpaper once a day and can't bring back the exact picture you had before. " +
+                "\"Turn off and reset\" returns your phone's default wallpaper; choosing Off in the list above just stops the daily changes and leaves the last verse in place. " +
                 "Some phones with their own theme or lock-screen apps may keep their own lock screen.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant

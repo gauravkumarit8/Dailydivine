@@ -1244,6 +1244,23 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run. Whether the alarm trigger actually updates the wallpaper on the Redmi is unknown.
 
+### 2026-11-10 — Round T (wallpaper: reset to default; debug buttons checked)
+
+**Checked, no change needed:** both debug-only buttons ("Ring a test alarm" in the Alarm tab, "Send test notifications now" in Settings) are already gated on `FLAG_DEBUGGABLE`, so release builds do not show them.
+
+**Why this change:** turning the daily wallpaper off left the last verse on the phone forever, and the screen said so in small print. That hurts trust, and trust is the app's selling point.
+
+| Change | Detail |
+|---|---|
+| `WallpaperUpdater.restoreSystemDefault(target)` | `WallpaperManager.clear(flags)` for the home and/or lock screen the app had replaced, under the same mutex; returns false if the phone refuses |
+| `WallpaperViewModel.turnOffAndRestoreDefault()` | resets the wallpaper, sets the target to Off, resets `wallpaperLastEpochDay` to 0 so turning it on again applies today's wallpaper, then shows a message |
+| `WallpaperScreen` | new "Turn off and reset to default wallpaper" button under "Update wallpaper now" (shown while the feature is on); "Good to know" text updated |
+| `strings.xml` | key `turn_off_and_reset_to_default_wallpaper` (checked against reserved words by `StringResourcesTest`) |
+
+**Limits (said honestly in the app):** it cannot bring back the user's exact previous picture; reading it needs a storage permission the app does not hold and would not ask for.
+
+**NOT verified:** none of this is a compile or device run. `clear()` behaviour differs between phones (some theme engines ignore it); not tried on the Redmi. No unit test: the logic is one platform call.
+
 ---
 
 ## What's Next (as of this session)

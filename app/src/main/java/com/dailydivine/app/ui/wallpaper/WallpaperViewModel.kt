@@ -143,5 +143,21 @@ class WallpaperViewModel @Inject constructor(
         }
     }
 
+    /** Switches the feature off AND gives the phone's default wallpaper back where we had replaced it. */
+    fun turnOffAndRestoreDefault() {
+        viewModelScope.launch {
+            val previous = _state.value.target
+            _state.value = _state.value.copy(busy = true)
+            val ok = updater.restoreSystemDefault(previous)
+            userPreferences.setWallpaperTarget(WallpaperTarget.OFF.name)
+            userPreferences.setWallpaperLastEpochDay(0L) // turning it on again must apply today's wallpaper
+            _state.value = _state.value.copy(
+                busy = false,
+                message = if (ok) "Daily wallpaper is off and your phone's default wallpaper is back"
+                else "Daily wallpaper is off, but this phone wouldn't reset the wallpaper. Change it in your phone's settings."
+            )
+        }
+    }
+
     fun clearMessage() { _state.value = _state.value.copy(message = null) }
 }
