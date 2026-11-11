@@ -7,6 +7,21 @@ import org.junit.Test
 
 class WallpaperRulesTest {
 
+    // ---- retry after a failed run
+    @Test fun `failed and verse-less runs are retried a limited number of times`() {
+        for (r in listOf(WallpaperUpdater.Result.FAILED, WallpaperUpdater.Result.NO_VERSE)) {
+            assertTrue(WallpaperRules.shouldRetry(r, 0))
+            assertTrue(WallpaperRules.shouldRetry(r, WallpaperRules.MAX_RETRIES - 1))
+            assertFalse(WallpaperRules.shouldRetry(r, WallpaperRules.MAX_RETRIES))
+        }
+    }
+
+    @Test fun `successful or irrelevant runs are never retried`() {
+        for (r in listOf(WallpaperUpdater.Result.APPLIED, WallpaperUpdater.Result.UP_TO_DATE, WallpaperUpdater.Result.DISABLED)) {
+            assertFalse(WallpaperRules.shouldRetry(r, 0))
+        }
+    }
+
     // ---- when to update
     @Test fun `off never updates`() =
         assertFalse(WallpaperRules.needsUpdate(WallpaperTarget.OFF, lastUpdatedEpochDay = -1, todayEpochDay = 20000))

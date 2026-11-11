@@ -1282,6 +1282,22 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or device run. The new `combine(...)` of four flows in `LibraryViewModel` and the overlay asset loading are the parts most worth watching in CI and on the phone.
 
+### 2026-11-11 — Round V (wallpaper: retry after a failed attempt)
+
+**Gap found in Round S review:** when an attempt returned FAILED (or NO_VERSE), nothing tried again until the next day or the next time the user opened the app. Both the alarm path (`DailyJobReceiver`) and the WorkManager path (`WallpaperWorker`) ignored the result.
+
+| Change | Detail |
+|---|---|
+| `WallpaperRules.shouldRetry(result, attempt)` | retry only FAILED and NO_VERSE, at most `MAX_RETRIES` = 3 times, `RETRY_DELAY_MINUTES` = 10 (pure, unit-tested) |
+| `WallpaperWorker` | returns `Result.retry()` (linear 10-minute backoff set on the request) while retries remain; **tomorrow's alarm and work are re-armed only on the final attempt** (re-enqueueing the unique work with REPLACE from inside the running worker would cancel it) |
+| `WallpaperScheduler.scheduleRetry()` | unique work `wallpaper_retry`, KEEP, one extra worker run 10 minutes later; `cancel()` also cancels it |
+| `DailyJobReceiver` | the alarm path asks for that retry when its own run failed |
+| tests | `WallpaperRulesTest`: two new cases |
+
+**Still not fixed:** theme engines (Xiaomi/HyperOS and others) that override or block wallpaper changes; the app cannot restore the user's old picture; the wallpaper path has never been confirmed on a device.
+
+**NOT verified:** none of this is a compile or device run. `Result.retry()` timing is decided by Android and may be later than 10 minutes in Doze.
+
 ---
 
 ## What's Next (as of this session)

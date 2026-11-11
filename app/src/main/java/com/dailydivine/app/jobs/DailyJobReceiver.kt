@@ -7,6 +7,8 @@ import android.util.Log
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.repository.StreakRepository
 import com.dailydivine.app.data.repository.VerseRepository
+import com.dailydivine.app.wallpaper.WallpaperRules
+import com.dailydivine.app.wallpaper.WallpaperScheduler
 import com.dailydivine.app.wallpaper.WallpaperUpdater
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +38,11 @@ class DailyJobReceiver : BroadcastReceiver() {
                 val prefs = userPreferences.state.first()
                 if (planFor(job, prefs).active) {
                     when (job) {
-                        DailyJob.WALLPAPER -> wallpaperUpdater.updateIfNeeded(WallpaperUpdater.Trigger.ALARM)
+                        DailyJob.WALLPAPER -> {
+                            val result = wallpaperUpdater.updateIfNeeded(WallpaperUpdater.Trigger.ALARM)
+                            // The alarm path cannot retry itself: ask WorkManager for one more try soon.
+                            if (WallpaperRules.shouldRetry(result, 0)) WallpaperScheduler(appContext).scheduleRetry()
+                        }
                         DailyJob.DAILY_VERSE -> runDailyVerse(appContext, prefs, userPreferences, verseRepository)
                         DailyJob.STREAK_REMINDER -> runStreakReminder(appContext, prefs, userPreferences, streakRepository)
                     }

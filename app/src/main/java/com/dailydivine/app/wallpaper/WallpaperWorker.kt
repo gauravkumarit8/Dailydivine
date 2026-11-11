@@ -21,16 +21,23 @@ class WallpaperWorker(context: Context, params: WorkerParameters) : CoroutineWor
         val ep = EntryPointAccessors.fromApplication(applicationContext, NotificationEntryPoint::class.java)
         val prefs = ep.userPreferences().state.first()
         val plan = planFor(DailyJob.WALLPAPER, prefs)
+        var retry = false
         try {
-            if (plan.active) ep.wallpaperUpdater().updateIfNeeded(WallpaperUpdater.Trigger.WORK)
+            if (plan.active) {
+                val result = ep.wallpaperUpdater().updateIfNeeded(WallpaperUpdater.Trigger.WORK)
+                retry = WallpaperRules.shouldRetry(result, runAttemptCount)
+            }
         } catch (e: Exception) {
             Log.e("WallpaperWorker", "Daily wallpaper update failed", e)
+            retry = runAttemptCount < WallpaperRules.MAX_RETRIES
         } finally {
-            if (plan.active) {
+            // While a retry is pending, leave tomorrow's chain alone: the last attempt re-arms it.
+            // (Re-enqueueing the unique work with REPLACE from inside a running worker would cancel it.)
+            if (plan.active && !retry) {
                 WallpaperScheduler(applicationContext).schedule(plan.hour, plan.minute, replace = true)
                 DailyAlarmScheduler(applicationContext).schedule(DailyJob.WALLPAPER, plan.hour, plan.minute, replace = true)
             }
         }
-        return Result.success()
+        return if (retry) Result.retry() else Result.success()
     }
 }

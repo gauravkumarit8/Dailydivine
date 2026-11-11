@@ -58,6 +58,15 @@ fun describeLastCheck(
 
 /** Pure rules, kept free of Android so they are unit-tested. */
 object WallpaperRules {
+    /** A failed or verse-less run is retried a few times; "up to date", "off" and "applied" never are. */
+    const val MAX_RETRIES = 3
+    const val RETRY_DELAY_MINUTES = 10L
+
+    /** [attempt] is the number of retries already made (0 for the first run). */
+    fun shouldRetry(result: WallpaperUpdater.Result, attempt: Int): Boolean =
+        attempt < MAX_RETRIES &&
+            (result == WallpaperUpdater.Result.FAILED || result == WallpaperUpdater.Result.NO_VERSE)
+
     /** Update when the feature is on and today's wallpaper has not been applied yet. */
     fun needsUpdate(target: WallpaperTarget, lastUpdatedEpochDay: Long, todayEpochDay: Long): Boolean =
         target != WallpaperTarget.OFF && lastUpdatedEpochDay != todayEpochDay
