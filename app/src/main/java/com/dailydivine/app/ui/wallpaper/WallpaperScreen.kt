@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dailydivine.app.ui.components.TimePickerDialog
+import com.dailydivine.app.util.BatteryGuidance
 import com.dailydivine.app.util.formatTime12h
 import com.dailydivine.app.wallpaper.TextPosition
 import com.dailydivine.app.wallpaper.WallpaperTarget
@@ -201,11 +202,15 @@ fun WallpaperScreen(onBack: () -> Unit, viewModel: WallpaperViewModel = hiltView
         }
         if (state.target != WallpaperTarget.OFF && !ignoringBattery) {
             Spacer(Modifier.height(16.dp))
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+            // A tip, not an error: the wallpaper still updates when the app is opened.
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
                 Column(Modifier.padding(16.dp)) {
                     Text(
-                        "For on-time daily updates, find DailyDivine in the battery list and choose \"Don't optimize\". " +
-                            "Some phones pause background apps overnight, so the wallpaper may only change when you open the app.",
+                        BatteryGuidance.withExtra(
+                            "For on-time daily updates, find DailyDivine in the battery list and choose \"Don't optimize\". " +
+                                "Some phones pause background apps overnight, so the wallpaper may only change when you open the app.",
+                            android.os.Build.MANUFACTURER
+                        ),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp), onClick = {

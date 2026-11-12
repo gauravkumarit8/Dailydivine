@@ -18,6 +18,12 @@ CAT = {111: ['2.13','2.14','2.20','2.22','4.38','13.28','15.15','6.30','7.14'],
        114: ['4.7','4.8','4.11','8.7','9.22','9.26','9.29','9.34','10.10','12.13','12.14','18.58','18.66','18.78']}
 TAGS = {'2.47': 'action,detachment', '2.48': 'balance,action', '9.22': 'trust,care', '6.5': 'self,effort',
         '18.66': 'refuge,trust', '4.7': 'dharma,hope'}
+def nbsp_danda(text):
+    """Glue each danda (। ॥) to the word before it with a no-break space, so a line can never wrap
+    and leave a danda alone on its own line (seen on a phone screenshot of Gita 9.29)."""
+    return text.replace(' \u0964', '\u00a0\u0964').replace(' \u0965', '\u00a0\u0965')
+
+
 doc = json.load(open(OUT, encoding='utf-8'))
 base = [v for v in doc['verses'] if v['id'] <= 1146]
 assert len(base) == 46 and [v['dayNumber'] for v in base] == list(range(1, 47)), 'Arnold block changed'
@@ -34,7 +40,7 @@ vs = list(base)
 for n, (_, cat, r) in enumerate(keyed, 47):
     row = rows[r]
     assert row['english'].strip() and row['sanskrit'].strip()
-    vs.append({'id': 1100 + n, 'categoryId': cat, 'dayNumber': n, 'originalText': row['sanskrit'],
+    vs.append({'id': 1100 + n, 'categoryId': cat, 'dayNumber': n, 'originalText': nbsp_danda(row['sanskrit']),
                'translatedText': row['english'], 'sourceReference': f'Bhagavad Gita {r}',
                'tags': TAGS.get(r, 'gita')})
 counts = {}

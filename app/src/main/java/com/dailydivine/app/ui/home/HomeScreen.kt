@@ -5,7 +5,9 @@ import com.dailydivine.app.R
 import androidx.compose.ui.res.stringResource
 import com.dailydivine.app.util.StreakCopy
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -290,10 +292,24 @@ private fun DailyVerseCard(
                 Spacer(Modifier.height(14.dp))
             }
             val verseSize = VerseDisplayRules.fontSizeSp(verseText.length)
-            Text(
-                "\u201C${VerseDisplayRules.normalize(verseText)}\u201D",
-                style = VerseTextStyle.copy(fontSize = verseSize.sp, lineHeight = (verseSize * 1.6f).sp)
-            )
+            val quoted = "\u201C${VerseDisplayRules.normalize(verseText)}\u201D"
+            val verseStyle = VerseTextStyle.copy(fontSize = verseSize.sp, lineHeight = (verseSize * 1.6f).sp)
+            val poemLines = quoted.split('\n')
+            if (poemLines.size > 1) {
+                // A poem's lines are longer than the card is wide, so a wrapped line used to look like a new
+                // line ("deeds be", "equable" alone). Each source line is its own paragraph, and its wrapped
+                // part is indented, so the reader can tell a continuation from a new line.
+                Text(
+                    buildAnnotatedString {
+                        poemLines.forEach { line ->
+                            withStyle(ParagraphStyle(textIndent = TextIndent(restLine = 20.sp))) { append(line) }
+                        }
+                    },
+                    style = verseStyle
+                )
+            } else {
+                Text(quoted, style = verseStyle)
+            }
             Spacer(Modifier.height(12.dp))
             Text(
                 "\u2014 $source",

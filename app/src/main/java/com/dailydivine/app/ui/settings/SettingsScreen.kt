@@ -60,6 +60,9 @@ fun SettingsScreen(
         Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(24.dp))
 
+        // Every other group has a heading; this first one did not.
+        Text(stringResource(R.string.your_tradition), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(Modifier.height(8.dp))
         SettingsGroup {
         SettingsRow(
             modifier = Modifier.clickable { showReligionPicker = true },

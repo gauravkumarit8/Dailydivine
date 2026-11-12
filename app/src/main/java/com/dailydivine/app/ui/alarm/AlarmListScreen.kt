@@ -50,6 +50,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.dailydivine.app.data.local.entity.Alarm
 import com.dailydivine.app.ui.components.TimePickerDialog
+import com.dailydivine.app.util.BatteryGuidance
 import com.dailydivine.app.util.formatTime12h
 
 /** Screen S11 (PRD Section 9): Alarm list + configuration. */
@@ -127,8 +128,11 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                 )
                 if (!isIgnoringBatteryOptimizations) add(
                     AlarmWarning(
-                        "Battery optimization may stop your alarm from firing in the background. " +
-                            "Find DailyDivine in the list and choose \"Don't optimize\".",
+                        BatteryGuidance.withExtra(
+                            "Battery optimization may stop your alarm from firing in the background. " +
+                                "Find DailyDivine in the list and choose \"Don't optimize\".",
+                            android.os.Build.MANUFACTURER
+                        ),
                         "Open battery settings"
                     ) {
                         runCatching { context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }

@@ -1298,6 +1298,23 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or device run. `Result.retry()` timing is decided by Android and may be later than 10 minutes in Doze.
 
+### 2026-11-11 — Round W (fixes from the user's first device screenshots, build 0.0.11)
+
+**Confirmed on the Redmi by the user:** the daily wallpaper is applied and removed successfully (the Wallpaper screen showed "Update now: wallpaper updated"); Round U's Hindi + Sanskrit Home card, the Language row and the Hinduism library render. First real device evidence for any of rounds A-V that is not just a CI result.
+
+**Defects seen in the 10 screenshots, and what was done:**
+
+| Finding | Fix |
+|---|---|
+| Sanskrit line broke so that the final danda "॥" sat alone on its own line (Gita 9.29) | `tools/build_hinduism_gita.py` joins each danda to the previous word with a no-break space; `hinduism_en.json` regenerated |
+| English poem (Arnold 2.47) wrapped so continuation fragments ("deeds be", "equable") looked like separate lines | Home verse card: each source line is its own paragraph with a hanging indent for the wrapped part |
+| Settings: the first card (Religion, Language) had no heading while every other group did | heading "Your tradition" |
+| Wallpaper battery tip was drawn in the error colour and gave only the Pixel-style instruction; the phone is a Redmi (HyperOS) | tip now uses the neutral secondary container; new `BatteryGuidance` adds the Xiaomi/Redmi/POCO step (Autostart + Battery saver "No restrictions") and a Samsung step; the same extra step is added to the Alarm tab's battery warning; `BatteryGuidanceTest` |
+
+**Seen but NOT changed (listed with the user, decisions or larger work):** support email is the owner's personal Gmail; version 0.0.11 shown in About; alarm warning banner shows before any alarm exists; streak chip is narrower than the cards; Library category badges use first letters (two "D"); the add-alarm button has low contrast against the background; Hindi mode leaves English menus and mixes English (Arnold) and Hindi verses in the Library; the Home card does not say the Hindi is a DailyDivine translation; Hindi text is wrapped in English curly quotes; Library/History/ring screen/share image still show poems without the hanging indent.
+
+**NOT verified:** none of this is a compile. The `ParagraphStyle`/`TextIndent` code is the most likely thing to need a CI fix.
+
 ---
 
 ## What's Next (as of this session)
