@@ -35,6 +35,13 @@ object VerseDisplayRules {
         return out.toString()
     }
 
+    /**
+     * The curly double quotes the screens put around a verse. Devanagari (Sanskrit, Hindi) is not
+     * set between English quotation marks, so text containing it is returned as it is.
+     */
+    fun quote(text: String): String =
+        if (text.any { it in '\u0900'..'\u097F' }) text else "\u201C$text\u201D"
+
     /** Font size in sp for the hero verse: shorter verses are larger, long ones shrink to stay readable. */
     fun fontSizeSp(length: Int): Int = when {
         length <= 140 -> 24

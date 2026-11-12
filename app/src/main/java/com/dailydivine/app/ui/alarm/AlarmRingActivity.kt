@@ -215,7 +215,7 @@ internal fun AlarmRingScreen(
             versePreview?.let {
                 Spacer(Modifier.height(24.dp))
                 Text(
-                    "\u201C${VerseDisplayRules.normalize(it)}\u201D",
+                    VerseDisplayRules.quote(VerseDisplayRules.normalize(it)),
                     style = VerseTextStyle.copy(fontSize = 18.sp, lineHeight = 28.sp),
                     color = Color.White,
                     textAlign = TextAlign.Center

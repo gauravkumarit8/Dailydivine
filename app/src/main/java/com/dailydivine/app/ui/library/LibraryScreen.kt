@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.selection.selectable
+import com.dailydivine.app.util.VerseAttribution
 import com.dailydivine.app.domain.model.MOOD_LABELS
 import com.dailydivine.app.domain.model.MOOD_EMOJIS
 import com.dailydivine.app.R
@@ -159,10 +160,10 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
             text = {
                 Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     item.verse?.let { v ->
-                        Text("\u201C${VerseDisplayRules.normalize(v.translatedText)}\u201D", style = VerseTextStyle)
+                        Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(v.translatedText)), style = VerseTextStyle)
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "\u2014 ${v.sourceReference}",
+                            "\u2014 ${VerseAttribution.line(v.sourceReference, v.languageCode)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -213,14 +214,14 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
         val isBookmarked = verse.id in bookmarkedIds
         AlertDialog(
             onDismissRequest = viewModel::closeDetail,
-            title = { Text(verse.sourceReference, style = MaterialTheme.typography.titleMedium) },
+            title = { Text(VerseAttribution.line(verse.sourceReference, verse.languageCode), style = MaterialTheme.typography.titleMedium) },
             text = {
                 Column(
                     Modifier
                         .heightIn(max = dialogMaxHeight())
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text("\u201C${VerseDisplayRules.normalize(verse.translatedText)}\u201D", style = VerseTextStyle)
+                    Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(verse.translatedText)), style = VerseTextStyle)
                 }
             },
             confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text(stringResource(R.string.close)) } },
@@ -255,7 +256,7 @@ private fun VerseList(verses: List<Verse>, onClick: (Verse) -> Unit) {
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        verse.sourceReference,
+                        VerseAttribution.line(verse.sourceReference, verse.languageCode),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -323,7 +324,7 @@ private fun HistoryRow(item: JournalHistoryItem, onClick: () -> Unit) {
             }
             item.verse?.let {
                 Spacer(Modifier.height(4.dp))
-                Text(it.sourceReference, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                Text(VerseAttribution.line(it.sourceReference, it.languageCode), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
             }
             Spacer(Modifier.height(8.dp))
             Text(

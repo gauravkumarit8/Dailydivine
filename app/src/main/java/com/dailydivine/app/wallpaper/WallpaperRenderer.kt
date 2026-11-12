@@ -1,5 +1,6 @@
 package com.dailydivine.app.wallpaper
 
+import com.dailydivine.app.util.VerseDisplayRules
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -58,7 +59,7 @@ class WallpaperRenderer {
             textSize = width * 0.058f
             setShadowLayer(width * 0.006f, 0f, width * 0.002f, 0x99000000.toInt())
         }
-        val quoted = "\u201C$verseText\u201D"
+        val quoted = VerseDisplayRules.quote(verseText)
         val maxBlockHeight = (height * 0.40f).toInt()
         var verseLayout = layoutOf(quoted, verse, textWidth)
         while (verseLayout.height > maxBlockHeight && verse.textSize > width * 0.030f) {

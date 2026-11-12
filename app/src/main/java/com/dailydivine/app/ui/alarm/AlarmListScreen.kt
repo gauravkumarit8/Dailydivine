@@ -95,7 +95,11 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
         // again here made a large empty gap above the content and above the + button.
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.addAlarm() }) {
+            FloatingActionButton(
+                onClick = { viewModel.addAlarm() },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add alarm")
             }
         }
@@ -179,7 +183,8 @@ fun AlarmListScreen(viewModel: AlarmListViewModel = hiltViewModel()) {
                     }
                 )
             }
-            AlarmWarningsPanel(warnings)
+            // Before the first alarm exists there is nothing to warn about: the panel only added worry.
+            AlarmWarningsPanel(if (alarms.isEmpty()) emptyList() else warnings)
 
             if (alarms.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

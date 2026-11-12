@@ -1,5 +1,6 @@
 package com.dailydivine.app.wallpaper
 
+import com.dailydivine.app.util.VerseAttribution
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.Bitmap
@@ -128,7 +129,7 @@ class WallpaperUpdater @Inject constructor(
         val primary = darkenUntilContrast(paletteForReligionId(religionId).primary, listOf(Color.White)).toArgb()
         try {
             renderer.render(
-                width, height, daily.verse.translatedText, daily.verse.sourceReference,
+                width, height, daily.verse.translatedText, VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode),
                 primary, background, TextPosition.fromName(prefs.wallpaperTextPosition)
             )
         } finally {

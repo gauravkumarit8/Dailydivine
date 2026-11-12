@@ -1315,6 +1315,23 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile. The `ParagraphStyle`/`TextIndent` code is the most likely thing to need a CI fix.
 
+### 2026-11-12 — Round X (visual fixes from the screenshot review; owner decisions)
+
+**Decisions by the owner (user):** (1) the support address stays `gaurav954624@gmail.com`; (2) **only the shlokas may be in Hindi or Sanskrit (or another language later); every menu, button and screen stays English.** So there will be no `values-hi`, and the earlier "Hindi menus" idea is dropped. The Settings note now says "Menus and screens are always in English." Version 0.0.11 is left until release (set 1.0.0 then).
+
+| Finding (screenshots) | Change |
+|---|---|
+| The Gita meaning was shown with only "Bhagavad Gita 9.29", unlike Arnold/KJV passages which name their translator | `VerseAttribution.line` adds "Hindi/English meaning by DailyDivine" to Gita references on the Home card (and its copy text), Library list/detail/favourites/history, the share image, the wallpaper and the daily notification. Stored data is not changed |
+| Hindi/Sanskrit wrapped in English curly quotes | `VerseDisplayRules.quote` leaves Devanagari text unquoted; used by Home, Library, ring screen, share image, wallpaper |
+| Streak chip narrower than the cards below it | chip fills the width, text column takes the slack, chevron sits at the right edge |
+| Alarm tab warned "2 things may stop your alarm from ringing" before any alarm existed | the warning panel is shown only once an alarm exists |
+| Add-alarm button was pale peach on cream | primary colour with `onPrimary` icon |
+| Tests | `VerseAttributionTest`; two `quote` tests in `VerseDisplayRulesTest` |
+
+**Left as they are (reasons):** Library category badges still show first letters (two "D"): needs an icon per category and a content decision; the wallpaper status line wording ("..., Update now: wallpaper updated") is clumsy but its exact text is covered by existing tests; the hanging indent for poems is only on the Home card.
+
+**NOT verified:** none of this is a compile or a device run.
+
 ---
 
 ## What's Next (as of this session)

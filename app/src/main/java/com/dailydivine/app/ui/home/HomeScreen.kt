@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.util.VerseAttribution
 import com.dailydivine.app.util.ShareFormat
 import com.dailydivine.app.R
 import androidx.compose.ui.res.stringResource
@@ -146,13 +147,13 @@ fun HomeScreen(
                 DailyVerseCard(
                     verseText = daily.verse.translatedText,
                     originalText = daily.verse.originalText,
-                    source = daily.verse.sourceReference,
+                    source = VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode),
                     isBookmarked = daily.isBookmarked,
                     isSpeaking = state.isSpeaking,
                     onPlayToggle = { viewModel.togglePlayVerse() },
                     onCopy = {
                         clipboardManager.setText(
-                            AnnotatedString("${daily.verse.translatedText}\n— ${daily.verse.sourceReference}")
+                            AnnotatedString("${daily.verse.translatedText}\n— ${VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode)}")
                         )
                     },
                     onBookmarkToggle = { viewModel.toggleBookmark() },
@@ -292,7 +293,7 @@ private fun DailyVerseCard(
                 Spacer(Modifier.height(14.dp))
             }
             val verseSize = VerseDisplayRules.fontSizeSp(verseText.length)
-            val quoted = "\u201C${VerseDisplayRules.normalize(verseText)}\u201D"
+            val quoted = VerseDisplayRules.quote(VerseDisplayRules.normalize(verseText))
             val verseStyle = VerseTextStyle.copy(fontSize = verseSize.sp, lineHeight = (verseSize * 1.6f).sp)
             val poemLines = quoted.split('\n')
             if (poemLines.size > 1) {
@@ -347,6 +348,7 @@ private fun StreakChip(streak: com.dailydivine.app.domain.model.StreakInfo, onCl
     val content = MaterialTheme.colorScheme.onSecondaryContainer
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .clip(shape)
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(role = Role.Button, onClick = onClick)
@@ -356,7 +358,7 @@ private fun StreakChip(streak: com.dailydivine.app.domain.model.StreakInfo, onCl
     ) {
         Icon(Icons.Filled.LocalFireDepartment, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.width(10.dp))
-        Column {
+        Column(Modifier.weight(1f)) {
             Text(StreakCopy.title(streak.currentStreak), style = MaterialTheme.typography.titleSmall, color = content)
             streak.nextMilestone?.let {
                 Text(

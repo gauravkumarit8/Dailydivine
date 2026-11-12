@@ -49,4 +49,13 @@ class VerseDisplayRulesTest {
             previous = size
         }
     }
+
+    @Test fun englishTextIsPutInCurlyQuotes() {
+        assertEquals("\u201CBe still.\u201D", VerseDisplayRules.quote("Be still."))
+    }
+
+    @Test fun devanagariTextIsNotPutInEnglishQuotes() {
+        val hindi = "\u092E\u0948\u0902 \u0938\u092C \u092A\u094D\u0930\u093E\u0923\u093F\u092F\u094B\u0902 \u092E\u0947\u0902 \u0938\u092E\u093E\u0928 \u0939\u0942\u0901\u0964"
+        assertEquals(hindi, VerseDisplayRules.quote(hindi))
+    }
 }

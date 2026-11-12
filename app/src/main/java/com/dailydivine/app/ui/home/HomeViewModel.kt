@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.util.VerseAttribution
 import com.dailydivine.app.util.ShareFormat
 import android.content.Context
 import android.net.Uri
@@ -300,7 +301,7 @@ class HomeViewModel @Inject constructor(
         val religionId = _uiState.value.religion?.id ?: return null
         return withContext(Dispatchers.Default) {
             runCatching {
-                shareImageGenerator.generate(daily.verse.translatedText, daily.verse.sourceReference, religionId, format)
+                shareImageGenerator.generate(daily.verse.translatedText, VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode), religionId, format)
             }.getOrNull()
         }
     }

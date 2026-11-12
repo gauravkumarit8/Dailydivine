@@ -59,7 +59,7 @@ class ShareImageGenerator(private val context: Context) {
             textSize = format.baseTextSize
             isAntiAlias = true
         }
-        val quoted = "\u201C${VerseDisplayRules.normalize(verseText)}\u201D"
+        val quoted = VerseDisplayRules.quote(VerseDisplayRules.normalize(verseText))
         // Long passages (some verses run 10+ lines) must still fit the square:
         // shrink the font in steps until the text block fits between the top
         // margin and the source/watermark area, down to a readable floor.

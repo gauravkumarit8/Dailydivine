@@ -1,5 +1,6 @@
 package com.dailydivine.app.jobs
 
+import com.dailydivine.app.util.VerseAttribution
 import android.content.Context
 import com.dailydivine.app.data.local.datastore.UserPreferences
 import com.dailydivine.app.data.local.datastore.UserPrefsState
@@ -25,7 +26,7 @@ internal suspend fun runDailyVerse(
     val religionId = prefs.religionId ?: return
     val installDate = prefs.installEpochDay?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()
     val daily = verseRepository.getDailyVerse(religionId, installDate, LocalDate.now()) ?: return
-    NotificationHelper.postDailyVerse(context, daily.verse.translatedText, daily.verse.sourceReference)
+    NotificationHelper.postDailyVerse(context, daily.verse.translatedText, VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode))
     userPreferences.setLastVerseNotifEpochDay(today)
 }
 

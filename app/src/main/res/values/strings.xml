@@ -85,7 +85,7 @@
     <string name="update_time">Update time</string>
     <string name="your_tradition">Your tradition</string>
     <string name="choose_verse_language">Verse language</string>
-    <string name="hindi_gita_note">Hindi meanings are available for the Bhagavad Gita verses, shown with the Sanskrit. Other passages stay in English, and the menus stay in English for now.</string>
+    <string name="hindi_gita_note">Hindi meanings are available for the Bhagavad Gita verses, shown with the Sanskrit. Other passages stay in English. Menus and screens are always in English.</string>
     <string name="turn_off_and_reset_to_default_wallpaper">Turn off and reset to default wallpaper</string>
     <string name="verses_are_currently_available_in">Verses are currently available in English only. The other languages are on the way.</string>
     <string name="verses_coming_soon">Verses coming soon</string>
