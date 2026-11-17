@@ -40,7 +40,7 @@ class WallpaperLastCheckTest {
 
     @Test fun `failures say the phone refused`() =
         assertEquals(
-            "today 5:00 AM, Update now: the phone refused the change",
+            "today 5:00 AM, you tapped Update now: the phone refused the change",
             describeLastCheck(ms(13, 5, 0), "MANUAL", "FAILED", now, ZoneOffset.UTC)
         )
 

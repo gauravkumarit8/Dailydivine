@@ -20,4 +20,16 @@ class LibraryCopyTest {
         assertEquals("\u2022", LibraryCopy.initial("   "))
         assertEquals("\u2022", LibraryCopy.initial("&&"))
     }
+
+    @Test fun initialsAreTwoLettersSoSimilarCategoriesDiffer() {
+        assertEquals("Du", LibraryCopy.initials("Duty & Action"))
+        assertEquals("De", LibraryCopy.initials("Devotion & Virtue"))
+        assertEquals("Ps", LibraryCopy.initials("Psalms"))
+        assertEquals("Pr", LibraryCopy.initials("Proverbs"))
+    }
+
+    @Test fun initialsHandleShortAndEmptyNames() {
+        assertEquals("A", LibraryCopy.initials("a"))
+        assertEquals("\u2022", LibraryCopy.initials("  & "))
+    }
 }

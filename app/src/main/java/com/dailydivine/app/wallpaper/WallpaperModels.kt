@@ -42,7 +42,7 @@ fun describeLastCheck(
         "WORK" -> "background job"
         "MORNING_ALARM" -> "your morning alarm"
         "APP_OPEN" -> "you opened the app"
-        "MANUAL" -> "Update now"
+        "MANUAL" -> "you tapped Update now"
         else -> "unknown"
     }
     val result = when (resultName) {

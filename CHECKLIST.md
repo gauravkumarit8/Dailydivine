@@ -1388,6 +1388,20 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run. The `@Query` update and the migration backfill have not run on a device (the user's phone already has content version 3, so it should migrate to 4 on the next launch).
 
+### 2026-11-17 — Round AB (polish items left over from the screenshot review)
+
+**CI / device:** the user confirmed Round AA works on the phone (Sanskrit for every Hinduism passage, number fix).
+
+| Item | Change |
+|---|---|
+| Poems wrapped as if each wrapped part were a new line on every screen except Home | the Home card's inline code became a shared composable `ui/components/PoemText` (each source line a paragraph, wrapped part indented); the Library verse detail and history detail dialogs now use it too |
+| Library category badges showed one letter, so "Duty & Action" and "Devotion & Virtue" (and Psalms / Proverbs) looked identical | `LibraryCopy.initials` gives two letters (Du, De, Ps, Pr); `initial` stays for compatibility; tests added |
+| Wallpaper status read "today 7:03 PM, Update now: wallpaper updated" | now "..., you tapped Update now: ..."; one test updated |
+
+**Still open (honest list):** the alarm ring screen, the add/edit alarm screen, onboarding, Favorites, History, dark mode and the share image have never been looked at on a device by me; the ring screen is centred text so it was left without the poem indent; Hindi words are not searchable; version is still 0.0.11.
+
+**NOT verified:** none of this is a compile or a device run.
+
 ---
 
 ## What's Next (as of this session)

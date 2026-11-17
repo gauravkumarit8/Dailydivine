@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.library
 
+import com.dailydivine.app.ui.components.PoemText
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -164,7 +165,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                             Text(v.originalText, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.height(10.dp))
                         }
-                        Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(v.translatedText)), style = VerseTextStyle)
+                        PoemText(VerseDisplayRules.quote(VerseDisplayRules.normalize(v.translatedText)), VerseTextStyle)
                         Spacer(Modifier.height(8.dp))
                         Text(
                             "\u2014 ${VerseAttribution.line(v.sourceReference, v.languageCode)}",
@@ -229,7 +230,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     Text(verse.originalText, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.height(10.dp))
                 }
-                Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(verse.translatedText)), style = VerseTextStyle)
+                PoemText(VerseDisplayRules.quote(VerseDisplayRules.normalize(verse.translatedText)), VerseTextStyle)
                 }
             },
             confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text(stringResource(R.string.close)) } },
@@ -303,7 +304,7 @@ private fun CategoryCard(name: String, count: Int, onClick: () -> Unit) {
                 modifier = Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(LibraryCopy.initial(name), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Text(LibraryCopy.initials(name), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             }
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
