@@ -8,7 +8,7 @@ ids 1147+, dayNumbers 47+, spread evenly across the four categories. English goe
 Sanskrit in originalText. Hindi stays in tools/gita/gita_pilot.json until the app has a Hindi UI.
 Idempotent: always rebuilds from the first 46 verses already in the file.
 """
-import json, os, random
+import json, os, random, re
 HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, '..', 'app', 'src', 'main', 'assets', 'content', 'hinduism_en.json')
 EXCLUDED = {'3.35'}   # dharma = one's own duty can be misread as "stay in your own religion"
@@ -18,6 +18,13 @@ CAT = {111: ['2.13','2.14','2.20','2.22','4.38','13.28','15.15','6.30','7.14'],
        114: ['4.7','4.8','4.11','8.7','9.22','9.26','9.29','9.34','10.10','12.13','12.14','18.58','18.66','18.78']}
 TAGS = {'2.47': 'action,detachment', '2.48': 'balance,action', '9.22': 'trust,care', '6.5': 'self,effort',
         '18.66': 'refuge,trust', '4.7': 'dharma,hope'}
+def std_ref(ref):
+    """The pilot refs come from the dataset, which counts Arjuna's question at the start of chapter 13
+    as an extra verse. Printed Gitas (700 verses) number chapter 13 one lower, so the app shows that."""
+    c, n = ref.split('.')
+    return f"{c}.{int(n) - 1}" if c == '13' and int(n) >= 2 else ref
+
+
 def nbsp_danda(text):
     """Glue each danda (। ॥) to the word before it with a no-break space, so a line can never wrap
     and leave a danda alone on its own line (seen on a phone screenshot of Gita 9.29)."""
@@ -27,6 +34,15 @@ def nbsp_danda(text):
 doc = json.load(open(OUT, encoding='utf-8'))
 base = [v for v in doc['verses'] if v['id'] <= 1146]
 assert len(base) == 46 and [v['dayNumber'] for v in base] == list(range(1, 47)), 'Arnold block changed'
+# Round AA: the Sanskrit of the Gita verse(s) each Arnold passage translates (tools/gita/extract_arnold_sanskrit.py)
+arnold = json.load(open(os.path.join(HERE, 'gita', 'arnold_sanskrit.json'), encoding='utf-8'))
+for v in base:
+    a = arnold[str(v['id'])]
+    chapter = a['refs'][0].split('.')[0]
+    verses = [x.split('.')[1] for x in a['refs']]
+    gita = f"Gita {chapter}.{verses[0]}" + (f"-{verses[-1]}" if len(verses) > 1 else '')
+    v['originalText'] = nbsp_danda(a['sanskrit'])
+    v['sourceReference'] = re.sub(r' \u00b7 Gita .*$', '', v['sourceReference']) + ' \u00b7 ' + gita
 rows = {r['ref']: r for r in json.load(open(os.path.join(HERE, 'gita', 'gita_pilot.json'), encoding='utf-8'))}
 used = [r for c in CAT.values() for r in c]
 assert len(used) == len(set(used)), 'duplicate ref in category map'
@@ -41,13 +57,13 @@ for n, (_, cat, r) in enumerate(keyed, 47):
     row = rows[r]
     assert row['english'].strip() and row['sanskrit'].strip()
     vs.append({'id': 1100 + n, 'categoryId': cat, 'dayNumber': n, 'originalText': nbsp_danda(row['sanskrit']),
-               'translatedText': row['english'], 'sourceReference': f'Bhagavad Gita {r}',
+               'translatedText': row['english'], 'sourceReference': f'Bhagavad Gita {std_ref(r)}',
                'tags': TAGS.get(r, 'gita')})
 counts = {}
 for v in vs: counts[v['categoryId']] = counts.get(v['categoryId'], 0) + 1
 for c in doc['categories']: c['verseCount'] = counts[c['id']]
 doc['verses'] = vs
-doc['version'] = 3
+doc['version'] = 4
 doc['source'] = ('The Song Celestial (Bhagavad-Gita), tr. Sir Edwin Arnold, 1885 (public domain; Project Gutenberg #2388), '
                  'plus Bhagavad Gita verses: Sanskrit text (public domain) with English meanings written for DailyDivine.')
 json.dump(doc, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
@@ -58,7 +74,7 @@ print(len(vs), 'verses', counts)
 gita = [v for v in vs if v['id'] > 1146]
 ov_dir = os.path.join(HERE, '..', 'app', 'src', 'main', 'assets', 'content_overlays')
 os.makedirs(ov_dir, exist_ok=True)
-by_ref = {f"Bhagavad Gita {r}": row for r, row in rows.items()}
+by_ref = {f"Bhagavad Gita {std_ref(r)}": row for r, row in rows.items()}
 ov = []
 for v in gita:
     hi = by_ref[v['sourceReference']]['hindi'].strip()

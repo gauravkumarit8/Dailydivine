@@ -1368,6 +1368,26 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run. Sanskrit read by a Hindi voice has not been heard (pronunciation of "ऽ" and of conjuncts may be imperfect); it needs a Hindi voice installed in the phone's text-to-speech settings.
 
+### 2026-11-17 — Round AA (Sanskrit for the 46 Arnold passages; a Gita numbering error found and fixed)
+
+**Request (user):** "yes" to mapping the 46 Arnold passages to their Sanskrit, so every Hinduism passage shows Sanskrit.
+
+**ERROR FOUND AND FIXED (mine, from Round R):** the dataset (gita/gita `verse.json`) counts Arjuna's question at the start of chapter 13 as an extra verse (701 verses; chapter 13 has 35 instead of 34), so every chapter-13 number in it is one higher than in printed Gitas. The app showed the verse "samam sarveshu bhuteshu..." as **Bhagavad Gita 13.28**; the printed number is **13.27**. The Sanskrit, Hindi and English were right; only the reference was off by one. Fixed with `std_ref()` in `tools/build_hinduism_gita.py`. The review file sent for Round R also said 13.28.
+
+| Piece | Detail |
+|---|---|
+| `tools/gita/extract_arnold_sanskrit.py` (new) | holds the passage -> verse map (58 distinct verses) and writes `tools/gita/arnold_sanskrit.json`; converts chapter-13 numbers; the only two mid-word line breaks (2.20, 2.22) are repaired with asserted exact fixes; every other line join was inspected |
+| Verification | for each of the 58 verses a distinctive Sanskrit word was matched against the verse's text; the 12 flagged were only sandhi spelling differences in my check strings and were confirmed by reading the printed text |
+| `build_hinduism_gita.py` | adds the Sanskrit to the 46 Arnold passages and appends " · Gita 2.47-48" to their reference line (idempotent); content version 3 -> **4** |
+| `VerseDao.refreshOriginalAndReference` (new) | updates ONLY `originalText` and `sourceReference`, only where they differ. `ContentMigrationManager` calls it for already-installed verses when the file version rises, so phones that already have the Arnold passages receive the Sanskrit and the corrected 13.27. Translated text, ids, days, categories are never touched. `FakeVerseDao` updated |
+| Tests | `ContentIntegrityTest.everyHinduismVerseHasDevanagariSanskrit` |
+
+**Hindi mode is unchanged:** Hindi meanings exist only for the 49 Gita verses, so Hindi readers still rotate through those 49; the Arnold passages show in English readers' days, with Sanskrit above.
+
+**Needs the owner's review:** `arnold_sanskrit_review.md` (46 entries). The mapping is my identification, not an authoritative index.
+
+**NOT verified:** none of this is a compile or a device run. The `@Query` update and the migration backfill have not run on a device (the user's phone already has content version 3, so it should migrate to 4 on the next launch).
+
 ---
 
 ## What's Next (as of this session)

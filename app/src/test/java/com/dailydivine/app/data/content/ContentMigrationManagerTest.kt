@@ -39,6 +39,10 @@ class ContentMigrationManagerTest {
         }
         override suspend fun getExistingVerseIds(religionId: Int): List<Int> =
             stored.values.filter { it.religionId == religionId }.map { it.id }
+        override suspend fun refreshOriginalAndReference(id: Int, originalText: String, sourceReference: String) {
+            val old = stored[id] ?: return
+            stored[id] = old.copy(originalText = originalText, sourceReference = sourceReference)
+        }
     }
 
     private class FakeCategoryDao : CategoryDao {

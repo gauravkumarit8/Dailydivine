@@ -19,7 +19,9 @@ import com.google.gson.Gson
  * new/changed ones.
  *
  * It never deletes or truncates the verses/streaks/bookmarks/user_profile
- * tables. That is the entire point of this class: an app update must not be
+ * tables, and never changes an installed verse's translated text. (Its Sanskrit and reference line may be
+ * refreshed; see VerseDao.refreshOriginalAndReference.) The old statement below still holds for rows:
+ * * tables. That is the entire point of this class: an app update must not be
  * able to destroy a user's streak or bookmarks.
  */
 class ContentMigrationManager(
@@ -63,6 +65,11 @@ class ContentMigrationManager(
 
         if (newVerses.isNotEmpty()) {
             verseDao.insertAll(newVerses) // OnConflictStrategy.IGNORE — belt-and-braces safety
+        }
+        // Verses already installed keep their id, day, category and translated text. Only their Sanskrit
+        // and reference line may be corrected or added by an update (e.g. Sanskrit for the Arnold passages).
+        allVerses.filter { it.id in existingIds }.forEach {
+            verseDao.refreshOriginalAndReference(it.id, it.originalText, it.sourceReference)
         }
         categoryDao.insertAll(contentLoader.toCategoryEntities(religionId, file))
 

@@ -59,6 +59,16 @@ class ContentIntegrityTest {
         }
     }
 
+    /** Every Hinduism passage shows its Sanskrit: the Gita verses and the Arnold passages (mapped to their verses). */
+    @Test fun everyHinduismVerseHasDevanagariSanskrit() {
+        val verses = parse(File(dir, "hinduism_en.json")).getAsJsonArray("verses")
+        for (e in verses) {
+            val v = e.asJsonObject
+            val sanskrit = v.get("originalText").asString
+            assertTrue("no Sanskrit for ${v.get("sourceReference").asString}", sanskrit.any { it in '\u0900'..'\u097F' })
+        }
+    }
+
     /** Hindi overlay: every entry points at a real Hinduism verse, with a consecutive block of day numbers. */
     @Test fun hindiOverlayMatchesTheHinduismContent() {
         val overlay = parse(File("src/main/assets/content_overlays/hinduism_hi.json"))
