@@ -160,6 +160,10 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
             text = {
                 Column(Modifier.heightIn(max = dialogMaxHeight()).verticalScroll(rememberScrollState())) {
                     item.verse?.let { v ->
+                        if (v.originalText.isNotBlank()) {
+                            Text(v.originalText, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                            Spacer(Modifier.height(10.dp))
+                        }
                         Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(v.translatedText)), style = VerseTextStyle)
                         Spacer(Modifier.height(8.dp))
                         Text(
@@ -221,7 +225,11 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                         .heightIn(max = dialogMaxHeight())
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(verse.translatedText)), style = VerseTextStyle)
+                    if (verse.originalText.isNotBlank()) {
+                    Text(verse.originalText, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.height(10.dp))
+                }
+                Text(VerseDisplayRules.quote(VerseDisplayRules.normalize(verse.translatedText)), style = VerseTextStyle)
                 }
             },
             confirmButton = { TextButton(onClick = viewModel::closeDetail) { Text(stringResource(R.string.close)) } },

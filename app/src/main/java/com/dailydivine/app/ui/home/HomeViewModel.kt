@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.home
 
+import com.dailydivine.app.audio.VerseSpeech
 import com.dailydivine.app.util.VerseAttribution
 import com.dailydivine.app.util.ShareFormat
 import android.content.Context
@@ -241,9 +242,9 @@ class HomeViewModel @Inject constructor(
             val rate = userPreferences.state.first().ttsRate // F012-R06
             _uiState.value = _uiState.value.copy(isSpeaking = true)
             // Speak in the VERSE's language, not the phone's default locale.
-            val result = ttsManager.speak(
-                verse.translatedText,
-                Locale.forLanguageTag(verse.languageCode),
+            // Sanskrit first (when the verse has it), then the meaning in the user's chosen language.
+            val result = ttsManager.speakParts(
+                VerseSpeech.plan(verse.originalText, verse.translatedText, verse.languageCode),
                 rate = rate,
                 onDone = { _uiState.value = _uiState.value.copy(isSpeaking = false) }
             )
@@ -301,7 +302,11 @@ class HomeViewModel @Inject constructor(
         val religionId = _uiState.value.religion?.id ?: return null
         return withContext(Dispatchers.Default) {
             runCatching {
-                shareImageGenerator.generate(daily.verse.translatedText, VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode), religionId, format)
+                shareImageGenerator.generate(
+                    daily.verse.translatedText,
+                    VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode),
+                    religionId, format, originalText = daily.verse.originalText
+                )
             }.getOrNull()
         }
     }

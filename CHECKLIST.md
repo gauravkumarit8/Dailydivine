@@ -1332,6 +1332,42 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run.
 
+### 2026-11-13 — Round Y (store, website and in-app credits brought up to date)
+
+**CI:** the user confirmed that Android CI is green and successful for the build including Rounds Q to X (first confirmed green since Round N).
+
+**Why:** the store listing, website and in-app credits still described Hinduism as Arnold's text only and said verses were English only, while the app now has Gita verses in Sanskrit with English and Hindi meanings (Rounds R and U). A credits screen that omits who wrote the meanings is a trust and licensing problem, not a cosmetic one.
+
+| File | Change |
+|---|---|
+| `ContentCredits.kt` (Settings > About > Content sources & credits) | Hinduism entry also credits the Gita verses: Sanskrit public domain from github.com/gita/gita (Unlicense); English and Hindi meanings written for DailyDivine and reviewed by the app's author |
+| `docs/terms.html` | same credit |
+| `docs/index.html` | Hinduism line mentions Sanskrit with Hindi and English meanings; FAQ "Can I read in my own language?" now says: English app and menus, Gita verses in Sanskrit with Hindi meanings in Settings |
+| `play-store/LISTING.md` | share "square or Story size"; Hinduism line; language sentence |
+
+**The user must re-upload `docs/` to https://grvthakur.bid/daily-divine/** for the website changes to go live (the in-app link points there).
+
+**NOT verified:** none of the Kotlin change is a compile (a string constant only). The listing copy has not been entered in Play Console.
+
+### 2026-11-13 — Round Z (read aloud: Sanskrit first, then the meaning; Sanskrit on images and in the Library)
+
+**Request (user):** read-aloud read only the Hindi meaning. Wanted the Sanskrit read first and then the meaning in the chosen language; and for Hinduism the Sanskrit should be shown for every language with the chosen language's meaning below it.
+
+| Piece | Detail |
+|---|---|
+| `audio/VerseSpeech` (new, pure) | plan = [Sanskrit read by a **Hindi voice** (Android has no Sanskrit voice), then the meaning in the verse's language]; `cleanForSpeech` removes no-break spaces/newlines and turns dandas into pauses |
+| `TTSManager.speakParts` | speaks the parts in turn with a 700 ms pause, each with its own language; a part whose voice is missing is skipped, but if the MEANING's voice is missing nothing is read and the existing "No voice is installed" message appears (no half-read verse). A generation counter makes `stop()` and late engine callbacks safe. The old `speak()` shares the same completion path |
+| `HomeViewModel.togglePlayVerse` | uses `VerseSpeech.plan`. "Wake Up & Read" auto-read goes through the same call |
+| `VerseComposer` (new) | the share image and the wallpaper now draw the Sanskrit above the meaning (smaller, cream) inside the same shrink-to-fit text block |
+| `LibraryScreen` | verse detail and history detail dialogs show the Sanskrit above the meaning |
+| Tests | `VerseSpeechTest` (4) |
+
+**Already true before this round:** the Home card shows the Sanskrit above the meaning in every language (English and Hindi), because the Sanskrit is part of the verse itself.
+
+**NOT done, needs a decision:** the 46 Arnold passages have no Sanskrit (they are chapter excerpts, not numbered verses), so on those days Hinduism shows English only. Mapping each to its Sanskrit verses needs a review by the owner. The alarm ring screen and the notification still show the meaning only.
+
+**NOT verified:** none of this is a compile or a device run. Sanskrit read by a Hindi voice has not been heard (pronunciation of "ऽ" and of conjuncts may be imperfect); it needs a Hindi voice installed in the phone's text-to-speech settings.
+
 ---
 
 ## What's Next (as of this session)

@@ -130,7 +130,8 @@ class WallpaperUpdater @Inject constructor(
         try {
             renderer.render(
                 width, height, daily.verse.translatedText, VerseAttribution.line(daily.verse.sourceReference, daily.verse.languageCode),
-                primary, background, TextPosition.fromName(prefs.wallpaperTextPosition)
+                primary, background, TextPosition.fromName(prefs.wallpaperTextPosition),
+                originalText = daily.verse.originalText
             )
         } finally {
             background?.recycle()

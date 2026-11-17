@@ -1,5 +1,6 @@
 package com.dailydivine.app.wallpaper
 
+import com.dailydivine.app.util.VerseComposer
 import com.dailydivine.app.util.VerseDisplayRules
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -29,7 +30,8 @@ class WallpaperRenderer {
         reference: String,
         primaryArgb: Int,
         background: Bitmap?,
-        position: TextPosition
+        position: TextPosition,
+        originalText: String = ""
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -59,7 +61,8 @@ class WallpaperRenderer {
             textSize = width * 0.058f
             setShadowLayer(width * 0.006f, 0f, width * 0.002f, 0x99000000.toInt())
         }
-        val quoted = VerseDisplayRules.quote(verseText)
+        // Sanskrit above the meaning when the verse has it; both shrink together to fit.
+        val quoted = VerseComposer.withOriginal(originalText, VerseDisplayRules.quote(verseText))
         val maxBlockHeight = (height * 0.40f).toInt()
         var verseLayout = layoutOf(quoted, verse, textWidth)
         while (verseLayout.height > maxBlockHeight && verse.textSize > width * 0.030f) {
@@ -97,7 +100,7 @@ class WallpaperRenderer {
         canvas.drawBitmap(source, matrix, Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
     }
 
-    private fun layoutOf(text: String, paint: TextPaint, width: Int): StaticLayout =
+    private fun layoutOf(text: CharSequence, paint: TextPaint, width: Int): StaticLayout =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
             .setAlignment(Layout.Alignment.ALIGN_CENTER)
             .setLineSpacing(0f, 1.15f)

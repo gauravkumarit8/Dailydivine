@@ -7,7 +7,8 @@ package com.dailydivine.app.util
  */
 object ContentCredits {
     val SCRIPTURE: List<Pair<String, String>> = listOf(
-        "Hinduism" to "The Song Celestial (Bhagavad-Gita), translated by Sir Edwin Arnold, 1885. Public domain. Project Gutenberg #2388.",
+        "Hinduism" to "The Song Celestial (Bhagavad-Gita), translated by Sir Edwin Arnold, 1885. Public domain. Project Gutenberg #2388. " +
+            "Bhagavad Gita verses: the Sanskrit text is public domain (taken from github.com/gita/gita, Unlicense); the English and Hindi meanings were written for DailyDivine from the Sanskrit and reviewed by the app's author.",
         "Christianity" to "The Holy Bible, King James Version. Public domain in the United States.",
         "Islam" to "The Meaning of the Glorious Koran, translated by Marmaduke Pickthall, 1930. Public domain. Text via Tanzil.net.",
         "Buddhism" to "The Dhammapada, translated by F. Max M\u00fcller, Sacred Books of the East vol. X, 1881. Public domain. Project Gutenberg #2017."

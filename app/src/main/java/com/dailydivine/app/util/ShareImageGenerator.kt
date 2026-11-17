@@ -30,7 +30,7 @@ import java.io.FileOutputStream
  */
 class ShareImageGenerator(private val context: Context) {
 
-    fun generate(verseText: String, source: String, religionId: Int, format: ShareFormat = ShareFormat.SQUARE): Uri {
+    fun generate(verseText: String, source: String, religionId: Int, format: ShareFormat = ShareFormat.SQUARE, originalText: String = ""): Uri {
         val width = format.width
         val height = format.height
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -59,7 +59,8 @@ class ShareImageGenerator(private val context: Context) {
             textSize = format.baseTextSize
             isAntiAlias = true
         }
-        val quoted = VerseDisplayRules.quote(VerseDisplayRules.normalize(verseText))
+        // For verses that have it, the Sanskrit sits above the meaning; both shrink together to fit.
+        val quoted = VerseComposer.withOriginal(originalText, VerseDisplayRules.quote(VerseDisplayRules.normalize(verseText)))
         // Long passages (some verses run 10+ lines) must still fit the square:
         // shrink the font in steps until the text block fits between the top
         // margin and the source/watermark area, down to a readable floor.
@@ -117,7 +118,7 @@ class ShareImageGenerator(private val context: Context) {
         }
     }
 
-    private fun buildStaticLayout(text: String, paint: TextPaint, width: Int): StaticLayout =
+    private fun buildStaticLayout(text: CharSequence, paint: TextPaint, width: Int): StaticLayout =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
             .setAlignment(Layout.Alignment.ALIGN_CENTER)
             .setLineSpacing(1.1f, 1.15f)
