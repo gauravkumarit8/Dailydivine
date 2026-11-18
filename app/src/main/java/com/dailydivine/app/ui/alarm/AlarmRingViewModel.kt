@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.alarm
 
+import com.dailydivine.app.util.VersePreview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailydivine.app.data.local.datastore.UserPreferences
@@ -38,15 +39,6 @@ class AlarmRingViewModel @Inject constructor(
         }
     }
 
-    /** F004-R15 wants just "the first line" -- approximated here as the
-     *  first sentence (up to the first '.', '!', or '?'), capped at 120
-     *  chars so an unusually long first sentence doesn't overflow the
-     *  ring screen's limited space. */
-    private fun firstSentence(rawText: String): String {
-        // Verse text keeps its poetic line breaks; flatten them for this one-line preview.
-        val text = rawText.replace(Regex("\\s*\\n\\s*"), " ")
-        val endIdx = text.indexOfFirst { it == '.' || it == '!' || it == '?' }
-        val candidate = if (endIdx in 0 until 200) text.substring(0, endIdx + 1) else text
-        return if (candidate.length > 120) candidate.take(117) + "..." else candidate
-    }
+    /** F004-R15: the first sentence of the verse (see [VersePreview], which also handles the Hindi danda). */
+    private fun firstSentence(rawText: String): String = VersePreview.firstSentence(rawText)
 }

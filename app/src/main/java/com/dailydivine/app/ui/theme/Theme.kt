@@ -1,5 +1,11 @@
 package com.dailydivine.app.ui.theme
 
+import android.content.ContextWrapper
+import android.content.Context
+import android.app.Activity
+import androidx.core.view.WindowCompat
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.runtime.SideEffect
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
@@ -19,6 +25,17 @@ fun DailyDivineTheme(
     content: @Composable () -> Unit
 ) {
     val palette = paletteForReligionId(religionId)
+    // The system bar icons must match the app's own theme, which may differ from the phone's
+    // (dark icons on a dark app bar would be invisible).
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = view.context.findActivity()?.window ?: return@SideEffect
+            val controller = WindowCompat.getInsetsController(window, view)
+            controller.isAppearanceLightStatusBars = !darkTheme
+            controller.isAppearanceLightNavigationBars = !darkTheme
+        }
+    }
     // A11Y: brand colours that fail 4.5:1 are nudged until they pass (see Contrast.kt);
     // colours that already pass (e.g. Christianity, Buddhism) are returned unchanged.
     val lightPrimary = remember(palette) { lightSchemePrimary(palette) }
@@ -70,4 +87,10 @@ fun DailyDivineTheme(
         ),
         content = content
     )
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

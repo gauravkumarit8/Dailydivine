@@ -1,5 +1,7 @@
 package com.dailydivine.app.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.dailydivine.app.util.ThemeMode
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
@@ -42,11 +44,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             val startDestination by mainViewModel.startDestination.collectAsState()
             val religionId by mainViewModel.currentReligionId.collectAsState()
+            val themeMode by mainViewModel.themeMode.collectAsState()
             // BUG FIX: previously called with no religionId at all, so the
             // app always showed the default (Spiritual/teal) palette
             // regardless of what the user selected. See MainViewModel's
             // currentReligionId doc comment.
-            DailyDivineTheme(religionId = religionId ?: 0) {
+            DailyDivineTheme(
+                religionId = religionId ?: 0,
+                darkTheme = ThemeMode.isDark(themeMode, isSystemInDarkTheme())
+            ) {
                 // startDestination is guaranteed non-null by the time Compose
                 // actually renders this, since the splash screen held above
                 // blocks the very first frame until it resolves.

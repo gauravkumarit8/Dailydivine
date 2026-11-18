@@ -1,5 +1,6 @@
 package com.dailydivine.app.data.local.datastore
 
+import com.dailydivine.app.util.ThemeMode
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
@@ -35,6 +36,7 @@ data class UserPrefsState(
     val streakReminderEnabled: Boolean = true,
     val milestonesEnabled: Boolean = true,
     val lastMilestoneDays: Int = 0, // highest milestone already celebrated, so each fires once
+    val themeMode: String = "system", // "system" | "light" | "dark" (see ThemeMode)
     val ttsRate: Float = 1.0f,      // F012-R06 voice speed: 0.75 slow, 1.0 normal, 1.25 fast
     // Daily wallpaper (new feature): OFF by default, so nothing ever changes without consent.
     val wallpaperTarget: String = "OFF",          // OFF | HOME | LOCK | BOTH
@@ -69,6 +71,7 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
         val MILESTONES_ENABLED = booleanPreferencesKey("milestones_enabled")
         val LAST_MILESTONE_DAYS = intPreferencesKey("last_milestone_days")
         val TTS_RATE = floatPreferencesKey("tts_rate")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
         val WALLPAPER_TARGET = stringPreferencesKey("wallpaper_target")
         val WALLPAPER_USE_CUSTOM = booleanPreferencesKey("wallpaper_use_custom")
         val WALLPAPER_HOUR = intPreferencesKey("wallpaper_hour")
@@ -95,6 +98,7 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
             streakReminderEnabled = prefs[Keys.STREAK_REMINDER_ENABLED] ?: true,
             milestonesEnabled = prefs[Keys.MILESTONES_ENABLED] ?: true,
             lastMilestoneDays = prefs[Keys.LAST_MILESTONE_DAYS] ?: 0,
+            themeMode = ThemeMode.normalize(prefs[Keys.THEME_MODE]),
             ttsRate = prefs[Keys.TTS_RATE] ?: 1.0f,
             wallpaperTarget = prefs[Keys.WALLPAPER_TARGET] ?: "OFF",
             wallpaperUseCustom = prefs[Keys.WALLPAPER_USE_CUSTOM] ?: false,
@@ -157,6 +161,10 @@ class UserPreferences @Inject constructor(@ApplicationContext private val contex
     suspend fun setLastVerseNotifEpochDay(day: Long) { context.dataStore.edit { it[Keys.LAST_VERSE_NOTIF_EPOCH_DAY] = day } }
     suspend fun setLastStreakNotifEpochDay(day: Long) { context.dataStore.edit { it[Keys.LAST_STREAK_NOTIF_EPOCH_DAY] = day } }
     suspend fun setWallpaperLastEpochDay(day: Long) { context.dataStore.edit { it[Keys.WALLPAPER_LAST_EPOCH_DAY] = day } }
+
+    suspend fun setThemeMode(mode: String) {
+        context.dataStore.edit { it[Keys.THEME_MODE] = ThemeMode.normalize(mode) }
+    }
 
     suspend fun setTtsRate(rate: Float) {
         context.dataStore.edit { it[Keys.TTS_RATE] = rate }

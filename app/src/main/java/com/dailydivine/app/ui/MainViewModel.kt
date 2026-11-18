@@ -55,6 +55,10 @@ class MainViewModel @Inject constructor(
     private val _currentReligionId = MutableStateFlow<Int?>(null)
     val currentReligionId: StateFlow<Int?> = _currentReligionId.asStateFlow()
 
+    /** "system" | "light" | "dark": the user's theme choice, applied live by MainActivity. */
+    private val _themeMode = MutableStateFlow("system")
+    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
+
     /** The subset of prefs that decides what notification work should exist. */
     private data class NotifKey(
         val onboarded: Boolean, val dailyVerse: Boolean, val hour: Int, val minute: Int, val streakReminder: Boolean
@@ -134,7 +138,10 @@ class MainViewModel @Inject constructor(
                 }
         }
         viewModelScope.launch {
-            userPreferences.state.collect { prefs -> _currentReligionId.value = prefs.religionId }
+            userPreferences.state.collect { prefs ->
+                _currentReligionId.value = prefs.religionId
+                _themeMode.value = prefs.themeMode
+            }
         }
         viewModelScope.launch {
             val prefs = userPreferences.state.first()

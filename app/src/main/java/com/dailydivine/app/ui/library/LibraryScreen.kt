@@ -219,7 +219,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
         val isBookmarked = verse.id in bookmarkedIds
         AlertDialog(
             onDismissRequest = viewModel::closeDetail,
-            title = { Text(VerseAttribution.line(verse.sourceReference, verse.languageCode), style = MaterialTheme.typography.titleMedium) },
+            title = { Text(verse.sourceReference, style = MaterialTheme.typography.titleMedium) },
             text = {
                 Column(
                     Modifier
@@ -333,7 +333,7 @@ private fun HistoryRow(item: JournalHistoryItem, onClick: () -> Unit) {
             }
             item.verse?.let {
                 Spacer(Modifier.height(4.dp))
-                Text(VerseAttribution.line(it.sourceReference, it.languageCode), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                Text(it.sourceReference, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
             }
             Spacer(Modifier.height(8.dp))
             Text(

@@ -1402,6 +1402,21 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run.
 
+### 2026-11-19 — Round AC (theme setting; fixes from the second set of device screenshots)
+
+**Reported by the user:** "i didn't find the theme in my setting". Cause: there was never a theme setting. The app followed the phone's light/dark mode only (`DailyDivineTheme(darkTheme = isSystemInDarkTheme())`), and `UserProfile.themeMode` existed in the schema but nothing used it.
+
+| Finding (screenshots, build with Rounds Q-AB) | Change |
+|---|---|
+| No way to choose light/dark | new **Appearance** group in Settings: System / Light / Dark chips. `UserPrefsState.themeMode` (DataStore key `theme_mode`), `ThemeMode.isDark`, applied live from `MainActivity` through `MainViewModel.themeMode`. Status/navigation bar icons now follow the app's theme (`SideEffect` in `DailyDivineTheme`), so a dark app on a light phone does not get invisible dark icons. Default stays "system", so nothing changes for existing users. `ThemeModeTest` |
+| Alarm tab: a single reliability warning opened in full (long Xiaomi steps) and filled about 40% of the screen, pinned above the list, so the alarm itself was half off screen | the panel is always one short line ("1 thing may stop your alarm from ringing") with a Review button; the details are shown only on tap |
+| Ring screen cut the verse in the middle of a word ("आत्मा ही अपन...") because the first-sentence rule knew only . ! ? and then cut at 120 chars | `VersePreview.firstSentence`: also stops at the Hindi danda, cap raised to 170, cuts at a word boundary with an ellipsis; `VersePreviewTest` |
+| The "Hindi meaning by DailyDivine" credit was repeated on every History row, and twice in the verse detail dialog (title and again below) | list/history rows and dialog titles show the plain reference; the credit stays once under the verse |
+
+**Seen, deliberately not changed (needs a decision or a design):** the Story/Square image gradient for Hinduism ends in a muddy olive-mustard (primary to secondary) while the wallpaper goes orange to deep red-brown; the Share chooser dialog has a lot of empty space; the black round button on the Home tab in one screenshot is the phone's own rotate suggestion, not the app; the ring screen does not show the Sanskrit or the verse reference.
+
+**NOT verified:** none of this is a compile or a device run.
+
 ---
 
 ## What's Next (as of this session)

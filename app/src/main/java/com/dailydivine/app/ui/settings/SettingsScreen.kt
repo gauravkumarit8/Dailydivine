@@ -1,5 +1,6 @@
 package com.dailydivine.app.ui.settings
 
+import com.dailydivine.app.util.ThemeMode
 import com.dailydivine.app.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
@@ -166,6 +167,30 @@ fun SettingsScreen(
                 Switch(checked = prefs.milestonesEnabled, onCheckedChange = null)
             }
         )
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Text(stringResource(R.string.appearance), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(Modifier.height(8.dp))
+        SettingsGroup {
+        SettingsRow(
+            headlineContent = { Text(stringResource(R.string.theme)) },
+            supportingContent = { Text(stringResource(R.string.theme_help)) }
+        )
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            listOf("System" to ThemeMode.SYSTEM, "Light" to ThemeMode.LIGHT, "Dark" to ThemeMode.DARK).forEach { (label, mode) ->
+                FilterChip(
+                    selected = prefs.themeMode == mode,
+                    onClick = { viewModel.setThemeMode(mode) },
+                    label = { Text(label) }
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
         }
 
         Spacer(Modifier.height(24.dp))

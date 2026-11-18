@@ -423,27 +423,27 @@ private class AlarmWarning(val text: String, val buttonLabel: String, val onClic
 private fun AlarmWarningsPanel(warnings: List<AlarmWarning>) {
     if (warnings.isEmpty()) return
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val many = warnings.size > 1
     Card(
         modifier = Modifier.fillMaxWidth().padding(ScreenHorizontalPadding, 8.dp, ScreenHorizontalPadding, 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         Column(Modifier.padding(16.dp)) {
-            if (many) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "${warnings.size} things may stop your alarm from ringing",
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    FilledTonalButton(onClick = { expanded = !expanded }) {
-                        Text(if (expanded) "Hide" else "Review")
-                    }
+            // Always one short line first. A single warning used to open in full (with the phone-maker
+            // steps) and filled almost half the screen, pushing the alarm itself off it.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    if (warnings.size == 1) "1 thing may stop your alarm from ringing"
+                    else "${warnings.size} things may stop your alarm from ringing",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f)
+                )
+                FilledTonalButton(onClick = { expanded = !expanded }) {
+                    Text(if (expanded) "Hide" else "Review")
                 }
             }
-            if (!many || expanded) {
+            if (expanded) {
                 warnings.forEachIndexed { index, w ->
-                    if (many) Spacer(Modifier.height(if (index == 0) 4.dp else 12.dp))
+                    Spacer(Modifier.height(if (index == 0) 4.dp else 12.dp))
                     Text(w.text, style = MaterialTheme.typography.bodyMedium)
                     TextButton(
                         onClick = w.onClick,
