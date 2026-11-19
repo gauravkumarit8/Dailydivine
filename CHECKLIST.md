@@ -1417,6 +1417,18 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** none of this is a compile or a device run.
 
+### 2026-11-19 — Round AD (CI hotfix: unescaped apostrophe in a string resource)
+
+**CI failure (user's log):** `strings.xml:80: Failed to flatten XML for resource 'theme_help' ... Invalid unicode escape sequence` at `:app:mergeDebugResources`.
+
+**Cause (mine, Round AC):** I wrote the new string with a plain apostrophe ("phone's"). aapt2 needs `\'` (or a typographic ’) in a string resource. The file is valid XML, so the XML parse in my sweeps could not see it, and the Kotlin syntax check does not read resources.
+
+**Fix:** `theme_help` now uses `phone\'s`.
+
+**Guard added so this class of mistake is caught before delivery and on CI:** `tools/check_string_resources.py` (unescaped apostrophe or double quote, or a value starting with @ or ?), run by me before every delivery from now on and as the first CI step in `.github/workflows/build.yml`. It flagged exactly this one string and no other when first run.
+
+**NOT verified:** a green CI run after this fix.
+
 ---
 
 ## What's Next (as of this session)

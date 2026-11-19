@@ -49,6 +49,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Check string resources (apostrophes, quotes)
+        run: python3 tools/check_string_resources.py
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
 

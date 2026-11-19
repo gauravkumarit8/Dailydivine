@@ -85,7 +85,7 @@
     <string name="update_time">Update time</string>
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
-    <string name="theme_help">System follows your phone's light or dark setting</string>
+    <string name="theme_help">System follows your phone\'s light or dark setting</string>
     <string name="your_tradition">Your tradition</string>
     <string name="choose_verse_language">Verse language</string>
     <string name="hindi_gita_note">Hindi meanings are available for the Bhagavad Gita verses, shown with the Sanskrit. Other passages stay in English. Menus and screens are always in English.</string>
