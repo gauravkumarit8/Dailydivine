@@ -1429,6 +1429,33 @@ No DAO or schema change (so no test fakes affected); the save logic is already c
 
 **NOT verified:** a green CI run after this fix.
 
+### 2026-11-19 — Round AE (planning only: content expansion plan)
+
+The owner asked for a plan to fill the content gaps after the strict review. Added `CONTENT_EXPANSION_PLAN.md` (repo root): current counts, launch decision (four traditions, hide the empty three), targets, sources with their legal status and whether the sandbox can fetch them, order of work, quality bar, risks and four decisions for the owner.
+
+**Feasibility checked this round:** the Quran source (github.com/Kristories/quran, Pickthall, 114 chapters) clones and parses; the Sefaria export is not in git (the repository holds only scripts and README) so Judaism needs a user-side download; Project Gutenberg is blocked from the sandbox so Buddhism's full Dhammapada, Spiritual and Sikhism need a user-side download.
+
+**Not done:** no code or content changed. **CI status:** Round AD (the string-resource hotfix) is not yet confirmed green.
+
+### 2026-11-23 — Round AF (Islam 34 -> 175 passages; first step of CONTENT_EXPANSION_PLAN.md)
+
+**Decision recorded:** the owner said "Continue" after the plan, so work started with the item that needs nothing from the owner (Islam). The questions in the plan (hide empty traditions at launch, reviewers, Arabic) are still open; defaults assumed: keep the Islam English-only for now (no Arabic), hide empty traditions in a later round.
+
+| Piece | Detail |
+|---|---|
+| Verification of what shipped | the 34 existing passages were compared verse by verse with the Pickthall text in github.com/Kristories/quran: identical apart from the closing punctuation that version 1 drops (and the app's one-verse-per-line format) |
+| `tools/build_islam_en.py` | rewritten like the Christianity builder: frozen `R_V1` (copied byte for byte), new `R_V2` of 141 passages spread evenly across the four categories, version 2; aborts on a missing reference, any duplicate or overlapping verse, unexpected capitals, double spaces, text over 460 characters (new passages only), or if the first 34 differ from the file |
+| Selection | about 180 candidates were drafted, pulled and READ; about 40 were dropped (battle context, hell clauses, fragments, rulings, text hostile to another faith, or too long). The reasons are listed in the script. Final: 175 passages (Mercy & Forgiveness 37, Patience & Trust 44, Guidance & Knowledge 41, Character & Kindness 53); longest new passage 454 characters |
+| `ContentIntegrityTest.islamFirst34VersesAreFrozen` | SHA-256 freeze of the first 34 (`6e0809b6...3e99`), identical to the hash of the file that shipped |
+| `licenses/CONTENT_SOURCES.md` | count, version, sources |
+| `islam_selection_review.md` (for the reviewer) | the 141 new passages with reference and category |
+
+**Needs a Muslim reviewer before release.** The selection is mine, not an authority's; drop whatever the reviewer drops (the builder makes that a one-line change).
+
+**Known side effects:** the daily verse is `day mod total`, so Islam's sequence shifts once for users past their first cycle; Islam is now just under six months before a repeat, below the plan's 180 target (5 more are easy to add).
+
+**NOT verified:** none of this is a compile or a device run. CI for Rounds AC/AD is not yet confirmed green.
+
 ---
 
 ## What's Next (as of this session)

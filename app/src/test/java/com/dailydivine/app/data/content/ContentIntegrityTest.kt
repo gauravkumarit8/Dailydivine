@@ -59,6 +59,19 @@ class ContentIntegrityTest {
         }
     }
 
+    /** The first 34 Islam passages shipped in version 1 and must never change (users may have saved them). */
+    @Test fun islamFirst34VersesAreFrozen() {
+        val verses = parse(File(dir, "islam_en.json")).getAsJsonArray("verses")
+        assertTrue(verses.size() >= 34)
+        val blob = (0 until 34).joinToString("\n") {
+            val v = verses[it].asJsonObject
+            "${v.get("id").asInt}|${v.get("dayNumber").asInt}|${v.get("sourceReference").asString}|${v.get("translatedText").asString}"
+        }
+        val hash = MessageDigest.getInstance("SHA-256").digest(blob.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+        assertEquals("6e0809b64d49a99c4f05e0198a8b743fba4c2699c3786958bacc989e4e483e99", hash)
+    }
+
     /** Every Hinduism passage shows its Sanskrit: the Gita verses and the Arnold passages (mapped to their verses). */
     @Test fun everyHinduismVerseHasDevanagariSanskrit() {
         val verses = parse(File(dir, "hinduism_en.json")).getAsJsonArray("verses")
