@@ -1456,6 +1456,39 @@ The owner asked for a plan to fill the content gaps after the strict review. Add
 
 **NOT verified:** none of this is a compile or a device run. CI for Rounds AC/AD is not yet confirmed green.
 
+### 2026-11-24 — Round AG (finding Besant's Gita on GitHub; a download script for the owner)
+
+**Question (owner):** is there a free source for the Gita meanings (and the other traditions); can we bundle the full Gita; look for a GitHub copy of Besant and find the sources.
+
+**Findings (recorded here, summarised in CONTENT_EXPANSION_PLAN.md):**
+- Sanskrit: gita/gita `data/verse.json` (Unlicense), 701 entries (chapter 13 counted with Arjuna's question), already used; the same file's transliteration, word meanings and translations are modern, copyrighted and NOT used.
+- English, verified public domain: Annie Besant, *The Bhagavad-Gita*, 4th ed. (1922). Published 1922 and Besant died in 1933: public domain in the US and in India. Source of the digital text: English Wikisource (transcription CC BY-SA 4.0: credit "English Wikisource, Bhagavad-Gita (Besant 4th)").
+- GitHub copies found: `tiwari91/hindi-library` (`sources/en-pd/gita-besant.json`, 700 verses, standard numbering) and `ArunaSivaram/Samvad` (`data/gita_besant.json`, 701 verses with speakers). Neither repository has a licence file, so their files and scripts are NOT copied. Compared verse by verse they agree on 636 of 700; 64 differ in small ways and each copy has transcription typos from Wikisource's scan (e.g. "ablation" for "oblation" 9.16, "rapidity" for "sapidity" 7.8, "arid" for "and" 2.33, "bath" for "hath" 4.41). Every verse used must therefore be proofread.
+- Hindi: `hindi-library` also ships Gandhi's *Anasakti Yoga* (the 1949 Hindi edition, unnamed translator) from Hindi Wikisource, unproofread, 6 verses missing. Public domain in India; its US status may be different (restored copyright for older Indian works is possible, 95 years from publication, not verified): NOT used without legal advice. Our own reviewed Hindi meanings remain the safe option.
+- Other traditions: Buddhism, SuttaCentral (Bhikkhu Sujato's translations, CC0; read in the repository LICENSE; fetchable from GitHub); Christianity, World English Bible (public domain, per ebible.org); Islam, Pickthall only; Judaism, JPS 1917; Sikhism, original Gurmukhi and Macauliffe 1909 only (the Shabad OS database lists redoing its English under an open licence as a todo); Spiritual, public-domain classics. Access to Insight translations are free to distribute but copyrighted (some non-commercial): avoid.
+
+**New:** `tools/fetch_besant_pages.ps1`. It downloads the 18 Wikisource discourse pages as served (MediaWiki API, 2 s between requests, identifying user agent) and zips them; the parser will be written and tested offline against those real files, not guessed. The sandbox cannot reach Wikisource.
+
+**Not done / NOT verified:** the script has not been run (no PowerShell here, and Wikisource is unreachable); no content changed.
+
+### 2026-11-24 — Round AH (Besant's Gita parsed from the owner's Wikisource download)
+
+**Input:** `besant_raw.zip` (the owner ran `fetch_besant_pages.ps1`; 18 valid MediaWiki API replies, no failed pages).
+
+**New:** `tools/gita/parse_besant.py` (original code; needs beautifulsoup4 + lxml) and its output `tools/gita/besant_1922.json`: 701 passages covering all 701 verse numbers, in Besant's numbering (chapter 13 = 35 verses because Arjuna's question is verse 1; subtract one from chapter-13 verses 2+ for the standard number, as in Round AA). Each passage has the English, the Sanskrit as printed by Besant, the English and Sanskrit speaker, the Wikisource scan page(s) and the Wikisource revision ids.
+
+**How it was checked:**
+- the verse number of each passage is read from the Devanagari numeral in its Sanskrit block (`॥ १२ ॥`), because the English "(12)" markers are sometimes malformed in Wikisource (17.19 and 18.14 carry marker typos "(20)" and "(15)"); every chapter's verse numbers are exactly 1..N with no gap or duplicate;
+- Besant's Sanskrit was compared with the gita/gita Sanskrit verse by verse: the same verse in all 701 passages; the differences are spelling conventions (the nasal conjunct versus the anusvara, a few Wikisource OCR slips) and seven passages where Wikisource itself omits a line of Sanskrit; English is not affected;
+- two bugs found and fixed in my own parser during this check: (1) it read only the `<p>` tags of the Sanskrit block and lost the first line of many verses, (2) it put a space wherever a page break fell inside a word ("griev ed");
+- Wikisource page quality: 249 pages proofread, 15 validated, none unproofread.
+
+**The English is not error-free.** Wikisource's own transcription has mistakes. Compared with the GitHub copy by ArunaSivaram/Samvad there are 42 real disagreements, each side right in some ("sapidity" 7.8 is right in Wikisource, "oblation" 9.16 right in Samvad, "ablation" in Wikisource is wrong, 11.25 has a truncated word). `besant_proofread_list.md` (delivered to the owner) lists them with scan links. **Every verse the app will show must be proofread against its scan before release.** Verses are not yet used by the app.
+
+**Licence:** Besant's text is public domain; the Wikisource transcription is CC BY-SA 4.0. Credit: "English Wikisource, Bhagavad-Gita (Besant 4th)" with revision ids. Share-alike: keep this credit and licence note with `besant_1922.json`; have it checked before shipping text taken from it.
+
+**Not done:** nothing in the app uses Besant yet; no proofreading by a human yet; the Gita reader screen is not built.
+
 ---
 
 ## What's Next (as of this session)
