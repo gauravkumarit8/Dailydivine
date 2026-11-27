@@ -27,6 +27,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.dailydivine.app.ui.alarm.AlarmListScreen
 import com.dailydivine.app.ui.badges.BadgesScreen
+import com.dailydivine.app.ui.gita.GitaReaderScreen
 import com.dailydivine.app.ui.wallpaper.WallpaperScreen
 import com.dailydivine.app.ui.home.HomeScreen
 import com.dailydivine.app.ui.library.LibraryScreen
@@ -159,7 +160,12 @@ fun DailyDivineNavGraph(
             composable(Screen.Badges.route) {
                 BadgesScreen(onBack = { navController.popBackStack() })
             }
-            composable(Screen.Library.route) { LibraryScreen() }
+            composable(Screen.Library.route) {
+                LibraryScreen(onOpenGita = { navController.navigate(Screen.GitaReader.route) })
+            }
+            composable(Screen.GitaReader.route) {
+                GitaReaderScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.Alarm.route) { AlarmListScreen() }
             composable(Screen.Settings.route) {
                 SettingsScreen(

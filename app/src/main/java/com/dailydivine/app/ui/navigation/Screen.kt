@@ -27,4 +27,5 @@ sealed class Screen(val route: String) {
 
     /** Daily wallpaper settings; reached from Settings. */
     object Wallpaper : Screen("wallpaper")
+    object GitaReader : Screen("gita")
 }

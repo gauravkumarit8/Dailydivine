@@ -1489,6 +1489,24 @@ The owner asked for a plan to fill the content gaps after the strict review. Add
 
 **Not done:** nothing in the app uses Besant yet; no proofreading by a human yet; the Gita reader screen is not built.
 
+### 2026-11-27 — Round AI (the Bhagavad Gita reader: 18 chapters, 701 passages)
+
+**Request (owner):** "yes continue with Bhagavad gita" after Besant's text was parsed (Round AH).
+
+| Piece | Detail |
+|---|---|
+| `tools/build_gita_reader.py` | builds `app/src/main/assets/gita/gita_reader.json` (329 KB) from `besant_1922.json` (English), the gita/gita Sanskrit (Unlicense, Sanskrit only) and our own reviewed meanings (`gita_pilot.json`). Standard 700-verse numbering (Besant's chapter 13 is one higher; Arjuna's question is passage `13.0`, "Arjuna's question"). Chapter titles are Besant's, title-cased (one Wikisource typo, INDESCTRUCTIBLE, fixed). All 701 passages are single verses |
+| Sanskrit line joins | the dataset breaks each verse into quarter-lines, sometimes inside a word. A join is made without a space only where Besant's own Sanskrit proves it (14 found, all genuine sandhi, e.g. 2.20, 2.22, 3.35); the 521 joins that could not be confirmed default to a space, so a missed mid-word break would show as one extra space |
+| English typos fixed (certain only) | 3.20 "he world", 6.43 "this former body", 9.16 "ablation", 10.26 "all tree", 11.25 "re of all the worlds". About 37 other places where a second copy reads differently are left exactly as Wikisource has them: that second copy may be another edition of Besant, so it is not a referee. They are listed in `besant_proofread_list.md` with scan links |
+| App code | `GitaModels.kt`, `GitaReaderRepository.kt` (loads the asset once, falls back to an empty book), `GitaReaderViewModel.kt` (book + the Settings verse language), `GitaReaderScreen.kt` (chapter list, chapter view, back handling, credits), route `Screen.GitaReader`, Library > Browse shows a "Bhagavad Gita, 700 verses" card for Hinduism only |
+| Each passage shows | verse label, speaker (where Besant gives one), Sanskrit, Besant's English, and "In simple words" (our English, or Hindi when Hindi is chosen) for the 49 verses that have one |
+| Credits | in-app credits, `docs/terms.html` (Besant, CC BY-SA 4.0 with link), `licenses/CONTENT_SOURCES.md` |
+| Tests | `GitaReaderDataTest` (18 chapters; every chapter covers exactly 1..N in standard numbering; unique ids; Sanskrit and English on every passage; 49 meanings in pairs, none on 3.35) |
+
+**Website docs discovery:** the Round Y wording (Gita credit, FAQ about language) never reached either repo: the app repo's `docs/` and the live website repo both still had the old text. Re-applied here to `docs/index.html` and `docs/terms.html`, and delivered as `daily-divine_site_update2.zip` for the website repo (`daily-divine/`). The owner must copy those three files into the website repo and push.
+
+**Not verified:** none of this is a compile or a device run; the screen has never been seen. Scrolling performance of the 70-passage chapter 2 and the look of the long Sanskrit are unchecked. The proofreading of the remaining about 37 disagreements is still open.
+
 ---
 
 ## What's Next (as of this session)

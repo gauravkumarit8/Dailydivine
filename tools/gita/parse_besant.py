@@ -77,6 +77,9 @@ def events(root):
     return out
 
 
+chapter_titles = {}
+
+
 def parse_chapter(ch, html):
     root = BeautifulSoup(html, 'lxml').select_one('div.mw-parser-output')
     verses, cur, speaker_en, problems, notes = [], None, None, [], []
@@ -117,6 +120,15 @@ def parse_chapter(ch, html):
                 cur['en'] = ' '.join(cur.pop('en_parts'))
                 verses.append(cur)
                 cur = None
+    title = None
+    evs = events(root)
+    for i, ev in enumerate(evs):
+        if ev[0] == 'P' and ev[1].startswith('Thus in the glorious Upanishads'):
+            for nxt in evs[i + 1:i + 3]:
+                if nxt[0] == 'SPK' and nxt[1]:
+                    title = nxt[1].rstrip('.').strip()
+                    break
+    chapter_titles[ch] = title
     if cur and cur['en_parts'] and cur['nums']:
         problems.append(f'{ch}: last verse never closed {cur["nums"]}')
     return verses, problems, notes
@@ -162,7 +174,7 @@ def main(raw_dir, verse_json=None):
             if norm_sa(v['sanskrit']) != want:
                 mism.append((v['chapter'], v['nums']))
     out = {'source': 'Annie Besant, The Bhagavad-Gita, 4th ed. (1922). Public domain. Text: English Wikisource, Bhagavad-Gita (Besant 4th), CC BY-SA 4.0.',
-           'wikisource_revisions': revs, 'verses': all_v}
+           'wikisource_revisions': revs, 'chapter_titles': chapter_titles, 'verses': all_v}
     dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'besant_1922.json')
     json.dump(out, open(dest, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     cov = sum(len(v['nums']) for v in all_v)

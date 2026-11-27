@@ -52,7 +52,7 @@ import com.dailydivine.app.ui.theme.VerseTextStyle
  * search across the user's religion, verse detail (S10) and Favorites.
  */
 @Composable
-fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
+fun LibraryScreen(onOpenGita: () -> Unit = {}, viewModel: LibraryViewModel = hiltViewModel()) {
     val religion by viewModel.religion.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -123,6 +123,12 @@ fun LibraryScreen(viewModel: LibraryViewModel = hiltViewModel()) {
                     contentPadding = PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // Hinduism (religion id 1) also offers the whole Gita: all 18 chapters, 700 verses.
+                    if (religion?.id == 1) {
+                        item(key = "gita_reader") {
+                            CategoryCard(name = "Bhagavad Gita", count = 700, onClick = onOpenGita)
+                        }
+                    }
                     items(categories, key = { it.id }) { cat ->
                         CategoryCard(name = cat.name, count = cat.verseCount, onClick = { viewModel.openCategory(cat) })
                     }
